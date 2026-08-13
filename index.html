@@ -176,6 +176,9 @@ button{
 .status-btn[data-val="incorrecto"].active{background:var(--red);color:#fff;border-color:var(--red);}
 .status-btn[data-val="na"].active{background:#d9d5e6;color:var(--purple-dark);border-color:#d9d5e6;}
 .cat-note{width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid var(--border);margin-top:2px;}
+.cat-photo-strip{margin-top:6px;}
+.photo-thumb.small{width:44px;height:44px;}
+.photo-add.small{width:44px;height:44px;font-size:16px;}
 
 .photo-strip{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
 .photo-thumb{
@@ -347,9 +350,9 @@ small.hint{color:var(--muted);font-size:11px;display:block;margin-top:4px;}
       </div>
     </div>
     <label>Participantes</label>
-    <input type="text" id="setParticipants" value="Alejandro Carrasco Guerrero, Mirella (EHS)">
+    <input type="text" id="setParticipants" placeholder="Ej: Nombre Apellido (SGI), Nombre Apellido (EHS)">
     <label>Objetivo del recorrido</label>
-    <textarea id="setObjective" placeholder="Ej: Verificar segregación en puntos críticos, identificar oportunidades de mejora hacia meta de 90% de desvío TRUE Zero Waste."></textarea>
+    <textarea id="setObjective">Verificar la correcta segregación de residuos en los puntos críticos del sitio, identificar oportunidades de mejora y avanzar hacia la meta de desvío de relleno sanitario del programa TRUE Zero Waste.</textarea>
     <div class="row" style="margin-top:12px;">
       <button class="btn-primary" onclick="startOrResume()">▶ Iniciar / Continuar recorrido</button>
       <button class="btn-ghost" onclick="openLoadModal()">📂 Cargar recorrido guardado</button>
@@ -363,7 +366,7 @@ small.hint{color:var(--muted);font-size:11px;display:block;margin-top:4px;}
     <div class="tabs">
       <button class="tab-btn active" data-tab="puntos" onclick="switchTab('puntos')">🧭 Puntos evaluados</button>
       <button class="tab-btn" data-tab="report" onclick="switchTab('report')">📊 Resumen / Informe</button>
-      <button class="tab-btn no-print" onclick="switchTab('setupCardTab')">⚙ Datos del recorrido</button>
+      <button class="tab-btn" data-tab="datos" onclick="switchTab('datos')">⚙ Datos del recorrido</button>
     </div>
 
     <div id="view-puntos">
@@ -442,6 +445,30 @@ small.hint{color:var(--muted);font-size:11px;display:block;margin-top:4px;}
       </div>
     </div>
 
+    <div id="view-datos" class="hidden">
+      <div class="card">
+        <h2>⚙ Datos del recorrido activo</h2>
+        <div class="row">
+          <div>
+            <label>Sitio</label>
+            <input type="text" id="datosSitio" disabled>
+          </div>
+          <div>
+            <label>Fecha</label>
+            <input type="text" id="datosFecha" disabled>
+          </div>
+        </div>
+        <label>Participantes</label>
+        <input type="text" id="datosParticipantes">
+        <label>Objetivo del recorrido</label>
+        <textarea id="datosObjetivo"></textarea>
+        <div class="row" style="margin-top:12px;">
+          <button class="btn-primary" onclick="saveDatosRecorrido()">💾 Guardar cambios</button>
+        </div>
+        <small class="hint">El sitio y la fecha no se editan aquí porque identifican este recorrido guardado. Si te equivocaste, usa "🆕 Nuevo recorrido" con los datos correctos.</small>
+      </div>
+    </div>
+
     <div id="view-report" class="hidden">
       <div class="card">
         <h2>📊 Resumen del recorrido</h2>
@@ -486,13 +513,15 @@ const CATEGORIAS = [
   {key:'papel', label:'Papel / Cartón'},
   {key:'plastico', label:'Plástico'},
   {key:'vidrio', label:'Vidrio'},
-  {key:'metal', label:'Metal'},
+  {key:'metal', label:'Metal / Aluminio'},
   {key:'organico', label:'Orgánico'},
-  {key:'peligroso', label:'Peligroso / E-waste'},
-  {key:'generales', label:'No reciclables / Generales'}
+  {key:'peligroso', label:'Peligrosos'},
+  {key:'electronico', label:'Residuos electrónicos'},
+  {key:'domiciliario', label:'Domiciliarios (no reciclables)'}
 ];
 
 let db = null;
+let tempCatPhotos = {}; // { catKey: [dataUrls...] } for the point being created/edited
 let currentRecorrido = null; // {id, sitio, fecha, participantes, objetivo, puntos:[], createdAt, updatedAt}
 let editingPointId = null;
 let tempPhotosNew = []; // dataURLs for point being created/edited
@@ -584,8 +613,52 @@ function buildCatGrid(){
         </div>
       </div>
       <input type="text" class="cat-note" placeholder="Nota breve (opcional)">
+      <div class="photo-strip cat-photo-strip" id="catPhotoStrip_${c.key}">
+        <label class="photo-add small">
+          📷
+          <input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handleCatPhotos(event,'${c.key}')">
+        </label>
+      </div>
     </div>
   `).join('');
+  tempCatPhotos = {};
+  CATEGORIAS.forEach(c=>renderCatPhotoStrip(c.key));
+}
+
+function handleCatPhotos(event, catKey){
+  const files = Array.from(event.target.files || []);
+  if(!tempCatPhotos[catKey]) tempCatPhotos[catKey] = [];
+  files.forEach(file=>{
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      compressImage(e.target.result, 900, 0.7).then(dataUrl=>{
+        tempCatPhotos[catKey].push(dataUrl);
+        renderCatPhotoStrip(catKey);
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+  event.target.value = '';
+}
+function renderCatPhotoStrip(catKey){
+  const strip = document.getElementById('catPhotoStrip_'+catKey);
+  if(!strip) return;
+  const photos = tempCatPhotos[catKey] || [];
+  strip.innerHTML = photos.map((p,i)=>`
+    <div style="position:relative;">
+      <img src="${p}" class="photo-thumb small" onclick="openLightbox('${p}')">
+      <button type="button" onclick="removeCatPhoto('${catKey}',${i})" style="position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:10px;line-height:1;">✕</button>
+    </div>
+  `).join('') + `
+    <label class="photo-add small">
+      📷
+      <input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handleCatPhotos(event,'${catKey}')">
+    </label>
+  `;
+}
+function removeCatPhoto(catKey, i){
+  tempCatPhotos[catKey].splice(i,1);
+  renderCatPhotoStrip(catKey);
 }
 function setCatStatus(btn, catKey){
   const item = btn.closest('.cat-item');
@@ -601,8 +674,9 @@ function readCatGrid(){
     const activeBtn = item.querySelector('.status-btn.active');
     const status = activeBtn ? activeBtn.dataset.val : null;
     const note = item.querySelector('.cat-note').value.trim();
-    if(status || note){
-      data.push({key, label, status, note});
+    const fotos = tempCatPhotos[key] || [];
+    if(status || note || fotos.length){
+      data.push({key, label, status, note, fotos});
     }
   });
   return data;
@@ -618,6 +692,10 @@ function loadCatGrid(catData){
       if(btn) btn.classList.add('active');
     }
     if(cd.note) item.querySelector('.cat-note').value = cd.note;
+    if(cd.fotos && cd.fotos.length){
+      tempCatPhotos[cd.key] = [...cd.fotos];
+      renderCatPhotoStrip(cd.key);
+    }
   });
 }
 
@@ -744,6 +822,7 @@ async function startOrResume(){
   }
   await persist();
   document.getElementById('workArea').classList.remove('hidden');
+  document.getElementById('setupCard').classList.add('hidden');
   document.getElementById('siteBadge').textContent = `${currentRecorrido.sitio} · ${currentRecorrido.fecha}`;
   renderPointsList();
   renderReport();
@@ -798,6 +877,7 @@ async function loadRecorrido(id){
   document.getElementById('setParticipants').value = rec.participantes || '';
   document.getElementById('setObjective').value = rec.objetivo || '';
   document.getElementById('workArea').classList.remove('hidden');
+  document.getElementById('setupCard').classList.add('hidden');
   document.getElementById('siteBadge').textContent = `${rec.sitio} · ${rec.fecha}`;
   renderPointsList();
   renderReport();
@@ -813,9 +893,11 @@ function confirmNewRecorrido(){
   if(!confirm('¿Iniciar un nuevo recorrido? El actual queda guardado y puedes retomarlo desde "Cargar recorrido guardado".')) return;
   currentRecorrido = null;
   document.getElementById('workArea').classList.add('hidden');
+  document.getElementById('setupCard').classList.remove('hidden');
   clearPointForm();
   document.getElementById('setSite').value = '';
-  document.getElementById('setObjective').value = '';
+  document.getElementById('setParticipants').value = '';
+  document.getElementById('setObjective').value = 'Verificar la correcta segregación de residuos en los puntos críticos del sitio, identificar oportunidades de mejora y avanzar hacia la meta de desvío de relleno sanitario del programa TRUE Zero Waste.';
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -919,7 +1001,13 @@ function renderPointsList(){
       </div>
       ${p.categorias && p.categorias.length ? `
         <div style="margin-top:8px;font-size:11.5px;">
-          ${p.categorias.map(c=>`<span style="display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:12px;background:${c.status==='correcto'?'#e4f9ef':c.status==='incorrecto'?'#fde2e2':'#eee'};color:${c.status==='correcto'?'#1d8a5e':c.status==='incorrecto'?'#c0272c':'#666'};">${c.label}${c.status?': '+(c.status==='correcto'?'✔':c.status==='incorrecto'?'✘':'N/A'):''}</span>`).join('')}
+          ${p.categorias.map(c=>`
+            <div style="margin-bottom:6px;">
+              <span style="display:inline-block;padding:2px 8px;border-radius:12px;background:${c.status==='correcto'?'#e4f9ef':c.status==='incorrecto'?'#fde2e2':'#eee'};color:${c.status==='correcto'?'#1d8a5e':c.status==='incorrecto'?'#c0272c':'#666'};">${c.label}${c.status?': '+(c.status==='correcto'?'✔':c.status==='incorrecto'?'✘':'N/A'):''}</span>
+              ${c.note ? ` <i style="color:var(--muted);">${c.note}</i>` : ''}
+              ${c.fotos && c.fotos.length ? `<div class="photo-strip" style="margin-top:4px;">${c.fotos.map(f=>`<img src="${f}" class="photo-thumb small" onclick="openLightbox('${f}')">`).join('')}</div>` : ''}
+            </div>
+          `).join('')}
         </div>` : ''}
       ${p.nota ? `<p style="font-size:12.5px;margin:8px 0 0;">${p.nota}</p>` : ''}
       ${p.esOportunidad && p.descOportunidad ? `<p style="font-size:12.5px;margin:6px 0 0;background:#fff8e8;padding:8px;border-radius:8px;"><b>Oportunidad:</b> ${p.descOportunidad}${p.responsable ? ' · Responsable sugerido: '+p.responsable : ''}</p>` : ''}
@@ -934,15 +1022,28 @@ function renderPointsList(){
 
 /* ============ TABS ============ */
 function switchTab(tab){
-  if(tab === 'setupCardTab'){
-    document.getElementById('setupCard').scrollIntoView({behavior:'smooth'});
-    return;
-  }
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
   document.getElementById('view-puntos').classList.toggle('hidden', tab!=='puntos');
   document.getElementById('view-report').classList.toggle('hidden', tab!=='report');
+  document.getElementById('view-datos').classList.toggle('hidden', tab!=='datos');
   if(tab==='report') renderReport();
+  if(tab==='datos') loadDatosTab();
+}
+function loadDatosTab(){
+  if(!currentRecorrido) return;
+  document.getElementById('datosSitio').value = currentRecorrido.sitio;
+  document.getElementById('datosFecha').value = currentRecorrido.fecha;
+  document.getElementById('datosParticipantes').value = currentRecorrido.participantes || '';
+  document.getElementById('datosObjetivo').value = currentRecorrido.objetivo || '';
+}
+async function saveDatosRecorrido(){
+  if(!currentRecorrido) return;
+  currentRecorrido.participantes = document.getElementById('datosParticipantes').value.trim();
+  currentRecorrido.objetivo = document.getElementById('datosObjetivo').value.trim();
+  await persist();
+  renderReport();
+  toast('✔ Datos del recorrido actualizados.');
 }
 
 /* ============ REPORT ============ */
@@ -1068,12 +1169,16 @@ function exportWord(){
   const prioBg = {alta:'#fde2e2', media:'#fff1d6', baja:'#e4f9ef'};
 
   const pointsHtml = puntos.map((p,i)=>{
-    const catRows = (p.categorias||[]).filter(c=>c.status||c.note).map(c=>`
+    const catRows = (p.categorias||[]).filter(c=>c.status||c.note||(c.fotos&&c.fotos.length)).map(c=>{
+      const fotosRow = (c.fotos && c.fotos.length) ? `
+      <tr><td colspan="3" style="padding:4px 8px;border:1px solid #ddd;">${c.fotos.map(f=>`<img src="${f}" style="width:110px;margin:2px 4px 2px 0;border:1px solid #ccc;">`).join('')}</td></tr>` : '';
+      return `
       <tr>
         <td style="padding:4px 8px;border:1px solid #ddd;">${c.label}</td>
         <td style="padding:4px 8px;border:1px solid #ddd;color:${statusColor(c.status)};font-weight:bold;">${statusLabel(c.status)}</td>
         <td style="padding:4px 8px;border:1px solid #ddd;">${c.note||''}</td>
-      </tr>`).join('');
+      </tr>${fotosRow}`;
+    }).join('');
     const catTable = catRows ? `
       <table style="border-collapse:collapse;width:100%;margin:8px 0;font-size:11pt;">
         <tr style="background:#522582;color:#fff;">
