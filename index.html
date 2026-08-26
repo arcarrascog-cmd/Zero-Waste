@@ -1,1347 +1,1382 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>♻ Zero Waste · Recorrido de Sitio</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --green-primary: #2d7b3d;
-            --green-light: #e8f5e9;
-            --gray-dark: #333;
-            --gray-light: #f5f5f5;
-            --orange-accent: #ff9800;
-            --blue-accent: #1976d2;
-            --red-accent: #d32f2f;
-            --border-radius: 8px;
-            --shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            background: #fafafa;
-            color: var(--gray-dark);
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 16px;
-        }
-
-        header {
-            background: linear-gradient(135deg, var(--green-primary) 0%, #1b5e2a 100%);
-            color: white;
-            padding: 24px 16px;
-            border-radius: var(--border-radius);
-            margin-bottom: 24px;
-            box-shadow: var(--shadow);
-        }
-
-        header h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .status-bar {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 12px;
-            font-size: 13px;
-        }
-
-        .status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #4caf50;
-        }
-
-        .status-indicator.offline {
-            background: #ff9800;
-        }
-
-        .card {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow);
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--green-primary);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 6px;
-            font-size: 14px;
-            color: var(--gray-dark);
-        }
-
-        input[type="text"],
-        input[type="date"],
-        input[type="number"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: border-color 0.2s;
-        }
-
-        input[type="text"]:focus,
-        input[type="date"]:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: var(--green-primary);
-            box-shadow: 0 0 0 3px rgba(45, 123, 61, 0.1);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        @media (max-width: 600px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .btn {
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: var(--green-primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #1b5e2a;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(45, 123, 61, 0.3);
-        }
-
-        .btn-secondary {
-            background: var(--gray-light);
-            color: var(--gray-dark);
-        }
-
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-
-        .btn-danger {
-            background: var(--red-accent);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #b71c1c;
-        }
-
-        .btn-block {
-            width: 100%;
-            justify-content: center;
-        }
-
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 12px;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-
-        .button-group .btn {
-            flex: 1;
-            min-width: 120px;
-        }
-
-        .residue-categories {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .residue-item {
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-            font-weight: 500;
-            font-size: 13px;
-        }
-
-        .residue-item:hover {
-            border-color: var(--green-primary);
-            background: var(--green-light);
-        }
-
-        .residue-item.selected {
-            border-color: var(--green-primary);
-            background: var(--green-light);
-            color: var(--green-primary);
-        }
-
-        .residue-status {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-            margin-top: 4px;
-        }
-
-        .status-good {
-            background: #c8e6c9;
-            color: #1b5e2a;
-        }
-
-        .status-warning {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-critical {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .record-item {
-            background: var(--gray-light);
-            padding: 16px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            border-left: 4px solid var(--green-primary);
-        }
-
-        .record-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .record-location {
-            font-weight: 600;
-            font-size: 16px;
-            color: var(--green-primary);
-        }
-
-        .record-date {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .record-details {
-            font-size: 13px;
-            color: #555;
-            margin: 8px 0;
-        }
-
-        .photo-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .photo-thumb {
-            width: 80px;
-            height: 80px;
-            border-radius: 4px;
-            object-fit: cover;
-            cursor: pointer;
-            border: 2px solid #ddd;
-            transition: border-color 0.2s;
-        }
-
-        .photo-thumb:hover {
-            border-color: var(--green-primary);
-        }
-
-        .photo-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-
-        .photo-input-wrapper input[type="file"] {
-            position: absolute;
-            left: -9999px;
-        }
-
-        .alert {
-            padding: 12px 16px;
-            border-radius: 6px;
-            margin-bottom: 16px;
-            font-size: 14px;
-        }
-
-        .alert-info {
-            background: #e3f2fd;
-            color: #1565c0;
-            border-left: 4px solid #1976d2;
-        }
-
-        .alert-success {
-            background: #c8e6c9;
-            color: #1b5e2a;
-            border-left: 4px solid var(--green-primary);
-        }
-
-        .alert-warning {
-            background: #fff3cd;
-            color: #856404;
-            border-left: 4px solid #ff9800;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
-        }
-
-        .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .stat-box {
-            background: var(--green-light);
-            padding: 16px;
-            border-radius: 6px;
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--green-primary);
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #666;
-            margin-top: 4px;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .tab-buttons {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            border-bottom: 2px solid #eee;
-        }
-
-        .tab-button {
-            background: none;
-            border: none;
-            padding: 12px 16px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            color: #999;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .tab-button.active {
-            color: var(--green-primary);
-            border-bottom-color: var(--green-primary);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            max-width: 90vw;
-            max-height: 90vh;
-            overflow: auto;
-            padding: 20px;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #999;
-        }
-
-        .progress-indicator {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 16px;
-            font-size: 12px;
-        }
-
-        .progress-step {
-            flex: 1;
-            text-align: center;
-            padding: 8px;
-            border-radius: 4px;
-            background: #f0f0f0;
-            margin: 0 4px;
-            color: #999;
-        }
-
-        .progress-step.active {
-            background: var(--green-light);
-            color: var(--green-primary);
-            font-weight: 600;
-        }
-
-        .priority-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .priority-high {
-            background: #ffebee;
-            color: var(--red-accent);
-        }
-
-        .priority-medium {
-            background: #fff3e0;
-            color: var(--orange-accent);
-        }
-
-        .priority-low {
-            background: #e8f5e9;
-            color: var(--green-primary);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zero Waste · Recorrido de Sitio</title>
+<style>
+:root{
+  --purple:#522582;
+  --purple-dark:#3a1a5e;
+  --green:#33D592;
+  --green-dark:#22a874;
+  --bg:#f4f2f8;
+  --card:#ffffff;
+  --text:#26203a;
+  --muted:#756f8a;
+  --border:#e3ddf0;
+  --red:#e5484d;
+  --amber:#f5a524;
+  --shadow:0 2px 10px rgba(82,37,130,0.08);
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:80px;
+}
+header{
+  background:linear-gradient(135deg,var(--purple),var(--purple-dark));
+  color:#fff;
+  padding:18px 20px;
+  position:sticky;
+  top:0;
+  z-index:50;
+  box-shadow:var(--shadow);
+}
+header h1{
+  margin:0;
+  font-size:19px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+header h1 .leaf{
+  width:26px;height:26px;
+  background:var(--green);
+  border-radius:8px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:15px;
+}
+header .sub{
+  font-size:12px;
+  opacity:0.85;
+  margin-top:3px;
+}
+#statusBar{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  font-size:11px;
+  margin-top:8px;
+  flex-wrap:wrap;
+}
+.pill{
+  background:rgba(255,255,255,0.15);
+  padding:3px 9px;
+  border-radius:20px;
+}
+.pill.online{background:var(--green);color:#0c3b28;}
+.pill.offline{background:var(--amber);color:#402c00;}
+
+.container{max-width:920px;margin:0 auto;padding:16px;}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:18px;
+  margin-bottom:16px;
+  box-shadow:var(--shadow);
+}
+.card h2{
+  margin:0 0 12px 0;
+  font-size:15px;
+  color:var(--purple-dark);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+label{
+  display:block;
+  font-size:12px;
+  font-weight:bold;
+  color:var(--muted);
+  margin:10px 0 4px;
+}
+input[type=text], input[type=date], select, textarea{
+  width:100%;
+  padding:9px 10px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  font-family:inherit;
+  font-size:13px;
+  background:#fbfaff;
+}
+textarea{min-height:60px;resize:vertical;}
+.row{display:flex;gap:10px;flex-wrap:wrap;}
+.row > div{flex:1;min-width:140px;}
+
+button{
+  font-family:inherit;
+  cursor:pointer;
+  border:none;
+  border-radius:9px;
+  padding:9px 14px;
+  font-size:13px;
+  font-weight:bold;
+}
+.btn-primary{background:var(--purple);color:#fff;}
+.btn-primary:hover{background:var(--purple-dark);}
+.btn-green{background:var(--green);color:#0c3b28;}
+.btn-green:hover{background:var(--green-dark);color:#fff;}
+.btn-ghost{background:#fff;color:var(--purple);border:1px solid var(--purple);}
+.btn-ghost:hover{background:#f2ecfb;}
+.btn-danger{background:#fdeaea;color:var(--red);}
+.btn-danger:hover{background:var(--red);color:#fff;}
+.btn-small{padding:5px 10px;font-size:11px;border-radius:7px;}
+.btn-mic{background:#f2ecfb;color:var(--purple);border-radius:50%;width:34px;height:34px;padding:0;font-size:15px;}
+.btn-mic.listening{background:var(--red);color:#fff;animation:pulse 1s infinite;}
+@keyframes pulse{0%{opacity:1;}50%{opacity:0.6;}100%{opacity:1;}}
+
+.mic-row{display:flex;gap:8px;align-items:flex-start;}
+.mic-row textarea{flex:1;}
+
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.tab-btn{
+  background:#fff;
+  border:1px solid var(--border);
+  color:var(--muted);
+  padding:8px 14px;
+  border-radius:20px;
+  font-size:12px;
+}
+.tab-btn.active{background:var(--purple);color:#fff;border-color:var(--purple);}
+
+.hidden{display:none !important;}
+
+.cat-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px;}
+.cat-item{
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px;
+  background:#fbfaff;
+}
+.cat-item .cat-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:6px;
+}
+.cat-item .cat-name{font-weight:bold;font-size:12.5px;}
+.status-btns{display:flex;gap:5px;}
+.status-btn{
+  border:1px solid var(--border);
+  background:#fff;
+  color:var(--muted);
+  padding:4px 9px;
+  border-radius:7px;
+  font-size:11px;
+}
+.status-btn[data-val="correcto"].active{background:var(--green);color:#0c3b28;border-color:var(--green);}
+.status-btn[data-val="incorrecto"].active{background:var(--red);color:#fff;border-color:var(--red);}
+.status-btn[data-val="na"].active{background:#d9d5e6;color:var(--purple-dark);border-color:#d9d5e6;}
+.cat-note{width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid var(--border);margin-top:2px;}
+.cat-photo-strip{margin-top:6px;}
+.photo-thumb.small{width:44px;height:44px;}
+.photo-add.small{width:44px;height:44px;font-size:16px;}
+
+.photo-strip{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.photo-thumb{
+  width:74px;height:74px;
+  border-radius:8px;
+  object-fit:cover;
+  border:1px solid var(--border);
+  cursor:pointer;
+}
+.photo-add{
+  width:74px;height:74px;
+  border:2px dashed var(--purple);
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--purple);
+  font-size:24px;
+  background:#f2ecfb;
+  cursor:pointer;
+}
+
+.point-card{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:12px;
+  background:#fff;
+}
+.point-card.finding{border-left:5px solid var(--amber);}
+.point-card.critical{border-left:5px solid var(--red);}
+.point-card.ok{border-left:5px solid var(--green);}
+.point-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.point-title{font-weight:bold;font-size:14px;color:var(--purple-dark);}
+.point-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.badge{
+  font-size:10px;
+  padding:3px 8px;
+  border-radius:20px;
+  font-weight:bold;
+  white-space:nowrap;
+}
+.badge.alta{background:#fde2e2;color:var(--red);}
+.badge.media{background:#fff1d6;color:#8a5a00;}
+.badge.baja{background:#e4f9ef;color:var(--green-dark);}
+.point-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px;}
+.summary-box{
+  background:#fbfaff;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px;
+  text-align:center;
+}
+.summary-box .num{font-size:24px;font-weight:bold;color:var(--purple);}
+.summary-box .lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+
+.bar-wrap{margin-bottom:8px;}
+.bar-lbl{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;}
+.bar-track{background:#ece7f7;border-radius:10px;height:10px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:10px;}
+
+#toast{
+  position:fixed;
+  bottom:20px;left:50%;
+  transform:translateX(-50%);
+  background:var(--purple-dark);
+  color:#fff;
+  padding:10px 18px;
+  border-radius:30px;
+  font-size:12.5px;
+  box-shadow:var(--shadow);
+  opacity:0;
+  transition:opacity .25s;
+  z-index:100;
+  pointer-events:none;
+}
+#toast.show{opacity:1;}
+
+.modal-bg{
+  position:fixed;inset:0;
+  background:rgba(38,32,58,0.55);
+  display:flex;align-items:center;justify-content:center;
+  z-index:200;
+  padding:16px;
+}
+.modal{
+  background:#fff;
+  border-radius:14px;
+  max-width:420px;
+  width:100%;
+  max-height:85vh;
+  overflow-y:auto;
+  padding:20px;
+}
+
+.lightbox{
+  position:fixed;inset:0;background:rgba(0,0,0,0.9);
+  display:flex;align-items:center;justify-content:center;
+  z-index:300;padding:20px;
+}
+.lightbox img{max-width:100%;max-height:85vh;border-radius:8px;}
+.lightbox .close-x{position:absolute;top:16px;right:20px;color:#fff;font-size:28px;cursor:pointer;}
+
+footer.fixedbar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;
+  border-top:1px solid var(--border);
+  padding:10px 16px;
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  flex-wrap:wrap;
+  box-shadow:0 -2px 10px rgba(82,37,130,0.08);
+  z-index:50;
+}
+
+small.hint{color:var(--muted);font-size:11px;display:block;margin-top:4px;}
+
+/* Print styles for report */
+@media print{
+  header, footer.fixedbar, .tabs, .no-print{display:none !important;}
+  body{padding:0;background:#fff;}
+  .card{box-shadow:none;border:1px solid #ccc;}
+  #view-report{display:block !important;}
+  .container{max-width:100%;}
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>♻ Zero Waste · Recorrido de Sitio</h1>
-            <p>ODATA Colocation · SGI · Registro con fotos y observaciones de segregación</p>
-            <div class="status-bar">
-                <div class="status-indicator" id="statusIndicator"></div>
-                <span id="statusText">Guardado local activo</span>
-            </div>
-        </header>
 
-        <!-- Pantalla 1: Datos del recorrido -->
-        <div id="screen-setup" class="card">
-            <div class="section-title">📋 Datos del recorrido</div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="sitio">Sitio</label>
-                    <select id="sitio">
-                        <option value="">Seleccionar...</option>
-                        <option value="ST01">ST01</option>
-                        <option value="ST02">ST02</option>
-                        <option value="BG01">BG01</option>
-                        <option value="SP01">SP01</option>
-                        <option value="SP02">SP02</option>
-                        <option value="SP03">SP03</option>
-                        <option value="SP04">SP04</option>
-                        <option value="RJ01">RJ01</option>
-                        <option value="QR01">QR01</option>
-                        <option value="QR02">QR02</option>
-                        <option value="QR03">QR03</option>
-                        <option value="QR04">QR04</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="fecha">Fecha</label>
-                    <input type="date" id="fecha">
-                </div>
-            </div>
+<header>
+  <h1><span class="leaf">♻</span> Zero Waste · Recorrido de Sitio</h1>
+  <div class="sub">ODATA Colocation · SGI · Registro con fotos y notas de segregación</div>
+  <div id="statusBar">
+    <span class="pill" id="connPill">●</span>
+    <span class="pill" id="savePill">Guardado local activo</span>
+  </div>
+</header>
 
-            <div class="form-group">
-                <label for="participantes">Participantes</label>
-                <input type="text" id="participantes" placeholder="Ej: Alejandro, Heide, Paula">
-            </div>
+<div class="container">
 
-            <div class="form-group">
-                <label for="objetivo">Objetivo del recorrido</label>
-                <textarea id="objetivo" placeholder="Verificar la correcta segregación de residuos...">Verificar la correcta segregación de residuos en los puntos críticos del sitio, identificar oportunidades de mejora y avanzar hacia la meta de desvío de relleno sanitario del programa TRUE Zero Waste.</textarea>
-            </div>
+  <!-- SETUP -->
+  <div class="card" id="setupCard">
+    <h2>📋 Datos del recorrido</h2>
+    <div class="row">
+      <div>
+        <label>Sitio</label>
+        <select id="setSite">
+          <option value="">Seleccionar...</option>
+          <option>ST01</option>
+          <option>ST02</option>
+          <option>BG01</option>
+          <option>SP01</option>
+          <option>SP02</option>
+          <option>SP03</option>
+          <option>SP04</option>
+          <option>RJ01</option>
+          <option>QR01</option>
+          <option>QR02</option>
+          <option>QR03</option>
+          <option>QR04</option>
+        </select>
+      </div>
+      <div>
+        <label>Fecha</label>
+        <input type="date" id="setDate">
+      </div>
+    </div>
+    <label>Participantes</label>
+    <input type="text" id="setParticipants" placeholder="Ej: Nombre Apellido (SGI), Nombre Apellido (EHS)">
+    <label>Objetivo del recorrido</label>
+    <textarea id="setObjective">Verificar la correcta segregación de residuos en los puntos críticos del sitio, identificar oportunidades de mejora y avanzar hacia la meta de desvío de relleno sanitario del programa TRUE Zero Waste.</textarea>
+    <div class="row" style="margin-top:12px;">
+      <button class="btn-primary" onclick="startOrResume()">▶ Iniciar / Continuar recorrido</button>
+      <button class="btn-ghost" onclick="openLoadModal()">📂 Cargar recorrido guardado</button>
+    </div>
+    <small class="hint">Los datos se guardan automáticamente en este dispositivo (IndexedDB), incluso sin internet. No se pierden al cerrar el navegador.</small>
+  </div>
 
-            <div class="button-group">
-                <button class="btn btn-primary btn-block" onclick="iniciarRecorrido()">▶ Iniciar recorrido</button>
-                <button class="btn btn-secondary btn-block" onclick="cargarRecorridoGuardado()">📂 Cargar recorrido guardado</button>
-            </div>
+  <!-- MAIN WORK AREA -->
+  <div id="workArea" class="hidden">
 
-            <div class="alert alert-info">
-                💾 Los datos se guardan automáticamente en este dispositivo, incluso sin internet. No se pierden al cerrar el navegador.
-            </div>
-        </div>
-
-        <!-- Pantalla 2: Registro de puntos -->
-        <div id="screen-recording" class="hidden">
-            <div class="card">
-                <div class="section-title">🧭 Recorrido en progreso</div>
-                
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <div class="stat-number" id="recordCount">0</div>
-                        <div class="stat-label">Puntos registrados</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number" id="photoCount">0</div>
-                        <div class="stat-label">Fotos tomadas</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number" id="findingCount">0</div>
-                        <div class="stat-label">Hallazgos marcados</div>
-                    </div>
-                </div>
-
-                <div class="button-group">
-                    <button class="btn btn-secondary" onclick="mostrarResumen()">📊 Ver resumen</button>
-                    <button class="btn btn-secondary" onclick="descargarReportePDF()">💾 Generar respaldo PDF</button>
-                    <button class="btn btn-danger btn-small" onclick="finalizarRecorrido()">🏁 Finalizar</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="section-title">➕ Registrar punto evaluado</div>
-                
-                <div class="form-group">
-                    <label for="ubicacion">Ubicación / punto</label>
-                    <select id="ubicacion" onchange="toggleOtraUbicacion()">
-                        <option value="">Seleccionar ubicación...</option>
-                        <option value="NOC">NOC</option>
-                        <option value="Oficina ODATA">Oficina ODATA</option>
-                        <option value="Comedor">Comedor</option>
-                        <option value="Lobby">Lobby</option>
-                        <option value="Pérgola">Pérgola</option>
-                        <option value="Pasillos">Pasillos</option>
-                        <option value="Composteras">Composteras</option>
-                        <option value="Doca">Doca</option>
-                        <option value="OTRO">Otra ubicación</option>
-                    </select>
-                </div>
-
-                <div id="otraUbicacionField" class="form-group hidden">
-                    <label for="otraUbicacion">Especifica la ubicación</label>
-                    <input type="text" id="otraUbicacion" placeholder="Ej: Sala de servidores, Cuarto de equipos, etc.">
-                </div>
-
-                <label style="font-weight: 600; margin-top: 16px;">Evaluación por categoría de residuo</label>
-                <div class="residue-categories">
-                    <div class="residue-item" onclick="toggleResidue('Orgánicos')">Orgánicos</div>
-                    <div class="residue-item" onclick="toggleResidue('Reciclables')">Reciclables</div>
-                    <div class="residue-item" onclick="toggleResidue('No peligrosos')">No peligrosos</div>
-                    <div class="residue-item" onclick="toggleResidue('Peligrosos')">Peligrosos</div>
-                    <div class="residue-item" onclick="toggleResidue('Electrónicos')">Electrónicos</div>
-                    <div class="residue-item" onclick="toggleResidue('Otros')">Otros</div>
-                </div>
-                <div id="residueSelected" style="font-size: 13px; color: #666; margin-top: 8px;"></div>
-
-                <div class="form-group" style="margin-top: 16px;">
-                    <label for="observacion">Observación general</label>
-                    <textarea id="observacion" placeholder="Describe el estado de segregación, problemas encontrados, etc."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Fotografías</label>
-                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                        <button class="btn btn-secondary" onclick="document.getElementById('photoInput').click()">📷 Agregar foto</button>
-                        <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="agregarFoto(event)">
-                    </div>
-                    <div id="photoPreview" class="photo-gallery"></div>
-                </div>
-
-                <div class="form-group">
-                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                        <input type="checkbox" id="esHallazgo">
-                        <span>Marcar como hallazgo / oportunidad de mejora</span>
-                    </label>
-                </div>
-
-                <div id="hallazgoFields" class="hidden">
-                    <div class="form-group">
-                        <label for="descHallazgo">Descripción de la oportunidad / hallazgo</label>
-                        <textarea id="descHallazgo" placeholder="Detalla el problema y la oportunidad de mejora..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="prioridad">Prioridad</label>
-                        <select id="prioridad">
-                            <option value="Baja">Baja</option>
-                            <option value="Media" selected>Media</option>
-                            <option value="Alta">Alta</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="responsable">Responsable sugerido</label>
-                        <input type="text" id="responsable" placeholder="Ej: Ignacio, Henrique, Operaciones">
-                    </div>
-                </div>
-
-                <div class="button-group">
-                    <button class="btn btn-primary btn-block" onclick="guardarPunto()">✔ Guardar punto</button>
-                    <button class="btn btn-secondary btn-block" onclick="limpiarFormulario()">Limpiar formulario</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="section-title">📌 Puntos registrados</div>
-                <div id="recordsList"></div>
-            </div>
-        </div>
-
-        <!-- Pantalla 3: Resumen y reporte -->
-        <div id="screen-summary" class="hidden">
-            <div class="card">
-                <div class="section-title">📊 Resumen del recorrido</div>
-                
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <div class="stat-number" id="summaryRecordCount">0</div>
-                        <div class="stat-label">Puntos registrados</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number" id="summaryPhotoCount">0</div>
-                        <div class="stat-label">Fotos tomadas</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number" id="summaryFindingCount">0</div>
-                        <div class="stat-label">Hallazgos identificados</div>
-                    </div>
-                </div>
-
-                <div id="findingsList"></div>
-
-                <div class="button-group" style="margin-top: 24px;">
-                    <button class="btn btn-primary" onclick="descargarReportePDF()">📄 Descargar informe PDF</button>
-                    <button class="btn btn-secondary" onclick="exportarCSV()">📑 Exportar CSV</button>
-                    <button class="btn btn-secondary" onclick="volver()">Volver a editar</button>
-                </div>
-            </div>
-        </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="puntos" onclick="switchTab('puntos')">🧭 Puntos evaluados</button>
+      <button class="tab-btn" data-tab="report" onclick="switchTab('report')">📊 Resumen / Informe</button>
+      <button class="tab-btn" data-tab="datos" onclick="switchTab('datos')">⚙ Datos del recorrido</button>
     </div>
 
-    <script>
-        // IndexedDB setup
-        let db;
-        const dbName = 'ZeroWasteDB';
-        const storeName = 'recorridos';
+    <div id="view-puntos">
+      <div class="card">
+        <h2>➕ Registrar punto evaluado</h2>
+        <div class="row">
+          <div>
+            <label>Ubicación / punto</label>
+            <input type="text" id="pUbicacion" placeholder="Ej: Comedor, Sala eléctrica piso 2, Bodega residuos...">
+          </div>
+          <div>
+            <label>Tipo de punto</label>
+            <select id="pTipo">
+              <option>Punto de segregación</option>
+              <option>Área generadora</option>
+              <option>Almacenamiento temporal</option>
+              <option>Punto de disposición final</option>
+            </select>
+          </div>
+        </div>
 
-        const initDB = () => {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(dbName, 1);
-                request.onerror = () => reject(request.error);
-                request.onsuccess = () => {
-                    db = request.result;
-                    resolve(db);
-                };
-                request.onupgradeneeded = (e) => {
-                    const store = e.target.result.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
-                    store.createIndex('fecha', 'fecha', { unique: false });
-                };
-            });
-        };
+        <label>Evaluación por categoría de residuo</label>
+        <div class="cat-grid" id="catGrid"></div>
 
-        // Estado actual
-        let recorridoActual = null;
-        let fotosActuales = [];
-        let residuosSeleccionados = [];
+        <label>Observación general</label>
+        <div class="mic-row">
+          <textarea id="pNota" placeholder="Describe lo observado..."></textarea>
+          <button type="button" class="btn-mic" id="micNota" onclick="toggleMic('pNota', this)">🎤</button>
+        </div>
 
-        // Inicializar
-        window.addEventListener('load', async () => {
-            await initDB();
-            document.getElementById('fecha').valueAsDate = new Date();
-            updateOnlineStatus();
-            window.addEventListener('online', updateOnlineStatus);
-            window.addEventListener('offline', updateOnlineStatus);
-        });
+        <label>Fotografías</label>
+        <div class="photo-strip" id="photoStripNew">
+          <label class="photo-add">
+            📷
+            <input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handlePhotos(event,'new')">
+          </label>
+        </div>
 
-        function updateOnlineStatus() {
-            const indicator = document.getElementById('statusIndicator');
-            const text = document.getElementById('statusText');
-            if (navigator.onLine) {
-                indicator.classList.remove('offline');
-                text.textContent = 'Guardado local activo';
-            } else {
-                indicator.classList.add('offline');
-                text.textContent = 'Sin conexión (modo offline)';
-            }
-        }
+        <div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--border);">
+          <label style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" id="pEsOportunidad" style="width:auto;" onchange="toggleOportunidad()">
+            Marcar como hallazgo / oportunidad de mejora
+          </label>
+          <div id="oportunidadFields" class="hidden">
+            <label>Descripción de la oportunidad / hallazgo</label>
+            <div class="mic-row">
+              <textarea id="pDescOportunidad" placeholder="Ej: Contenedores sin rotular, mezcla de orgánico con reciclable..."></textarea>
+              <button type="button" class="btn-mic" id="micOp" onclick="toggleMic('pDescOportunidad', this)">🎤</button>
+            </div>
+            <div class="row">
+              <div>
+                <label>Prioridad</label>
+                <select id="pPrioridad">
+                  <option value="alta">Alta</option>
+                  <option value="media" selected>Media</option>
+                  <option value="baja">Baja</option>
+                </select>
+              </div>
+              <div>
+                <label>Responsable sugerido</label>
+                <input type="text" id="pResponsable" placeholder="Ej: FM / EHS / Comunicaciones">
+              </div>
+            </div>
+          </div>
+        </div>
 
-        function iniciarRecorrido() {
-            const sitio = document.getElementById('sitio').value;
-            const fecha = document.getElementById('fecha').value;
-            const participantes = document.getElementById('participantes').value;
-            const objetivo = document.getElementById('objetivo').value;
+        <div class="row" style="margin-top:14px;">
+          <button class="btn-green" onclick="savePoint()">✔ Guardar punto</button>
+          <button class="btn-ghost" onclick="clearPointForm()">Limpiar formulario</button>
+        </div>
+      </div>
 
-            if (!sitio || !fecha) {
-                alert('Por favor completa Sitio y Fecha');
-                return;
-            }
+      <div class="card">
+        <h2>📌 Puntos registrados (<span id="countPuntos">0</span>)</h2>
+        <div id="pointsList"></div>
+        <div class="row no-print" style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--border);">
+          <button class="btn-primary" onclick="finalizarYDescargar()">🏁 Finalizar recorrido y descargar informe Word</button>
+        </div>
+        <small class="hint no-print">Descarga el informe completo apenas termines de recorrer la sala, sin salir de esta pantalla.</small>
+      </div>
+    </div>
 
-            recorridoActual = {
-                sitio,
-                fecha,
-                participantes,
-                objetivo,
-                puntos: [],
-                creado: new Date().toISOString()
-            };
+    <div id="view-datos" class="hidden">
+      <div class="card">
+        <h2>⚙ Datos del recorrido activo</h2>
+        <div class="row">
+          <div>
+            <label>Sitio</label>
+            <input type="text" id="datosSitio" disabled>
+          </div>
+          <div>
+            <label>Fecha</label>
+            <input type="text" id="datosFecha" disabled>
+          </div>
+        </div>
+        <label>Participantes</label>
+        <input type="text" id="datosParticipantes">
+        <label>Objetivo del recorrido</label>
+        <textarea id="datosObjetivo"></textarea>
+        <div class="row" style="margin-top:12px;">
+          <button class="btn-primary" onclick="saveDatosRecorrido()">💾 Guardar cambios</button>
+        </div>
+        <small class="hint">El sitio y la fecha no se editan aquí porque identifican este recorrido guardado. Si te equivocaste, usa "🆕 Nuevo recorrido" con los datos correctos.</small>
+      </div>
+    </div>
 
-            fotosActuales = [];
-            mostrarPantalla('screen-recording');
-            actualizarEstadisticas();
-        }
+    <div id="view-report" class="hidden">
+      <div class="card">
+        <h2>📊 Resumen del recorrido</h2>
+        <div class="summary-grid" id="summaryGrid"></div>
+        <div id="barsWrap"></div>
+      </div>
 
-        function toggleOtraUbicacion() {
-            const select = document.getElementById('ubicacion');
-            const otraField = document.getElementById('otraUbicacionField');
-            if (select.value === 'OTRO') {
-                otraField.classList.remove('hidden');
-                document.getElementById('otraUbicacion').focus();
-            } else {
-                otraField.classList.add('hidden');
-            }
-        }
+      <div class="card">
+        <h2>🎯 Oportunidades de mejora identificadas</h2>
+        <div id="findingsList"></div>
+      </div>
 
-        function toggleResidue(tipo) {
-            const idx = residuosSeleccionados.indexOf(tipo);
-            if (idx > -1) {
-                residuosSeleccionados.splice(idx, 1);
-            } else {
-                residuosSeleccionados.push(tipo);
-            }
-            
-            // Actualizar estilos
-            document.querySelectorAll('.residue-item').forEach(el => {
-                const text = el.textContent.trim();
-                if (residuosSeleccionados.includes(text)) {
-                    el.classList.add('selected');
-                } else {
-                    el.classList.remove('selected');
-                }
-            });
+      <div class="card no-print">
+        <h2>📤 Generar y enviar informe</h2>
+        <p style="font-size:12.5px;color:var(--muted);">
+          "Descargar informe Word" genera un .doc editable con resumen, fotos y hallazgos (se abre directo en Word). También puedes generar PDF con "Imprimir / Guardar como PDF".
+          El correo se abre en tu cliente de correo con el resumen; adjunta el PDF exportado manualmente (los correos no permiten adjuntar automáticamente desde el navegador).
+        </p>
+        <div class="row">
+          <button class="btn-primary" onclick="exportWord()">📄 Descargar informe Word</button>
+          <button class="btn-primary" onclick="window.print()">🖨 Imprimir / Guardar como PDF</button>
+          <button class="btn-green" onclick="exportCSV()">📑 Exportar CSV</button>
+          <button class="btn-ghost" onclick="exportEmail()">✉ Preparar correo</button>
+        </div>
+      </div>
+    </div>
 
-            // Mostrar seleccionados
-            const display = residuosSeleccionados.length > 0 
-                ? `✓ Seleccionados: ${residuosSeleccionados.join(', ')}`
-                : '';
-            document.getElementById('residueSelected').textContent = display;
-        }
+  </div>
 
-        document.getElementById('esHallazgo').addEventListener('change', (e) => {
-            document.getElementById('hallazgoFields').classList.toggle('hidden', !e.target.checked);
-        });
+</div>
 
-        function agregarFoto(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    fotosActuales.push({
-                        data: e.target.result,
-                        nombre: file.name,
-                        timestamp: new Date().toLocaleString('es-ES')
-                    });
-                    mostrarGaleria();
-                };
-                reader.readAsDataURL(file);
-            }
-        }
+<footer class="fixedbar no-print" id="footerBar">
+  <button class="btn-danger btn-small" onclick="confirmNewRecorrido()">🆕 Nuevo recorrido</button>
+  <span style="font-size:11px;color:var(--muted);align-self:center;" id="siteBadge"></span>
+</footer>
 
-        function mostrarGaleria() {
-            const preview = document.getElementById('photoPreview');
-            preview.innerHTML = '';
-            fotosActuales.forEach((foto, idx) => {
-                const img = document.createElement('img');
-                img.src = foto.data;
-                img.className = 'photo-thumb';
-                img.onclick = () => verFotoGrande(foto);
-                preview.appendChild(img);
-            });
-            document.getElementById('photoCount').textContent = fotosActuales.length;
-        }
+<div id="toast"></div>
 
-        function verFotoGrande(foto) {
-            const modal = document.createElement('div');
-            modal.className = 'modal active';
-            modal.innerHTML = `
-                <div style="position: relative;">
-                    <img src="${foto.data}" style="max-width: 90vw; max-height: 90vh; border-radius: 8px;">
-                    <button class="modal-close" onclick="this.parentElement.parentElement.remove()">✕</button>
-                </div>
-            `;
-            document.body.appendChild(modal);
-            modal.onclick = (e) => {
-                if (e.target === modal) modal.remove();
-            };
-        }
+<script>
+/* ============ CONFIG ============ */
+const CATEGORIAS = [
+  {key:'papel', label:'Papel / Cartón'},
+  {key:'plastico', label:'Plástico'},
+  {key:'vidrio', label:'Vidrio'},
+  {key:'metal', label:'Metal / Aluminio'},
+  {key:'tetrapak', label:'Tetrapak'},
+  {key:'organico', label:'Orgánico'},
+  {key:'peligroso', label:'Peligrosos'},
+  {key:'electronico', label:'Residuos electrónicos'},
+  {key:'domiciliario', label:'Domiciliarios (no reciclables)'}
+];
 
-        function guardarPunto() {
-            let ubicacion = document.getElementById('ubicacion').value;
-            const otraUbicacion = document.getElementById('otraUbicacion').value;
-            const observacion = document.getElementById('observacion').value;
-            const esHallazgo = document.getElementById('esHallazgo').checked;
+let db = null;
+let tempCatPhotos = {}; // { catKey: [dataUrls...] } for the point being created/edited
+let currentRecorrido = null; // {id, sitio, fecha, participantes, objetivo, puntos:[], createdAt, updatedAt}
+let editingPointId = null;
+let tempPhotosNew = []; // dataURLs for point being created/edited
+let recognitionInstance = null;
+let recognitionTarget = null;
 
-            if (!ubicacion) {
-                alert('Por favor selecciona una ubicación');
-                return;
-            }
+/* ============ INDEXEDDB ============ */
+function openDB(){
+  return new Promise((resolve, reject)=>{
+    const req = indexedDB.open('zeroWasteDB', 1);
+    req.onupgradeneeded = (e)=>{
+      const _db = e.target.result;
+      if(!_db.objectStoreNames.contains('recorridos')){
+        _db.createObjectStore('recorridos', {keyPath:'id'});
+      }
+    };
+    req.onsuccess = (e)=> resolve(e.target.result);
+    req.onerror = (e)=> reject(e);
+  });
+}
+function dbPut(record){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction('recorridos','readwrite');
+    tx.objectStore('recorridos').put(record);
+    tx.oncomplete = ()=>resolve();
+    tx.onerror = (e)=>reject(e);
+  });
+}
+function dbGetAll(){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction('recorridos','readonly');
+    const req = tx.objectStore('recorridos').getAll();
+    req.onsuccess = ()=>resolve(req.result || []);
+    req.onerror = (e)=>reject(e);
+  });
+}
+function dbDelete(id){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction('recorridos','readwrite');
+    tx.objectStore('recorridos').delete(id);
+    tx.oncomplete = ()=>resolve();
+    tx.onerror = (e)=>reject(e);
+  });
+}
 
-            // Si es "OTRO", usar el valor ingresado manualmente
-            if (ubicacion === 'OTRO') {
-                if (!otraUbicacion.trim()) {
-                    alert('Por favor especifica la ubicación');
-                    return;
-                }
-                ubicacion = otraUbicacion;
-            }
+/* ============ INIT ============ */
+window.addEventListener('DOMContentLoaded', async ()=>{
+  document.getElementById('setDate').value = new Date().toISOString().slice(0,10);
+  buildCatGrid();
+  updateConnPill();
+  window.addEventListener('online', updateConnPill);
+  window.addEventListener('offline', updateConnPill);
+  try{
+    db = await openDB();
+  }catch(e){
+    toast('⚠ No se pudo abrir el almacenamiento local de este navegador.');
+  }
+});
 
-            const punto = {
-                id: Date.now(),
-                ubicacion,
-                residuos: residuosSeleccionados.slice(),
-                observacion,
-                fotos: fotosActuales.slice(),
-                hallazgo: esHallazgo ? {
-                    descripcion: document.getElementById('descHallazgo').value,
-                    prioridad: document.getElementById('prioridad').value,
-                    responsable: document.getElementById('responsable').value
-                } : null,
-                timestamp: new Date().toLocaleString('es-ES')
-            };
+function updateConnPill(){
+  const pill = document.getElementById('connPill');
+  if(navigator.onLine){
+    pill.textContent = '● En línea';
+    pill.className = 'pill online';
+  }else{
+    pill.textContent = '● Sin conexión (modo offline)';
+    pill.className = 'pill offline';
+  }
+}
 
-            recorridoActual.puntos.push(punto);
-            guardarEnDB();
-            limpiarFormulario();
-            mostrarPuntos();
-            actualizarEstadisticas();
-        }
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
 
-        function limpiarFormulario() {
-            document.getElementById('ubicacion').value = '';
-            document.getElementById('otraUbicacion').value = '';
-            document.getElementById('otraUbicacionField').classList.add('hidden');
-            document.getElementById('observacion').value = '';
-            document.getElementById('esHallazgo').checked = false;
-            document.getElementById('hallazgoFields').classList.add('hidden');
-            document.getElementById('descHallazgo').value = '';
-            document.getElementById('responsable').value = '';
-            document.getElementById('prioridad').value = 'Media';
-            fotosActuales = [];
-            residuosSeleccionados = [];
-            document.querySelectorAll('.residue-item').forEach(el => el.classList.remove('selected'));
-            document.getElementById('residueSelected').textContent = '';
-            document.getElementById('photoPreview').innerHTML = '';
-            document.getElementById('photoInput').value = '';
-        }
+/* ============ CATEGORY GRID (form) ============ */
+function buildCatGrid(){
+  const grid = document.getElementById('catGrid');
+  grid.innerHTML = CATEGORIAS.map(c=>`
+    <div class="cat-item" data-cat="${c.key}">
+      <div class="cat-head">
+        <span class="cat-name">${c.label}</span>
+        <div class="status-btns">
+          <button type="button" class="status-btn" data-val="correcto" onclick="setCatStatus(this,'${c.key}')">✔ Correcto</button>
+          <button type="button" class="status-btn" data-val="incorrecto" onclick="setCatStatus(this,'${c.key}')">✘ Incorrecto</button>
+          <button type="button" class="status-btn" data-val="na" onclick="setCatStatus(this,'${c.key}')">— N/A</button>
+        </div>
+      </div>
+      <input type="text" class="cat-note" placeholder="Nota breve (opcional)">
+      <div class="photo-strip cat-photo-strip" id="catPhotoStrip_${c.key}">
+        <label class="photo-add small">
+          📷
+          <input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handleCatPhotos(event,'${c.key}')">
+        </label>
+      </div>
+    </div>
+  `).join('');
+  tempCatPhotos = {};
+  CATEGORIAS.forEach(c=>renderCatPhotoStrip(c.key));
+}
 
-        function mostrarPuntos() {
-            const lista = document.getElementById('recordsList');
-            if (recorridoActual.puntos.length === 0) {
-                lista.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📍</div><p>No hay puntos registrados aún</p></div>';
-                return;
-            }
+function handleCatPhotos(event, catKey){
+  const files = Array.from(event.target.files || []);
+  if(!tempCatPhotos[catKey]) tempCatPhotos[catKey] = [];
+  files.forEach(file=>{
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      compressImage(e.target.result, 900, 0.7).then(dataUrl=>{
+        tempCatPhotos[catKey].push(dataUrl);
+        renderCatPhotoStrip(catKey);
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+  event.target.value = '';
+}
+function renderCatPhotoStrip(catKey){
+  const strip = document.getElementById('catPhotoStrip_'+catKey);
+  if(!strip) return;
+  const photos = tempCatPhotos[catKey] || [];
+  strip.innerHTML = photos.map((p,i)=>`
+    <div style="position:relative;">
+      <img src="${p}" class="photo-thumb small" onclick="openLightbox('${p}')">
+      <button type="button" onclick="removeCatPhoto('${catKey}',${i})" style="position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:10px;line-height:1;">✕</button>
+    </div>
+  `).join('') + `
+    <label class="photo-add small">
+      📷
+      <input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handleCatPhotos(event,'${catKey}')">
+    </label>
+  `;
+}
+function removeCatPhoto(catKey, i){
+  tempCatPhotos[catKey].splice(i,1);
+  renderCatPhotoStrip(catKey);
+}
+function setCatStatus(btn, catKey){
+  const item = btn.closest('.cat-item');
+  item.querySelectorAll('.status-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function readCatGrid(){
+  const items = document.querySelectorAll('#catGrid .cat-item');
+  const data = [];
+  items.forEach(item=>{
+    const key = item.dataset.cat;
+    const label = CATEGORIAS.find(c=>c.key===key).label;
+    const activeBtn = item.querySelector('.status-btn.active');
+    const status = activeBtn ? activeBtn.dataset.val : null;
+    const note = item.querySelector('.cat-note').value.trim();
+    const fotos = tempCatPhotos[key] || [];
+    if(status || note || fotos.length){
+      data.push({key, label, status, note, fotos});
+    }
+  });
+  return data;
+}
+function loadCatGrid(catData){
+  buildCatGrid();
+  if(!catData) return;
+  catData.forEach(cd=>{
+    const item = document.querySelector(`#catGrid .cat-item[data-cat="${cd.key}"]`);
+    if(!item) return;
+    if(cd.status){
+      const btn = item.querySelector(`.status-btn[data-val="${cd.status}"]`);
+      if(btn) btn.classList.add('active');
+    }
+    if(cd.note) item.querySelector('.cat-note').value = cd.note;
+    if(cd.fotos && cd.fotos.length){
+      tempCatPhotos[cd.key] = [...cd.fotos];
+      renderCatPhotoStrip(cd.key);
+    }
+  });
+}
 
-            lista.innerHTML = recorridoActual.puntos.map((punto, idx) => `
-                <div class="record-item">
-                    <div class="record-header">
-                        <span class="record-location">${punto.ubicacion}</span>
-                        <button class="btn btn-danger btn-small" onclick="eliminarPunto(${idx})">Eliminar</button>
-                    </div>
-                    <div class="record-details">
-                        <strong>Residuos evaluados:</strong> ${punto.residuos.join(', ') || 'N/A'}
-                    </div>
-                    <div class="record-details">${punto.observacion}</div>
-                    ${punto.fotos.length > 0 ? `
-                        <div class="photo-gallery">
-                            ${punto.fotos.map(f => `<img src="${f.data}" class="photo-thumb" onclick="verFotoGrande({data: '${f.data}'});">`).join('')}
-                        </div>
-                    ` : ''}
-                    ${punto.hallazgo ? `
-                        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd;">
-                            <div class="priority-badge priority-${punto.hallazgo.prioridad.toLowerCase()}">
-                                ${punto.hallazgo.prioridad}
-                            </div>
-                            <div style="margin-top: 8px; font-size: 13px;">
-                                <strong>Hallazgo:</strong> ${punto.hallazgo.descripcion}<br>
-                                <strong>Responsable:</strong> ${punto.hallazgo.responsable || '-'}
-                            </div>
-                        </div>
-                    ` : ''}
-                </div>
-            `).join('');
-        }
+/* ============ VOICE DICTATION ============ */
+function toggleMic(targetId, btn){
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SpeechRecognition){
+    toast('🎤 Dictado por voz no disponible en este navegador (requiere conexión y Chrome/Edge).');
+    return;
+  }
+  if(recognitionInstance && recognitionTarget === targetId){
+    recognitionInstance.stop();
+    return;
+  }
+  if(recognitionInstance){ recognitionInstance.stop(); }
 
-        function eliminarPunto(idx) {
-            if (confirm('¿Eliminar este punto?')) {
-                recorridoActual.puntos.splice(idx, 1);
-                guardarEnDB();
-                mostrarPuntos();
-                actualizarEstadisticas();
-            }
-        }
+  recognitionInstance = new SpeechRecognition();
+  recognitionTarget = targetId;
+  recognitionInstance.lang = 'es-CL';
+  recognitionInstance.continuous = true;
+  recognitionInstance.interimResults = false;
 
-        function actualizarEstadisticas() {
-            let totalFotos = 0;
-            let totalHallazgos = 0;
-            recorridoActual.puntos.forEach(p => {
-                totalFotos += p.fotos.length;
-                if (p.hallazgo) totalHallazgos++;
-            });
-            document.getElementById('recordCount').textContent = recorridoActual.puntos.length;
-            document.getElementById('photoCount').textContent = totalFotos;
-            document.getElementById('findingCount').textContent = totalHallazgos;
-        }
+  btn.classList.add('listening');
+  recognitionInstance.onresult = (e)=>{
+    const textarea = document.getElementById(targetId);
+    let finalText = '';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal) finalText += e.results[i][0].transcript;
+    }
+    if(finalText){
+      textarea.value = (textarea.value ? textarea.value + ' ' : '') + finalText.trim();
+    }
+  };
+  recognitionInstance.onerror = ()=>{
+    btn.classList.remove('listening');
+  };
+  recognitionInstance.onend = ()=>{
+    btn.classList.remove('listening');
+    recognitionInstance = null;
+  };
+  recognitionInstance.start();
+}
 
-        function mostrarResumen() {
-            const hallazgos = recorridoActual.puntos.filter(p => p.hallazgo);
-            document.getElementById('findingsList').innerHTML = hallazgos.length === 0 
-                ? '<div class="empty-state"><p>Sin hallazgos identificados</p></div>'
-                : hallazgos.map(h => `
-                    <div class="record-item" style="border-left-color: ${h.hallazgo.prioridad === 'Alta' ? 'var(--red-accent)' : h.hallazgo.prioridad === 'Media' ? 'var(--orange-accent)' : 'var(--green-primary)'};">
-                        <div class="record-header">
-                            <span class="record-location">${h.ubicacion}</span>
-                            <span class="priority-badge priority-${h.hallazgo.prioridad.toLowerCase()}">
-                                ${h.hallazgo.prioridad}
-                            </span>
-                        </div>
-                        <div class="record-details"><strong>Hallazgo:</strong> ${h.hallazgo.descripcion}</div>
-                        <div class="record-details"><strong>Responsable:</strong> ${h.hallazgo.responsable || '-'}</div>
-                    </div>
-                `).join('');
+/* ============ PHOTOS ============ */
+function handlePhotos(event, mode){
+  const files = Array.from(event.target.files || []);
+  files.forEach(file=>{
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      compressImage(e.target.result, 1100, 0.72).then(dataUrl=>{
+        tempPhotosNew.push(dataUrl);
+        renderPhotoStrip();
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+  event.target.value = '';
+}
+function compressImage(dataUrl, maxW, quality){
+  return new Promise(resolve=>{
+    const img = new Image();
+    img.onload = ()=>{
+      let w = img.width, h = img.height;
+      if(w > maxW){ h = Math.round(h * (maxW/w)); w = maxW; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = ()=>resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+function renderPhotoStrip(){
+  const strip = document.getElementById('photoStripNew');
+  strip.innerHTML = tempPhotosNew.map((p,i)=>`
+    <div style="position:relative;">
+      <img src="${p}" class="photo-thumb" onclick="openLightbox('${p}')">
+      <button type="button" onclick="removeTempPhoto(${i})" style="position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;line-height:1;">✕</button>
+    </div>
+  `).join('') + `
+    <label class="photo-add">
+      📷
+      <input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handlePhotos(event,'new')">
+    </label>
+  `;
+}
+function removeTempPhoto(i){
+  tempPhotosNew.splice(i,1);
+  renderPhotoStrip();
+}
+function openLightbox(src){
+  const box = document.createElement('div');
+  box.className = 'lightbox';
+  box.innerHTML = `<span class="close-x">✕</span><img src="${src}">`;
+  box.onclick = ()=>box.remove();
+  document.body.appendChild(box);
+}
 
-            document.getElementById('summaryRecordCount').textContent = recorridoActual.puntos.length;
-            let totalFotos = 0;
-            recorridoActual.puntos.forEach(p => totalFotos += p.fotos.length);
-            document.getElementById('summaryPhotoCount').textContent = totalFotos;
-            document.getElementById('summaryFindingCount').textContent = hallazgos.length;
+/* ============ SETUP / RECORRIDO LIFECYCLE ============ */
+function makeId(sitio, fecha){
+  return `${sitio}_${fecha}_${Date.now()}`;
+}
+async function startOrResume(){
+  const sitio = document.getElementById('setSite').value;
+  const fecha = document.getElementById('setDate').value;
+  const participantes = document.getElementById('setParticipants').value.trim();
+  const objetivo = document.getElementById('setObjective').value.trim();
+  if(!sitio){ toast('Selecciona un sitio.'); return; }
+  if(!fecha){ toast('Selecciona una fecha.'); return; }
 
-            mostrarPantalla('screen-summary');
-        }
+  if(currentRecorrido && currentRecorrido.sitio === sitio && currentRecorrido.fecha === fecha){
+    // resume same one, just update meta
+    currentRecorrido.participantes = participantes;
+    currentRecorrido.objetivo = objetivo;
+  } else {
+    currentRecorrido = {
+      id: makeId(sitio, fecha),
+      sitio, fecha, participantes, objetivo,
+      puntos: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    };
+  }
+  await persist();
+  document.getElementById('workArea').classList.remove('hidden');
+  document.getElementById('setupCard').classList.add('hidden');
+  document.getElementById('siteBadge').textContent = `${currentRecorrido.sitio} · ${currentRecorrido.fecha}`;
+  renderPointsList();
+  renderReport();
+  toast('Recorrido listo. ¡A registrar puntos!');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 
-        function guardarEnDB() {
-            return new Promise((resolve) => {
-                const transaction = db.transaction([storeName], 'readwrite');
-                const store = transaction.objectStore(storeName);
-                const request = store.put({
-                    ...recorridoActual,
-                    id: recorridoActual.id || `${recorridoActual.sitio}-${recorridoActual.fecha}-${Date.now()}`
-                });
-                request.onsuccess = resolve;
-            });
-        }
+async function persist(){
+  if(!currentRecorrido || !db) return;
+  currentRecorrido.updatedAt = Date.now();
+  try{
+    await dbPut(currentRecorrido);
+    document.getElementById('savePill').textContent = '✔ Guardado ' + new Date().toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){
+    document.getElementById('savePill').textContent = '⚠ Error al guardar localmente';
+  }
+}
 
-        function cargarRecorridoGuardado() {
-            alert('Función de cargar recorrido guardado - implementar selector de recorridos');
-        }
+async function openLoadModal(){
+  if(!db){ toast('Almacenamiento local no disponible.'); return; }
+  const all = await dbGetAll();
+  if(all.length === 0){ toast('No hay recorridos guardados todavía.'); return; }
+  all.sort((a,b)=>b.updatedAt - a.updatedAt);
+  const bg = document.createElement('div');
+  bg.className = 'modal-bg';
+  bg.innerHTML = `
+    <div class="modal">
+      <h2 style="margin-top:0;color:var(--purple-dark);font-size:16px;">📂 Recorridos guardados</h2>
+      ${all.map(r=>`
+        <div style="border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px;">
+          <div style="font-weight:bold;font-size:13px;">${r.sitio} · ${r.fecha}</div>
+          <div style="font-size:11px;color:var(--muted);margin:3px 0 8px;">${r.puntos.length} puntos registrados · actualizado ${new Date(r.updatedAt).toLocaleString('es-CL')}</div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn-primary btn-small" onclick='loadRecorrido("${r.id}")'>Abrir</button>
+            <button class="btn-danger btn-small" onclick='deleteRecorrido("${r.id}")'>Eliminar</button>
+          </div>
+        </div>
+      `).join('')}
+      <button class="btn-ghost" style="width:100%;margin-top:6px;" onclick="this.closest('.modal-bg').remove()">Cerrar</button>
+    </div>
+  `;
+  document.body.appendChild(bg);
+}
+async function loadRecorrido(id){
+  const all = await dbGetAll();
+  const rec = all.find(r=>r.id===id);
+  if(!rec) return;
+  currentRecorrido = rec;
+  document.querySelectorAll('.modal-bg').forEach(m=>m.remove());
+  document.getElementById('setSite').value = rec.sitio;
+  document.getElementById('setDate').value = rec.fecha;
+  document.getElementById('setParticipants').value = rec.participantes || '';
+  document.getElementById('setObjective').value = rec.objetivo || '';
+  document.getElementById('workArea').classList.remove('hidden');
+  document.getElementById('setupCard').classList.add('hidden');
+  document.getElementById('siteBadge').textContent = `${rec.sitio} · ${rec.fecha}`;
+  renderPointsList();
+  renderReport();
+  toast('Recorrido cargado.');
+}
+async function deleteRecorrido(id){
+  if(!confirm('¿Eliminar este recorrido guardado? No se puede deshacer.')) return;
+  await dbDelete(id);
+  document.querySelectorAll('.modal-bg').forEach(m=>m.remove());
+  toast('Recorrido eliminado.');
+}
+function confirmNewRecorrido(){
+  if(!confirm('¿Iniciar un nuevo recorrido? El actual queda guardado y puedes retomarlo desde "Cargar recorrido guardado".')) return;
+  currentRecorrido = null;
+  document.getElementById('workArea').classList.add('hidden');
+  document.getElementById('setupCard').classList.remove('hidden');
+  clearPointForm();
+  document.getElementById('setSite').value = '';
+  document.getElementById('setParticipants').value = '';
+  document.getElementById('setObjective').value = 'Verificar la correcta segregación de residuos en los puntos críticos del sitio, identificar oportunidades de mejora y avanzar hacia la meta de desvío de relleno sanitario del programa TRUE Zero Waste.';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 
-        function finalizarRecorrido() {
-            if (confirm('¿Finalizar recorrido y generar informe?')) {
-                guardarEnDB().then(() => mostrarResumen());
-            }
-        }
+/* ============ POINTS ============ */
+function toggleOportunidad(){
+  document.getElementById('oportunidadFields').classList.toggle('hidden', !document.getElementById('pEsOportunidad').checked);
+}
+function clearPointForm(){
+  document.getElementById('pUbicacion').value = '';
+  document.getElementById('pTipo').selectedIndex = 0;
+  document.getElementById('pNota').value = '';
+  document.getElementById('pEsOportunidad').checked = false;
+  document.getElementById('pDescOportunidad').value = '';
+  document.getElementById('pPrioridad').value = 'media';
+  document.getElementById('pResponsable').value = '';
+  document.getElementById('oportunidadFields').classList.add('hidden');
+  tempPhotosNew = [];
+  editingPointId = null;
+  buildCatGrid();
+  renderPhotoStrip();
+}
+async function savePoint(){
+  if(!currentRecorrido){ toast('Primero inicia el recorrido.'); return; }
+  const ubicacion = document.getElementById('pUbicacion').value.trim();
+  if(!ubicacion){ toast('Indica la ubicación del punto.'); return; }
 
-        function descargarReportePDF() {
-            const contenido = generarHTMLReportePDF();
-            
-            // Crear elemento temporal visible para que html2pdf lo procese correctamente
-            const tempContainer = document.createElement('div');
-            tempContainer.id = 'pdf-temp-container';
-            tempContainer.innerHTML = contenido;
-            tempContainer.style.position = 'absolute';
-            tempContainer.style.left = '-9999px';
-            tempContainer.style.width = '210mm';
-            tempContainer.style.background = 'white';
-            document.body.appendChild(tempContainer);
+  const point = {
+    id: editingPointId || ('pt_' + Date.now()),
+    ubicacion,
+    tipo: document.getElementById('pTipo').value,
+    categorias: readCatGrid(),
+    nota: document.getElementById('pNota').value.trim(),
+    fotos: [...tempPhotosNew],
+    esOportunidad: document.getElementById('pEsOportunidad').checked,
+    descOportunidad: document.getElementById('pDescOportunidad').value.trim(),
+    prioridad: document.getElementById('pPrioridad').value,
+    responsable: document.getElementById('pResponsable').value.trim(),
+    ts: Date.now()
+  };
 
-            // Esperar a que las imágenes se carguen
-            setTimeout(() => {
-                const elemento = document.getElementById('pdf-temp-container');
-                const opt = {
-                    margin: 0,
-                    filename: `Zero-Waste-${recorridoActual.sitio}-${recorridoActual.fecha}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true, allowTaint: true },
-                    jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4', compress: true }
-                };
+  if(editingPointId){
+    const idx = currentRecorrido.puntos.findIndex(p=>p.id===editingPointId);
+    if(idx>-1) currentRecorrido.puntos[idx] = point;
+  } else {
+    currentRecorrido.puntos.push(point);
+  }
+  await persist();
+  clearPointForm();
+  renderPointsList();
+  renderReport();
+  toast('✔ Punto guardado');
+}
+function editPoint(id){
+  const p = currentRecorrido.puntos.find(x=>x.id===id);
+  if(!p) return;
+  editingPointId = id;
+  document.getElementById('pUbicacion').value = p.ubicacion;
+  document.getElementById('pTipo').value = p.tipo;
+  document.getElementById('pNota').value = p.nota || '';
+  document.getElementById('pEsOportunidad').checked = p.esOportunidad;
+  document.getElementById('pDescOportunidad').value = p.descOportunidad || '';
+  document.getElementById('pPrioridad').value = p.prioridad || 'media';
+  document.getElementById('pResponsable').value = p.responsable || '';
+  toggleOportunidad();
+  loadCatGrid(p.categorias);
+  tempPhotosNew = [...(p.fotos || [])];
+  renderPhotoStrip();
+  document.getElementById('view-puntos').scrollIntoView({behavior:'smooth'});
+}
+async function deletePoint(id){
+  if(!confirm('¿Eliminar este punto?')) return;
+  currentRecorrido.puntos = currentRecorrido.puntos.filter(p=>p.id!==id);
+  await persist();
+  renderPointsList();
+  renderReport();
+  toast('Punto eliminado.');
+}
 
-                html2pdf().set(opt).from(elemento).save().then(() => {
-                    // Limpiar elemento temporal
-                    document.body.removeChild(tempContainer);
-                }).catch(error => {
-                    console.error('Error generando PDF:', error);
-                    document.body.removeChild(tempContainer);
-                    alert('Error al generar PDF. Intenta de nuevo.');
-                });
-            }, 500);
-        }
+function pointStatusClass(p){
+  if(p.esOportunidad && p.prioridad === 'alta') return 'critical';
+  if(p.esOportunidad) return 'finding';
+  const hasIncorrecto = (p.categorias||[]).some(c=>c.status==='incorrecto');
+  return hasIncorrecto ? 'finding' : 'ok';
+}
 
-        function generarHTMLReportePDF() {
-            const hallazgos = recorridoActual.puntos.filter(p => p.hallazgo);
-            const totalFotos = recorridoActual.puntos.reduce((sum, p) => sum + p.fotos.length, 0);
-            
-            return `<!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="utf-8">
-                    <style>
-                        * { margin: 0; padding: 0; box-sizing: border-box; }
-                        body { font-family: Arial, sans-serif; color: #333; }
-                        .page-break { page-break-after: always; }
-                        .portada {
-                            width: 100%;
-                            height: 297mm;
-                            background: linear-gradient(135deg, #2d7b3d 0%, #1b5e2a 50%, #15463f 100%);
-                            color: white;
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: space-between;
-                            padding: 40mm;
-                            box-sizing: border-box;
-                        }
-                        .portada h1 { font-size: 32px; letter-spacing: 2px; margin-bottom: 20mm; }
-                        .portada .subtitle { font-size: 14px; opacity: 0.9; margin-bottom: 40mm; line-height: 1.8; }
-                        .portada .title { font-size: 48px; font-weight: bold; margin-bottom: 20mm; line-height: 1.2; }
-                        .portada .footer { border-top: 2px solid rgba(255,255,255,0.3); padding-top: 20mm; font-size: 14px; }
-                        .content { padding: 30mm; }
-                        h2 { border-bottom: 3px solid #2d7b3d; padding-bottom: 10mm; margin-bottom: 20mm; color: #2d7b3d; font-size: 24px; }
-                        h3 { color: #2d7b3d; margin: 15mm 0 10mm 0; font-size: 16px; }
-                        .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15mm; margin-bottom: 20mm; }
-                        .stat-box { background: #e8f5e9; padding: 15mm; border-left: 5px solid #2d7b3d; border-radius: 4px; }
-                        .stat-number { font-size: 32px; font-weight: bold; color: #2d7b3d; margin-bottom: 5mm; }
-                        .stat-label { font-size: 13px; color: #555; }
-                        table { width: 100%; border-collapse: collapse; margin-bottom: 20mm; }
-                        td { padding: 10mm; border: 1px solid #ddd; font-size: 13px; }
-                        td:first-child { background: #f5f5f5; font-weight: bold; color: #2d7b3d; width: 30%; }
-                        .punto { margin-bottom: 20mm; padding: 20mm; background: #fafafa; border-left: 4px solid #2d7b3d; }
-                        .punto-titulo { font-size: 18px; font-weight: bold; color: #2d7b3d; margin-bottom: 10mm; }
-                        .observacion { background: white; padding: 10mm; border-left: 3px solid #2d7b3d; margin: 10mm 0; font-size: 13px; line-height: 1.6; }
-                        .foto-galeria { display: grid; grid-template-columns: 1fr 1fr; gap: 10mm; margin: 15mm 0; }
-                        .foto-item { break-inside: avoid; }
-                        .foto-item img { width: 100%; max-height: 150mm; border-radius: 4px; border: 1px solid #ddd; }
-                        .foto-timestamp { font-size: 11px; color: #999; margin-top: 5mm; }
-                        .hallazgo { background: #fff3e0; padding: 15mm; border-left: 5px solid #ff9800; margin: 10mm 0; border-radius: 4px; }
-                        .hallazgo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10mm; }
-                        .hallazgo-title { font-weight: bold; color: #e65100; font-size: 14px; }
-                        .priority-badge { display: inline-block; padding: 5mm 10mm; border-radius: 3px; font-weight: bold; font-size: 12px; color: white; }
-                        .priority-alta { background: #d32f2f; }
-                        .priority-media { background: #ff9800; }
-                        .priority-baja { background: #2d7b3d; }
-                        .hallazgo-text { font-size: 13px; line-height: 1.6; margin: 8mm 0; }
-                        .hallazgos-consolidados { margin-top: 20mm; }
-                        .grupo-prioridad { margin-bottom: 15mm; break-inside: avoid; }
-                        .grupo-header { background: #f5f5f5; padding: 10mm; border-left: 5px solid #666; font-weight: bold; margin-bottom: 10mm; font-size: 13px; }
-                        .grupo-header.alta { border-left-color: #d32f2f; }
-                        .grupo-header.media { border-left-color: #ff9800; }
-                        .grupo-header.baja { border-left-color: #2d7b3d; }
-                        .hallazgo-item { padding: 12mm; background: #fafafa; border-left: 3px solid #ddd; margin-bottom: 8mm; border-radius: 2px; }
-                        .hallazgo-item p { margin: 0 0 5mm 0; font-size: 12px; }
-                        .ubicacion-badge { font-weight: bold; color: #2d7b3d; }
-                        .footer-page { text-align: center; border-top: 2px solid #ddd; padding-top: 20mm; color: #999; font-size: 11px; }
-                    </style>
-                </head>
-                <body>
-                    <!-- PORTADA -->
-                    <div class="portada page-break">
-                        <div>
-                            <h1>♻ ODATA COLOCATION</h1>
-                            <div class="subtitle">
-                                SISTEMA DE GESTIÓN INTEGRADO<br>
-                                TRUE Zero Waste · Recorrido de Sitio
-                            </div>
-                        </div>
+function renderPointsList(){
+  const wrap = document.getElementById('pointsList');
+  document.getElementById('countPuntos').textContent = currentRecorrido.puntos.length;
+  if(currentRecorrido.puntos.length === 0){
+    wrap.innerHTML = `<p style="color:var(--muted);font-size:12.5px;">Aún no hay puntos registrados en este recorrido.</p>`;
+    return;
+  }
+  wrap.innerHTML = [...currentRecorrido.puntos].reverse().map(p=>`
+    <div class="point-card ${pointStatusClass(p)}">
+      <div class="point-head">
+        <div>
+          <div class="point-title">${p.ubicacion}</div>
+          <div class="point-meta">${p.tipo} · ${new Date(p.ts).toLocaleString('es-CL')}</div>
+        </div>
+        ${p.esOportunidad ? `<span class="badge ${p.prioridad}">${p.prioridad.toUpperCase()}</span>` : ''}
+      </div>
+      ${p.categorias && p.categorias.length ? `
+        <div style="margin-top:8px;font-size:11.5px;">
+          ${p.categorias.map(c=>`
+            <div style="margin-bottom:6px;">
+              <span style="display:inline-block;padding:2px 8px;border-radius:12px;background:${c.status==='correcto'?'#e4f9ef':c.status==='incorrecto'?'#fde2e2':'#eee'};color:${c.status==='correcto'?'#1d8a5e':c.status==='incorrecto'?'#c0272c':'#666'};">${c.label}${c.status?': '+(c.status==='correcto'?'✔':c.status==='incorrecto'?'✘':'N/A'):''}</span>
+              ${c.note ? ` <i style="color:var(--muted);">${c.note}</i>` : ''}
+              ${c.fotos && c.fotos.length ? `<div class="photo-strip" style="margin-top:4px;">${c.fotos.map(f=>`<img src="${f}" class="photo-thumb small" onclick="openLightbox('${f}')">`).join('')}</div>` : ''}
+            </div>
+          `).join('')}
+        </div>` : ''}
+      ${p.nota ? `<p style="font-size:12.5px;margin:8px 0 0;">${p.nota}</p>` : ''}
+      ${p.esOportunidad && p.descOportunidad ? `<p style="font-size:12.5px;margin:6px 0 0;background:#fff8e8;padding:8px;border-radius:8px;"><b>Oportunidad:</b> ${p.descOportunidad}${p.responsable ? ' · Responsable sugerido: '+p.responsable : ''}</p>` : ''}
+      ${p.fotos && p.fotos.length ? `<div class="photo-strip">${p.fotos.map(f=>`<img src="${f}" class="photo-thumb" onclick="openLightbox('${f}')">`).join('')}</div>` : ''}
+      <div class="point-actions no-print">
+        <button class="btn-ghost btn-small" onclick="editPoint('${p.id}')">✏ Editar</button>
+        <button class="btn-danger btn-small" onclick="deletePoint('${p.id}')">🗑 Eliminar</button>
+      </div>
+    </div>
+  `).join('');
+}
 
-                        <div>
-                            <div class="title">Informe de<br>Segregación<br>de Residuos</div>
-                        </div>
+/* ============ TABS ============ */
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById('view-puntos').classList.toggle('hidden', tab!=='puntos');
+  document.getElementById('view-report').classList.toggle('hidden', tab!=='report');
+  document.getElementById('view-datos').classList.toggle('hidden', tab!=='datos');
+  if(tab==='report') renderReport();
+  if(tab==='datos') loadDatosTab();
+}
+function loadDatosTab(){
+  if(!currentRecorrido) return;
+  document.getElementById('datosSitio').value = currentRecorrido.sitio;
+  document.getElementById('datosFecha').value = currentRecorrido.fecha;
+  document.getElementById('datosParticipantes').value = currentRecorrido.participantes || '';
+  document.getElementById('datosObjetivo').value = currentRecorrido.objetivo || '';
+}
+async function saveDatosRecorrido(){
+  if(!currentRecorrido) return;
+  currentRecorrido.participantes = document.getElementById('datosParticipantes').value.trim();
+  currentRecorrido.objetivo = document.getElementById('datosObjetivo').value.trim();
+  await persist();
+  renderReport();
+  toast('✔ Datos del recorrido actualizados.');
+}
 
-                        <div class="footer">
-                            <p style="margin-bottom: 8mm;"><strong>Sitio:</strong> ${recorridoActual.sitio}</p>
-                            <p style="margin-bottom: 8mm;"><strong>Fecha:</strong> ${recorridoActual.fecha}</p>
-                            <p style="margin-bottom: 8mm;"><strong>Participantes:</strong> ${recorridoActual.participantes || '-'}</p>
-                            <p style="margin: 10mm 0 0 0; opacity: 0.8; font-size: 12px;">
-                                Informe generado: ${new Date().toLocaleString('es-ES')}
-                            </p>
-                        </div>
-                    </div>
+/* ============ REPORT ============ */
+function renderReport(){
+  if(!currentRecorrido) return;
+  const puntos = currentRecorrido.puntos;
+  const total = puntos.length;
+  const oportunidades = puntos.filter(p=>p.esOportunidad);
+  const altas = oportunidades.filter(p=>p.prioridad==='alta').length;
+  const medias = oportunidades.filter(p=>p.prioridad==='media').length;
+  const bajas = oportunidades.filter(p=>p.prioridad==='baja').length;
+  const totalFotos = puntos.reduce((s,p)=>s + (p.fotos?p.fotos.length:0), 0);
 
-                    <!-- RESUMEN EJECUTIVO -->
-                    <div class="content page-break">
-                        <h2>Resumen Ejecutivo</h2>
+  let correctos=0, incorrectos=0, na=0;
+  puntos.forEach(p=>(p.categorias||[]).forEach(c=>{
+    if(c.status==='correcto') correctos++;
+    else if(c.status==='incorrecto') incorrectos++;
+    else if(c.status==='na') na++;
+  }));
+  const totalEval = correctos+incorrectos+na;
+  const pctCorrecto = totalEval ? Math.round((correctos/totalEval)*100) : 0;
 
-                        <div class="stats-grid">
-                            <div class="stat-box">
-                                <div class="stat-number">${recorridoActual.puntos.length}</div>
-                                <div class="stat-label">Puntos evaluados</div>
-                            </div>
-                            <div style="background: #fff3e0; padding: 15mm; border-left: 5px solid #ff9800; border-radius: 4px;">
-                                <div class="stat-number" style="color: #ff9800;">${hallazgos.length}</div>
-                                <div class="stat-label">Hallazgos identificados</div>
-                            </div>
-                            <div style="background: #f3e5f5; padding: 15mm; border-left: 5px solid #7b1fa2; border-radius: 4px;">
-                                <div class="stat-number" style="color: #7b1fa2;">${totalFotos}</div>
-                                <div class="stat-label">Fotos registradas</div>
-                            </div>
-                        </div>
+  document.getElementById('summaryGrid').innerHTML = `
+    <div class="summary-box"><div class="num">${total}</div><div class="lbl">Puntos evaluados</div></div>
+    <div class="summary-box"><div class="num">${pctCorrecto}%</div><div class="lbl">Segregación correcta</div></div>
+    <div class="summary-box"><div class="num">${oportunidades.length}</div><div class="lbl">Oportunidades / hallazgos</div></div>
+    <div class="summary-box"><div class="num">${totalFotos}</div><div class="lbl">Fotografías</div></div>
+  `;
 
-                        <div style="background: #f5f5f5; padding: 15mm; border-radius: 4px; margin-bottom: 20mm;">
-                            <h3 style="margin-top: 0;">Objetivo del recorrido</h3>
-                            <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #555;">
-                                ${recorridoActual.objetivo}
-                            </p>
-                        </div>
+  const bars = [
+    {lbl:`Alta prioridad`, val:altas, max:Math.max(1,oportunidades.length), color:'var(--red)'},
+    {lbl:`Media prioridad`, val:medias, max:Math.max(1,oportunidades.length), color:'var(--amber)'},
+    {lbl:`Baja prioridad`, val:bajas, max:Math.max(1,oportunidades.length), color:'var(--green)'},
+  ];
+  document.getElementById('barsWrap').innerHTML = `
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Sitio: <b>${currentRecorrido.sitio}</b> · Fecha: <b>${currentRecorrido.fecha}</b> · Participantes: <b>${currentRecorrido.participantes||'-'}</b></div>
+    ${currentRecorrido.objetivo ? `<div style="font-size:12px;color:var(--muted);margin-bottom:10px;"><b>Objetivo:</b> ${currentRecorrido.objetivo}</div>`:''}
+    ${bars.map(b=>`
+      <div class="bar-wrap">
+        <div class="bar-lbl"><span>${b.lbl}</span><span>${b.val}</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(b.val/b.max)*100}%;background:${b.color};"></div></div>
+      </div>
+    `).join('')}
+  `;
 
-                        ${hallazgos.length > 0 ? `
-                            <h3>Hallazgos por Prioridad</h3>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10mm;">
-                                <div style="text-align: center; padding: 10mm; background: #ffebee; border-radius: 4px;">
-                                    <div style="font-size: 24px; font-weight: bold; color: #d32f2f;">${hallazgos.filter(h => h.hallazgo.prioridad === 'Alta').length}</div>
-                                    <div style="font-size: 12px; color: #c62828;">Prioridad Alta</div>
-                                </div>
-                                <div style="text-align: center; padding: 10mm; background: #fff3e0; border-radius: 4px;">
-                                    <div style="font-size: 24px; font-weight: bold; color: #ff9800;">${hallazgos.filter(h => h.hallazgo.prioridad === 'Media').length}</div>
-                                    <div style="font-size: 12px; color: #e65100;">Prioridad Media</div>
-                                </div>
-                                <div style="text-align: center; padding: 10mm; background: #e8f5e9; border-radius: 4px;">
-                                    <div style="font-size: 24px; font-weight: bold; color: #2d7b3d;">${hallazgos.filter(h => h.hallazgo.prioridad === 'Baja').length}</div>
-                                    <div style="font-size: 12px; color: #1b5e2a;">Prioridad Baja</div>
-                                </div>
-                            </div>
-                        ` : ''}
-                    </div>
+  document.getElementById('findingsList').innerHTML = oportunidades.length === 0
+    ? `<p style="color:var(--muted);font-size:12.5px;">No se han registrado oportunidades de mejora todavía.</p>`
+    : oportunidades.sort((a,b)=>({alta:0,media:1,baja:2}[a.prioridad]-{alta:0,media:1,baja:2}[b.prioridad])).map(p=>`
+      <div class="point-card ${pointStatusClass(p)}">
+        <div class="point-head">
+          <div>
+            <div class="point-title">${p.ubicacion}</div>
+            <div class="point-meta">${p.tipo}${p.responsable ? ' · Responsable: '+p.responsable : ''}</div>
+          </div>
+          <span class="badge ${p.prioridad}">${p.prioridad.toUpperCase()}</span>
+        </div>
+        <p style="font-size:12.5px;margin:8px 0 0;">${p.descOportunidad || p.nota || ''}</p>
+        ${p.fotos && p.fotos.length ? `<div class="photo-strip">${p.fotos.map(f=>`<img src="${f}" class="photo-thumb" onclick="openLightbox('${f}')">`).join('')}</div>` : ''}
+      </div>
+    `).join('');
+}
 
-                    <!-- DATOS DEL RECORRIDO -->
-                    <div class="content page-break">
-                        <h2>Datos del Recorrido</h2>
-                        <table>
-                            <tr>
-                                <td>Sitio</td>
-                                <td>${recorridoActual.sitio}</td>
-                            </tr>
-                            <tr>
-                                <td>Fecha del recorrido</td>
-                                <td>${recorridoActual.fecha}</td>
-                            </tr>
-                            <tr>
-                                <td>Participantes</td>
-                                <td>${recorridoActual.participantes || '-'}</td>
-                            </tr>
-                            <tr>
-                                <td>Puntos evaluados</td>
-                                <td>${recorridoActual.puntos.length}</td>
-                            </tr>
-                        </table>
-                    </div>
+/* ============ EXPORT: CSV ============ */
+function exportCSV(){
+  if(!currentRecorrido || currentRecorrido.puntos.length===0){ toast('No hay puntos para exportar.'); return; }
+  const headers = ['Ubicacion','Tipo','Categorias evaluadas','Nota general','Es oportunidad','Descripcion oportunidad','Prioridad','Responsable','N fotos','Fecha/hora'];
+  const rows = currentRecorrido.puntos.map(p=>[
+    p.ubicacion,
+    p.tipo,
+    (p.categorias||[]).map(c=>`${c.label}:${c.status||'-'}`).join(' | '),
+    p.nota||'',
+    p.esOportunidad?'Si':'No',
+    p.descOportunidad||'',
+    p.prioridad||'',
+    p.responsable||'',
+    (p.fotos||[]).length,
+    new Date(p.ts).toLocaleString('es-CL')
+  ]);
+  const csvContent = [headers, ...rows].map(r=>
+    r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')
+  ).join('\n');
+  const blob = new Blob(['\ufeff'+csvContent], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ZeroWaste_${currentRecorrido.sitio}_${currentRecorrido.fecha}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV exportado.');
+}
 
-                    <!-- PUNTOS REGISTRADOS -->
-                    ${recorridoActual.puntos.map((punto, idx) => `
-                        <div class="content page-break">
-                            <h2>Punto ${idx + 1}: ${punto.ubicacion}</h2>
+/* ============ EXPORT: WORD (.doc) ============ */
+function statusLabel(s){
+  if(s==='correcto') return 'Correcto';
+  if(s==='incorrecto') return 'Incorrecto';
+  if(s==='na') return 'N/A';
+  return '-';
+}
+function statusColor(s){
+  if(s==='correcto') return '#1d8a5e';
+  if(s==='incorrecto') return '#c0272c';
+  return '#666666';
+}
+/* ============ FINALIZAR Y DESCARGAR ============ */
+async function finalizarYDescargar(){
+  if(!currentRecorrido || currentRecorrido.puntos.length === 0){
+    toast('Registra al menos un punto antes de finalizar.');
+    return;
+  }
+  renderReport();
+  await exportWord();
+}
 
-                            <div class="punto">
-                                <p style="margin: 0 0 8mm 0; font-size: 13px;"><strong>Ubicación:</strong> ${punto.ubicacion}</p>
-                                <p style="margin: 0 0 8mm 0; font-size: 13px;"><strong>Categorías de residuo evaluadas:</strong> ${punto.residuos.length > 0 ? punto.residuos.join(', ') : 'No especificado'}</p>
-                                <p style="margin: 0; font-size: 13px;"><strong>Timestamp:</strong> ${punto.timestamp}</p>
-                            </div>
+function escapeHtml(str){
+  if(str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
 
-                            <h3>Observaciones</h3>
-                            <div class="observacion">
-                                ${punto.observacion || '-'}
-                            </div>
+/* Re-compress a photo specifically for the Word report, much lighter than the
+   on-screen copy, to avoid Word truncating very large HTML-based documents. */
+function shrinkForWord(dataUrl){
+  return compressImage(dataUrl, 480, 0.5);
+}
+async function shrinkAllForWord(puntos){
+  const cache = new Map();
+  const all = [];
+  puntos.forEach(p=>{
+    (p.fotos||[]).forEach(f=>all.push(f));
+    (p.categorias||[]).forEach(c=>(c.fotos||[]).forEach(f=>all.push(f)));
+  });
+  const unique = [...new Set(all)];
+  for(const f of unique){
+    try{
+      cache.set(f, await shrinkForWord(f));
+    }catch(e){
+      cache.set(f, f); // fallback to original if compression fails
+    }
+  }
+  return cache;
+}
 
-                            ${punto.fotos.length > 0 ? `
-                                <h3>Fotografías (${punto.fotos.length})</h3>
-                                <div class="foto-galeria">
-                                    ${punto.fotos.map(foto => `
-                                        <div class="foto-item">
-                                            <img src="${foto.data}" alt="Foto">
-                                            <div class="foto-timestamp">${foto.timestamp}</div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            ` : ''}
+async function exportWord(){
+  if(!currentRecorrido || currentRecorrido.puntos.length===0){ toast('No hay puntos para generar el informe.'); return; }
+  toast('Generando informe Word...');
+  try{
+    const r = currentRecorrido;
+    const puntos = r.puntos;
+    const oportunidades = puntos.filter(p=>p.esOportunidad);
 
-                            ${punto.hallazgo ? `
-                                <div class="hallazgo">
-                                    <div class="hallazgo-header">
-                                        <span class="hallazgo-title">⚠ HALLAZGO IDENTIFICADO</span>
-                                        <span class="priority-badge priority-${punto.hallazgo.prioridad.toLowerCase()}">
-                                            ${punto.hallazgo.prioridad}
-                                        </span>
-                                    </div>
-                                    <div class="hallazgo-text">
-                                        <strong>Descripción:</strong><br>${punto.hallazgo.descripcion}
-                                    </div>
-                                    <p style="margin: 0; font-size: 13px;">
-                                        <strong>Responsable sugerido:</strong> ${punto.hallazgo.responsable || '-'}
-                                    </p>
-                                </div>
-                            ` : ''}
-                        </div>
-                    `).join('')}
+    let correctos=0, incorrectos=0, na=0;
+    puntos.forEach(p=>(p.categorias||[]).forEach(c=>{
+      if(c.status==='correcto') correctos++;
+      else if(c.status==='incorrecto') incorrectos++;
+      else if(c.status==='na') na++;
+    }));
+    const totalEval = correctos+incorrectos+na;
+    const pctCorrecto = totalEval ? Math.round((correctos/totalEval)*100) : 0;
+    const totalFotos = puntos.reduce((s,p)=>s + (p.fotos?p.fotos.length:0) + (p.categorias||[]).reduce((s2,c)=>s2+(c.fotos?c.fotos.length:0),0), 0);
+    const fechaGen = new Date().toLocaleString('es-CL');
 
-                    <!-- HALLAZGOS CONSOLIDADOS -->
-                    ${hallazgos.length > 0 ? `
-                        <div class="content page-break">
-                            <h2>Hallazgos y Oportunidades de Mejora</h2>
+    // Pre-shrink every unique photo once, in parallel-safe sequence, for a lighter document
+    const photoCache = await shrinkAllForWord(puntos);
+    const wordPhoto = (f)=> photoCache.get(f) || f;
 
-                            <div class="hallazgos-consolidados">
-                                ${[
-                                    { titulo: 'PRIORIDAD ALTA', prioridad: 'Alta', clase: 'alta' },
-                                    { titulo: 'PRIORIDAD MEDIA', prioridad: 'Media', clase: 'media' },
-                                    { titulo: 'PRIORIDAD BAJA', prioridad: 'Baja', clase: 'baja' }
-                                ].map(grupo => {
-                                    const items = hallazgos.filter(h => h.hallazgo.prioridad === grupo.prioridad);
-                                    if (items.length === 0) return '';
-                                    return `
-                                        <div class="grupo-prioridad">
-                                            <div class="grupo-header ${grupo.clase}">
-                                                ${grupo.titulo} (${items.length})
-                                            </div>
-                                            ${items.map(h => `
-                                                <div class="hallazgo-item">
-                                                    <p><span class="ubicacion-badge">📍 ${h.ubicacion}</span></p>
-                                                    <p style="margin: 5mm 0 8mm 0; color: #555; line-height: 1.5;">
-                                                        ${h.hallazgo.descripcion}
-                                                    </p>
-                                                    <p style="font-size: 11px; color: #999; margin: 0;">
-                                                        <strong>Responsable:</strong> ${h.hallazgo.responsable || '-'}
-                                                    </p>
-                                                </div>
-                                            `).join('')}
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-                    ` : ''}
+    const prioLabel = {alta:'ALTA', media:'MEDIA', baja:'BAJA'};
+    const prioColor = {alta:'#c0272c', media:'#8a5a00', baja:'#1d8a5e'};
+    const prioBg = {alta:'#fde2e2', media:'#fff1d6', baja:'#e4f9ef'};
 
-                    <!-- PIE DE PÁGINA -->
-                    <div class="content">
-                        <div class="footer-page">
-                            <p style="margin: 0;">
-                                ODATA Colocation · Sistema de Gestión Integrado (SGI)<br>
-                                TRUE Zero Waste Certification Program<br>
-                                Informe generado: ${new Date().toLocaleString('es-ES')}
-                            </p>
-                        </div>
-                    </div>
-                </body>
-                </html>
-            `;
-        }
+    const pointsHtml = puntos.map((p,i)=>{
+      const catRows = (p.categorias||[]).filter(c=>c.status||c.note||(c.fotos&&c.fotos.length)).map(c=>{
+        const fotosRow = (c.fotos && c.fotos.length) ? `
+        <tr><td colspan="3" style="padding:4px 8px;border:1px solid #ddd;">${c.fotos.map(f=>`<img src="${wordPhoto(f)}" style="width:100px;margin:2px 4px 2px 0;border:1px solid #ccc;">`).join('')}</td></tr>` : '';
+        return `
+        <tr>
+          <td style="padding:4px 8px;border:1px solid #ddd;">${escapeHtml(c.label)}</td>
+          <td style="padding:4px 8px;border:1px solid #ddd;color:${statusColor(c.status)};font-weight:bold;">${statusLabel(c.status)}</td>
+          <td style="padding:4px 8px;border:1px solid #ddd;">${escapeHtml(c.note)}</td>
+        </tr>${fotosRow}`;
+      }).join('');
+      const catTable = catRows ? `
+        <table style="border-collapse:collapse;width:100%;margin:8px 0;font-size:11pt;">
+          <tr style="background:#522582;color:#fff;">
+            <th style="padding:4px 8px;border:1px solid #ddd;text-align:left;">Categoría</th>
+            <th style="padding:4px 8px;border:1px solid #ddd;text-align:left;">Estado</th>
+            <th style="padding:4px 8px;border:1px solid #ddd;text-align:left;">Nota</th>
+          </tr>
+          ${catRows}
+        </table>` : '';
+      const fotosHtml = (p.fotos && p.fotos.length) ? `
+        <div style="margin:8px 0;">
+          ${p.fotos.map(f=>`<img src="${wordPhoto(f)}" style="width:180px;margin:4px 6px 4px 0;border:1px solid #ccc;">`).join('')}
+        </div>` : '';
+      const oportunidadHtml = p.esOportunidad ? `
+        <table style="width:100%;background:${prioBg[p.prioridad]||'#fff8e8'};border:1px solid #eee;margin-top:8px;">
+          <tr><td style="padding:8px;">
+            <b style="color:${prioColor[p.prioridad]||'#8a5a00'};">⚑ OPORTUNIDAD DE MEJORA — PRIORIDAD ${prioLabel[p.prioridad]||''}</b><br>
+            ${escapeHtml(p.descOportunidad)}
+            ${p.responsable ? `<br><i>Responsable sugerido: ${escapeHtml(p.responsable)}</i>` : ''}
+          </td></tr>
+        </table>` : '';
 
-        function exportarCSV() {
-            let csv = 'Sitio,Fecha,Ubicación,Residuos,Observación,Hallazgo,Prioridad,Responsable\n';
-            recorridoActual.puntos.forEach(p => {
-                csv += `${recorridoActual.sitio},${recorridoActual.fecha},${p.ubicacion},"${p.residuos.join('; ')}","${p.observacion}","${p.hallazgo ? p.hallazgo.descripcion : ''}",${p.hallazgo ? p.hallazgo.prioridad : ''},${p.hallazgo ? p.hallazgo.responsable : ''}\n`;
-            });
+      return `
+        <div style="margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid #ddd;">
+          <h3 style="color:#522582;margin-bottom:2px;">${i+1}. ${escapeHtml(p.ubicacion)}</h3>
+          <div style="font-size:10pt;color:#666;margin-bottom:6px;">${escapeHtml(p.tipo)} · ${new Date(p.ts).toLocaleString('es-CL')}</div>
+          ${catTable}
+          ${p.nota ? `<p style="font-size:11pt;"><b>Observación:</b> ${escapeHtml(p.nota)}</p>` : ''}
+          ${oportunidadHtml}
+          ${fotosHtml}
+        </div>`;
+    }).join('');
 
-            const link = document.createElement('a');
-            const blob = new Blob([csv], { type: 'text/csv' });
-            link.href = URL.createObjectURL(blob);
-            link.download = `Zero-Waste-${recorridoActual.sitio}-${recorridoActual.fecha}.csv`;
-            link.click();
-        }
+    const findingsSummary = oportunidades.length === 0
+      ? '<p>No se identificaron oportunidades de mejora en este recorrido.</p>'
+      : `<table style="border-collapse:collapse;width:100%;font-size:11pt;">
+          <tr style="background:#522582;color:#fff;">
+            <th style="padding:5px 8px;border:1px solid #ddd;text-align:left;">#</th>
+            <th style="padding:5px 8px;border:1px solid #ddd;text-align:left;">Ubicación</th>
+            <th style="padding:5px 8px;border:1px solid #ddd;text-align:left;">Prioridad</th>
+            <th style="padding:5px 8px;border:1px solid #ddd;text-align:left;">Descripción</th>
+            <th style="padding:5px 8px;border:1px solid #ddd;text-align:left;">Responsable</th>
+          </tr>
+          ${oportunidades.map((p,i)=>`
+            <tr>
+              <td style="padding:5px 8px;border:1px solid #ddd;">${i+1}</td>
+              <td style="padding:5px 8px;border:1px solid #ddd;">${escapeHtml(p.ubicacion)}</td>
+              <td style="padding:5px 8px;border:1px solid #ddd;color:${prioColor[p.prioridad]};font-weight:bold;">${prioLabel[p.prioridad]}</td>
+              <td style="padding:5px 8px;border:1px solid #ddd;">${escapeHtml(p.descOportunidad)}</td>
+              <td style="padding:5px 8px;border:1px solid #ddd;">${escapeHtml(p.responsable)}</td>
+            </tr>`).join('')}
+        </table>`;
 
-        function volver() {
-            mostrarPantalla('screen-recording');
-            mostrarPuntos();
-        }
+    const docHtml = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+      <meta charset="utf-8">
+      <title>Informe Zero Waste ${escapeHtml(r.sitio)} ${escapeHtml(r.fecha)}</title>
+      <!--[if gte mso 9]>
+      <xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml>
+      <![endif]-->
+      <style>
+        body{font-family:Verdana, Geneva, sans-serif; color:#26203a;}
+        h1{color:#522582;}
+        h2{color:#522582;border-bottom:2px solid #33D592;padding-bottom:4px;}
+      </style>
+    </head>
+    <body>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:14px;">
+        <tr>
+          <td style="background:#522582;color:#fff;padding:16px;">
+            <h1 style="color:#fff;margin:0;">♻ Informe de Recorrido Zero Waste</h1>
+            <div style="font-size:11pt;margin-top:4px;">ODATA Colocation · Sistema de Gestión Integrado (SGI)</div>
+          </td>
+        </tr>
+      </table>
 
-        function mostrarPantalla(id) {
-            document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-        }
-    </script>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:11pt;">
+        <tr><td style="padding:4px 0;width:160px;"><b>Sitio</b></td><td style="padding:4px 0;">${escapeHtml(r.sitio)}</td></tr>
+        <tr><td style="padding:4px 0;"><b>Fecha del recorrido</b></td><td style="padding:4px 0;">${escapeHtml(r.fecha)}</td></tr>
+        <tr><td style="padding:4px 0;"><b>Participantes</b></td><td style="padding:4px 0;">${escapeHtml(r.participantes)||'-'}</td></tr>
+        ${r.objetivo ? `<tr><td style="padding:4px 0;vertical-align:top;"><b>Objetivo</b></td><td style="padding:4px 0;">${escapeHtml(r.objetivo)}</td></tr>` : ''}
+        <tr><td style="padding:4px 0;"><b>Fecha de generación del informe</b></td><td style="padding:4px 0;">${fechaGen}</td></tr>
+      </table>
+
+      <h2>Resumen ejecutivo</h2>
+      <table style="border-collapse:collapse;width:100%;font-size:11pt;margin-bottom:16px;">
+        <tr style="background:#f4f2f8;">
+          <td style="padding:8px;border:1px solid #ddd;text-align:center;"><b style="font-size:16pt;color:#522582;">${puntos.length}</b><br>Puntos evaluados</td>
+          <td style="padding:8px;border:1px solid #ddd;text-align:center;"><b style="font-size:16pt;color:#522582;">${pctCorrecto}%</b><br>Segregación correcta</td>
+          <td style="padding:8px;border:1px solid #ddd;text-align:center;"><b style="font-size:16pt;color:#522582;">${oportunidades.length}</b><br>Oportunidades / hallazgos</td>
+          <td style="padding:8px;border:1px solid #ddd;text-align:center;"><b style="font-size:16pt;color:#522582;">${totalFotos}</b><br>Fotografías</td>
+        </tr>
+      </table>
+
+      <h2>Oportunidades de mejora identificadas</h2>
+      ${findingsSummary}
+
+      <h2 style="margin-top:24px;">Detalle de puntos evaluados</h2>
+      ${pointsHtml}
+
+      <p style="font-size:9pt;color:#999;margin-top:24px;">Informe generado con la herramienta de Recorrido Zero Waste · SGI ODATA Colocation</p>
+    </body>
+    </html>`;
+
+    const blob = new Blob(['\ufeff', docHtml], {type:'application/msword'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Informe_ZeroWaste_${r.sitio}_${r.fecha}.doc`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    toast('✔ Informe Word descargado.');
+  }catch(err){
+    console.error(err);
+    toast('⚠ Ocurrió un error generando el informe. Intenta nuevamente o revisa si hay muchas fotos de muy alta resolución.');
+  }
+}
+
+/* ============ EXPORT: EMAIL ============ */
+function exportEmail(){
+  if(!currentRecorrido){ toast('No hay recorrido activo.'); return; }
+  const puntos = currentRecorrido.puntos;
+  const oportunidades = puntos.filter(p=>p.esOportunidad);
+  let body = `Informe de Recorrido Zero Waste\n`;
+  body += `Sitio: ${currentRecorrido.sitio}\nFecha: ${currentRecorrido.fecha}\nParticipantes: ${currentRecorrido.participantes||'-'}\n`;
+  if(currentRecorrido.objetivo) body += `Objetivo: ${currentRecorrido.objetivo}\n`;
+  body += `\nPuntos evaluados: ${puntos.length}\nOportunidades de mejora identificadas: ${oportunidades.length}\n\n`;
+  body += `--- Oportunidades / hallazgos ---\n`;
+  if(oportunidades.length===0){
+    body += `(Sin hallazgos registrados)\n`;
+  } else {
+    oportunidades.forEach((p,i)=>{
+      body += `${i+1}. [${p.prioridad.toUpperCase()}] ${p.ubicacion}: ${p.descOportunidad || p.nota || ''}${p.responsable ? ' (Responsable sugerido: '+p.responsable+')' : ''}\n`;
+    });
+  }
+  body += `\nNota: Este correo es un resumen. Adjunta el informe PDF exportado (Imprimir / Guardar como PDF) con las fotografías completas.\n\nAbs,\nAlejandro`;
+
+  const subject = `[SGI] Informe Zero Waste - ${currentRecorrido.sitio} - ${currentRecorrido.fecha}`;
+  const mailto = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.location.href = mailto;
+}
+</script>
 </body>
 </html>
