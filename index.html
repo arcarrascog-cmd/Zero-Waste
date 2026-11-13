@@ -7,17 +7,17 @@
 <style>
 :root{
   --purple:#522582;
-  --purple-dark:#3a1a5e;
+  --purple-dark:#2E1547;
   --green:#33D592;
   --green-dark:#22a874;
-  --bg:#f4f2f8;
+  --bg:#f7f6fa;
   --card:#ffffff;
-  --text:#26203a;
-  --muted:#756f8a;
-  --border:#e3ddf0;
-  --red:#e5484d;
-  --amber:#f5a524;
-  --shadow:0 2px 10px rgba(82,37,130,0.08);
+  --text:#17121f;
+  --muted:#6f6a7d;
+  --border:#e6e3ec;
+  --red:#c62828;
+  --amber:#b26a00;
+  --shadow:0 1px 2px rgba(18,7,32,.04);
 }
 *{box-sizing:border-box;}
 body{
@@ -78,7 +78,7 @@ header .sub{
 .card{
   background:var(--card);
   border:1px solid var(--border);
-  border-radius:14px;
+  border-radius:10px;
   padding:18px;
   margin-bottom:16px;
   box-shadow:var(--shadow);
@@ -129,12 +129,8 @@ button{
 .btn-danger{background:#fdeaea;color:var(--red);}
 .btn-danger:hover{background:var(--red);color:#fff;}
 .btn-small{padding:5px 10px;font-size:11px;border-radius:7px;}
-.btn-mic{background:#f2ecfb;color:var(--purple);border-radius:50%;width:34px;height:34px;padding:0;font-size:15px;}
-.btn-mic.listening{background:var(--red);color:#fff;animation:pulse 1s infinite;}
 @keyframes pulse{0%{opacity:1;}50%{opacity:0.6;}100%{opacity:1;}}
 
-.mic-row{display:flex;gap:8px;align-items:flex-start;}
-.mic-row textarea{flex:1;}
 
 .tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
 .tab-btn{
@@ -172,7 +168,7 @@ button{
   border-radius:7px;
   font-size:11px;
 }
-.status-btn[data-val="correcto"].active{background:var(--green);color:#0c3b28;border-color:var(--green);}
+.status-btn[data-val="correcto"].active{background:#e3f5ea;color:#0b7a3b;border-color:#0b7a3b;}
 .status-btn[data-val="incorrecto"].active{background:var(--red);color:#fff;border-color:var(--red);}
 .status-btn[data-val="na"].active{background:#d9d5e6;color:var(--purple-dark);border-color:#d9d5e6;}
 .cat-note{width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid var(--border);margin-top:2px;}
@@ -299,6 +295,18 @@ footer.fixedbar{
 
 small.hint{color:var(--muted);font-size:11px;display:block;margin-top:4px;}
 
+/* ---- Autoguardado y estados ---- */
+.pill.saving{background:#fff1c2;color:#5c4300;}
+.pill.ok{background:rgba(51,213,146,0.28);}
+.pill.err{background:var(--red);color:#fff;cursor:pointer;}
+#workArea.busy{pointer-events:none;opacity:.6;}
+#photoBusy{font-size:11.5px;color:var(--purple);font-weight:bold;margin-top:6px;display:block;}
+.choice{display:block;width:100%;text-align:left;margin:6px 0;}
+.modal h3{font-size:12.5px;color:var(--purple-dark);margin:12px 0 4px;}
+.modal ul{padding-left:18px;}
+.grp-date{font-size:11px;color:var(--muted);margin:10px 0 4px;font-weight:bold;text-transform:uppercase;}
+.draft-tag{display:inline-block;font-size:10px;background:#fff1c2;color:#5c4300;padding:2px 7px;border-radius:10px;margin-left:4px;}
+
 /* Print styles for report */
 @media print{
   header, footer.fixedbar, .tabs, .no-print{display:none !important;}
@@ -308,21 +316,59 @@ small.hint{color:var(--muted);font-size:11px;display:block;margin-top:4px;}
   .container{max-width:100%;}
 }
 </style>
+<style>
+/* ---- Ubicaciones, editor y hallazgos ---- */
+.x-btn{position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;line-height:1;padding:0;cursor:pointer;}
+.actions-bar{display:flex;gap:8px;flex-wrap:wrap;}
+.actions-bar button{flex:1;min-width:110px;padding:12px 8px;font-size:13px;}
+.prog-row{font-size:12.5px;margin-bottom:6px;}
+.loc-card{border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;background:#fff;border-left:5px solid #cfc8e3;}
+.loc-card.st-evaluada{border-left-color:var(--green);}
+.loc-card.st-en_proceso{border-left-color:var(--amber);}
+.loc-card.st-pendiente{border-left-color:#cfc8e3;}
+.badge-est{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:bold;white-space:nowrap;background:#eee;color:#555;}
+.badge-est.st-evaluada{background:#e4f9ef;color:var(--green-dark);}
+.badge-est.st-en_proceso{background:#fff1d6;color:#8a5a00;}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0;}
+.chip{font-size:11px;padding:3px 8px;border-radius:12px;background:#eee;color:#555;}
+.chip.st-correcto{background:#e3f5ea;color:#0b7a3b;}
+.chip.st-incorrecto{background:#fdecec;color:#c62828;}
+.chip.st-na{background:#f1f0f4;color:#514c5e;}
+.chip.st-pend{background:#fff;border:1px dashed #b9b1cf;color:#6b6480;}
+.chip-btn{font-size:11px;background:#f2ecfb;color:var(--purple-dark);border:none;border-radius:12px;padding:5px 9px;cursor:pointer;text-align:left;}
+.det{margin-top:6px;width:100%;}
+.det summary{font-size:12px;color:var(--purple);cursor:pointer;}
+.hall-mini{font-size:12px;padding:4px 0;border-top:1px dashed var(--border);}
+.hall{border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:#fff;}
+.hall.st-cerrado{opacity:.85;}
+.hall>summary{padding:9px 10px;font-size:12.5px;cursor:pointer;list-style:none;}
+.hall-body{padding:0 10px 10px;}
+.hall textarea{min-height:48px;}
+.status-btns{flex-wrap:wrap;}
+.cat-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+.cat-row input{flex:2;}
+.cat-row select{flex:2;}
+.grp-date{margin-top:12px;}
+#editorCard{border:2px solid var(--purple);}
+details.sec{border:1px solid var(--border);border-radius:10px;padding:8px 10px;margin-bottom:10px;}
+details.sec>summary{font-weight:bold;color:var(--purple-dark);cursor:pointer;font-size:13.5px;}
+#progressBox{background:#fbfaff;border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:12px;}
+</style>
 </head>
 <body>
 
 <header>
   <h1><span class="leaf">♻</span> Zero Waste · Recorrido de Sitio</h1>
-  <div class="sub">ODATA Colocation · SGI · Registro con fotos y notas de segregación</div>
+  <div class="sub">ODATA Colocation · SGI · Auditoría por ubicación con evidencias y seguimiento</div>
   <div id="statusBar">
     <span class="pill" id="connPill">●</span>
-    <span class="pill" id="savePill">Guardado local activo</span>
+    <span class="pill" id="savePill">Sin recorrido activo</span>
   </div>
 </header>
 
 <div class="container">
 
-  <!-- SETUP -->
+  <!-- INICIO DE RECORRIDO -->
   <div class="card" id="setupCard">
     <h2>📋 Datos del recorrido</h2>
     <div class="row">
@@ -330,18 +376,9 @@ small.hint{color:var(--muted);font-size:11px;display:block;margin-top:4px;}
         <label>Sitio</label>
         <select id="setSite">
           <option value="">Seleccionar...</option>
-          <option>ST01</option>
-          <option>ST02</option>
-          <option>BG01</option>
-          <option>SP01</option>
-          <option>SP02</option>
-          <option>SP03</option>
-          <option>SP04</option>
-          <option>RJ01</option>
-          <option>QR01</option>
-          <option>QR02</option>
-          <option>QR03</option>
-          <option>QR04</option>
+          <option>ST01</option><option>ST02</option><option>BG01</option>
+          <option>SP01</option><option>SP02</option><option>SP03</option><option>SP04</option>
+          <option>RJ01</option><option>QR01</option><option>QR02</option><option>QR03</option><option>QR04</option>
         </select>
       </div>
       <div>
@@ -357,110 +394,143 @@ small.hint{color:var(--muted);font-size:11px;display:block;margin-top:4px;}
       <button class="btn-primary" onclick="startOrResume()">▶ Iniciar / Continuar recorrido</button>
       <button class="btn-ghost" onclick="openLoadModal()">📂 Cargar recorrido guardado</button>
     </div>
-    <small class="hint">Los datos se guardan automáticamente en este dispositivo (IndexedDB), incluso sin internet. No se pierden al cerrar el navegador.</small>
+    <div class="row" style="margin-top:8px;">
+      <button class="btn-green btn-small" onclick="exportarRespaldo()">💾 Descargar respaldo</button>
+      <button class="btn-ghost btn-small" onclick="importarRespaldo()">📥 Importar respaldo</button>
+      <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+    </div>
+    <small class="hint">Cada cambio se guarda solo en este dispositivo (IndexedDB). Si cierras o recargas, el recorrido y la ubicación en edición se recuperan. Límites: no sincroniza entre dispositivos y puede perderse si se borran los datos del navegador. Descarga respaldos con regularidad. El PDF no reemplaza el respaldo.</small>
   </div>
 
-  <!-- MAIN WORK AREA -->
+  <!-- ÁREA DE TRABAJO -->
   <div id="workArea" class="hidden">
 
+    <div class="card actions-bar">
+      <button class="btn-primary" id="btnContinuar">▶ Continuar recorrido</button>
+      <button class="btn-green" id="btnEvaluar">📍 Evaluar ubicación</button>
+      <button class="btn-ghost" id="btnInforme">📄 Generar informe</button>
+    </div>
+
+    <div id="progressBox"></div>
+
     <div class="tabs">
-      <button class="tab-btn active" data-tab="puntos" onclick="switchTab('puntos')">🧭 Puntos evaluados</button>
-      <button class="tab-btn" data-tab="report" onclick="switchTab('report')">📊 Resumen / Informe</button>
+      <button class="tab-btn active" data-tab="puntos" onclick="switchTab('puntos')">📍 Ubicaciones</button>
+      <button class="tab-btn" data-tab="report" onclick="switchTab('report')">📊 Indicadores / Informe</button>
       <button class="tab-btn" data-tab="datos" onclick="switchTab('datos')">⚙ Datos del recorrido</button>
     </div>
 
+    <!-- UBICACIONES -->
     <div id="view-puntos">
-      <div class="card">
-        <h2>➕ Registrar punto evaluado</h2>
-        <div class="row">
-          <div>
-            <label>Ubicación / punto</label>
-            <input type="text" id="pUbicacion" placeholder="Ej: Comedor, Sala eléctrica piso 2, Bodega residuos...">
-          </div>
-          <div>
-            <label>Tipo de punto</label>
-            <select id="pTipo">
-              <option>Punto de segregación</option>
-              <option>Área generadora</option>
-              <option>Almacenamiento temporal</option>
-              <option>Punto de disposición final</option>
-            </select>
-          </div>
-        </div>
+      <div class="card hidden" id="editorCard">
+        <h2 id="editorTitle">📍 Evaluar ubicación</h2>
+        <small class="hint" id="editorHint"></small>
 
-        <label>Evaluación por categoría de residuo</label>
-        <div class="cat-grid" id="catGrid"></div>
-
-        <label>Observación general</label>
-        <div class="mic-row">
-          <textarea id="pNota" placeholder="Describe lo observado..."></textarea>
-          <button type="button" class="btn-mic" id="micNota" onclick="toggleMic('pNota', this)">🎤</button>
-        </div>
-
-        <label>Fotografías</label>
-        <div class="photo-strip" id="photoStripNew">
-          <label class="photo-add">
-            📷
-            <input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handlePhotos(event,'new')">
-          </label>
-        </div>
-
-        <div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--border);">
-          <label style="display:flex;align-items:center;gap:8px;">
-            <input type="checkbox" id="pEsOportunidad" style="width:auto;" onchange="toggleOportunidad()">
-            Marcar como hallazgo / oportunidad de mejora
-          </label>
-          <div id="oportunidadFields" class="hidden">
-            <label>Descripción de la oportunidad / hallazgo</label>
-            <div class="mic-row">
-              <textarea id="pDescOportunidad" placeholder="Ej: Contenedores sin rotular, mezcla de orgánico con reciclable..."></textarea>
-              <button type="button" class="btn-mic" id="micOp" onclick="toggleMic('pDescOportunidad', this)">🎤</button>
+        <details class="sec" open>
+          <summary>1. Ubicación</summary>
+          <div class="row">
+            <div>
+              <label>Nombre</label>
+              <input type="text" id="dNombre" placeholder="Ej: Comedor piso 1">
             </div>
-            <div class="row">
-              <div>
-                <label>Prioridad</label>
-                <select id="pPrioridad">
-                  <option value="alta">Alta</option>
-                  <option value="media" selected>Media</option>
-                  <option value="baja">Baja</option>
-                </select>
-              </div>
-              <div>
-                <label>Responsable sugerido</label>
-                <input type="text" id="pResponsable" placeholder="Ej: FM / EHS / Comunicaciones">
-              </div>
+            <div>
+              <label>Tipo de ubicación</label>
+              <select id="dTipo">
+                <option value="comedor">Comedor / cocina</option>
+                <option value="lobby">Lobby / recepción</option>
+                <option value="oficina">Oficina</option>
+                <option value="sala_tecnica">Sala técnica (eléctrica / mecánica)</option>
+                <option value="sala_equipos">Sala de equipos (data hall)</option>
+                <option value="bodega">Bodega</option>
+                <option value="contratistas">Área de contratistas</option>
+                <option value="almacenamiento">Almacenamiento de residuos</option>
+                <option value="otra">Otra ubicación</option>
+              </select>
             </div>
           </div>
-        </div>
+        </details>
 
-        <div class="row" style="margin-top:14px;">
-          <button class="btn-green" onclick="savePoint()">✔ Guardar punto</button>
-          <button class="btn-ghost" onclick="clearPointForm()">Limpiar formulario</button>
+        <details class="sec" open>
+          <summary>2. Criterios (estado: correcto, incorrecto, no aplica o pendiente)</summary>
+          <div id="dCrit" style="margin-top:8px;"></div>
+          <div class="row" style="margin-top:8px;">
+            <div><select id="dAddCrit"></select></div>
+            <button class="btn-ghost btn-small" id="dAddCritBtn" type="button" style="flex:0;">＋ Agregar</button>
+          </div>
+        </details>
+
+        <details class="sec">
+          <summary>3. Observación general y fotos</summary>
+          <textarea id="dObs" style="margin-top:8px;" placeholder="Describe lo observado en la ubicación..."></textarea>
+          <label>Fotografías generales</label>
+          <div class="photo-strip" id="dPhotos"></div>
+          <small id="photoBusy" class="hidden"></small>
+        </details>
+
+        <details class="sec" id="dHallDet">
+          <summary>4. Hallazgos y acciones (<span id="dHallCount">0</span>)</summary>
+          <div id="dHall" style="margin-top:8px;"></div>
+          <button class="btn-ghost btn-small" id="dAddHall" type="button" style="margin-top:6px;">＋ Hallazgo manual</button>
+        </details>
+
+        <div class="row" style="margin-top:12px;">
+          <button class="btn-green" id="btnSaveLoc" type="button">✔ Guardar ubicación</button>
+          <button class="btn-ghost" id="btnCloseEditor" type="button">Cerrar (conserva el borrador)</button>
+          <button class="btn-danger btn-small" id="btnClearLoc" type="button">Descartar</button>
         </div>
       </div>
 
       <div class="card">
-        <h2>📌 Puntos registrados (<span id="countPuntos">0</span>)</h2>
-        <div id="pointsList"></div>
-        <div class="row no-print" style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--border);">
-          <button class="btn-primary" onclick="finalizarYDescargar()">🏁 Finalizar recorrido y descargar informe PDF</button>
-        </div>
-        <small class="hint no-print">Descarga el informe completo apenas termines de recorrer la sala, sin salir de esta pantalla.</small>
+        <h2>📍 Ubicaciones del recorrido</h2>
+        <div id="locList"></div>
       </div>
     </div>
 
+    <!-- INDICADORES / INFORME -->
+    <div id="view-report" class="hidden">
+      <div class="card">
+        <h2>📊 Indicadores</h2>
+        <div class="summary-grid" id="summaryGrid"></div>
+        <div id="barsWrap"></div>
+      </div>
+
+      <div class="card">
+        <h2>⏳ Ubicaciones pendientes</h2>
+        <div id="pendList"></div>
+      </div>
+
+      <div class="card">
+        <h2>🎯 Hallazgos abiertos y seguimiento</h2>
+        <div id="findingsList"></div>
+      </div>
+
+      <div class="card no-print">
+        <h2>📤 Informes PDF</h2>
+        <p style="font-size:12.5px;color:var(--muted);">
+          El informe consolidado incluye resumen ejecutivo, cobertura, pendientes, hallazgos y el detalle de cada ubicación. Si faltan ubicaciones o criterios, se marca como <b>BORRADOR</b>. Generar un informe no cierra ni modifica el recorrido.
+        </p>
+        <div class="row">
+          <button class="btn-primary" onclick="exportarInformeConsolidado()">📄 Consolidado (PDF)</button>
+          <button class="btn-ghost" onclick="imprimirInforme()">🖨 Abrir PDF para imprimir</button>
+        </div>
+        <label>Informe de una ubicación</label>
+        <div class="row">
+          <div><select id="reportLoc"></select></div>
+          <button class="btn-primary btn-small" onclick="exportarInformeUbicacion()" style="flex:0;">📄 PDF de la ubicación</button>
+        </div>
+        <div class="row" style="margin-top:8px;">
+          <button class="btn-green btn-small" onclick="exportCSV()">📑 Exportar CSV</button>
+          <button class="btn-ghost btn-small" onclick="exportEmail()">✉ Preparar correo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATOS -->
     <div id="view-datos" class="hidden">
       <div class="card">
         <h2>⚙ Datos del recorrido activo</h2>
         <div class="row">
-          <div>
-            <label>Sitio</label>
-            <input type="text" id="datosSitio" disabled>
-          </div>
-          <div>
-            <label>Fecha</label>
-            <input type="text" id="datosFecha" disabled>
-          </div>
+          <div><label>Sitio</label><input type="text" id="datosSitio" disabled></div>
+          <div><label>Fecha</label><input type="text" id="datosFecha" disabled></div>
         </div>
         <label>Participantes</label>
         <input type="text" id="datosParticipantes">
@@ -469,39 +539,21 @@ small.hint{color:var(--muted);font-size:11px;display:block;margin-top:4px;}
         <div class="row" style="margin-top:12px;">
           <button class="btn-primary" onclick="saveDatosRecorrido()">💾 Guardar cambios</button>
         </div>
-        <small class="hint">El sitio y la fecha no se editan aquí porque identifican este recorrido guardado. Si te equivocaste, usa "🆕 Nuevo recorrido" con los datos correctos.</small>
       </div>
-    </div>
-
-    <div id="view-report" class="hidden">
       <div class="card">
-        <h2>📊 Resumen del recorrido</h2>
-        <div class="summary-grid" id="summaryGrid"></div>
-        <div id="barsWrap"></div>
-      </div>
-
-      <div class="card">
-        <h2>🎯 Oportunidades de mejora identificadas</h2>
-        <div id="findingsList"></div>
-      </div>
-
-      <div class="card no-print">
-        <h2>📤 Generar y enviar informe</h2>
-        <p style="font-size:12.5px;color:var(--muted);">
-          "Descargar informe PDF" genera un PDF completo con resumen, fotos y hallazgos, listo para adjuntar o enviar. También puedes usar "Imprimir" si prefieres el diálogo del navegador.
-          El correo se abre en tu cliente de correo con el resumen; adjunta el PDF exportado manualmente (los correos no permiten adjuntar automáticamente desde el navegador).
-        </p>
+        <h2>🏷 Catálogo de ubicaciones <span style="font-weight:normal;font-size:12px;">(sitio <span id="catSitio"></span>)</span></h2>
+        <small class="hint">El catálogo es editable y es propio de cada sitio. Agregar o cambiar una ubicación no copia resultados de auditorías anteriores.</small>
+        <div id="catList" style="margin-top:8px;"></div>
+        <label>Nueva ubicación</label>
         <div class="row">
-          <button class="btn-primary" onclick="exportPDF()">📄 Descargar informe PDF</button>
-          <button class="btn-primary" onclick="window.print()">🖨 Imprimir / Guardar como PDF</button>
-          <button class="btn-green" onclick="exportCSV()">📑 Exportar CSV</button>
-          <button class="btn-ghost" onclick="exportEmail()">✉ Preparar correo</button>
+          <div><input type="text" id="catNewNombre" placeholder="Ej: Sala de baterías"></div>
+          <div><select id="catNewTipo"></select></div>
+          <button class="btn-green btn-small" id="btnCatAdd" type="button" style="flex:0;">＋ Agregar</button>
         </div>
       </div>
     </div>
 
   </div>
-
 </div>
 
 <footer class="fixedbar no-print" id="footerBar">
@@ -510,7 +562,6 @@ small.hint{color:var(--muted);font-size:11px;display:block;margin-top:4px;}
 </footer>
 
 <div id="toast"></div>
-
 <script>
 /* jsPDF (bundled offline for PDF report generation) */
 /** @license
@@ -902,7 +953,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
 !function(t,e){if("object"==typeof exports&&"object"==typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var n=e();for(var o in n)("object"==typeof exports?exports:t)[o]=n[o]}}(Object("undefined"!=typeof globalThis?globalThis:void 0!==this?this:"undefined"!=typeof window?window:"undefined"!=typeof self?self:global),function(){return function(){"use strict";var t={d:function(e,n){for(var o in n)t.o(n,o)&&!t.o(e,o)&&Object.defineProperty(e,o,{enumerable:!0,get:n[o]})},o:function(t,e){return Object.prototype.hasOwnProperty.call(t,e)},r:function(t){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(t,"__esModule",{value:!0})}},e={};function n(t,e,n,o,i){o=o||{};var r=i.internal.scaleFactor,l=i.internal.getFontSize()/r,a=l*(i.getLineHeightFactor?i.getLineHeightFactor():1.15),s="",u=1;if("middle"!==o.valign&&"bottom"!==o.valign&&"center"!==o.halign&&"right"!==o.halign||(u=(s="string"==typeof t?t.split(/\r\n|\r|\n/g):t).length||1),n+=l*(2-1.15),"middle"===o.valign?n-=u/2*a:"bottom"===o.valign&&(n-=u*a),"center"===o.halign||"right"===o.halign){var h=l;if("center"===o.halign&&(h*=.5),s&&u>=1){for(var c=0;c<s.length;c++)i.text(s[c],e-i.getStringUnitWidth(s[c])*h,n),n+=a;return i}e-=i.getStringUnitWidth(t)*h}return"justify"===o.halign?i.text(t,e,n,{maxWidth:o.maxWidth||100,align:"justify"}):i.text(t,e,n),i}t.r(e),t.d(e,{Cell:function(){return F},CellHookData:function(){return P},Column:function(){return H},HookData:function(){return W},Row:function(){return D},Table:function(){return C},__createTable:function(){return Q},__drawTable:function(){return V},applyPlugin:function(){return U},autoTable:function(){return $},default:function(){return tt}}),Object.defineProperty(n,"name",{value:"default",configurable:!0});var o,i={},r=function(){function t(t){this.jsPDFDocument=t,this.userStyles={textColor:t.getTextColor?this.jsPDFDocument.getTextColor():0,fontSize:t.internal.getFontSize(),fontStyle:t.internal.getFont().fontStyle,font:t.internal.getFont().fontName,lineWidth:t.getLineWidth?this.jsPDFDocument.getLineWidth():0,lineColor:t.getDrawColor?this.jsPDFDocument.getDrawColor():0}}return t.setDefaults=function(t,e){void 0===e&&(e=null),e?e.__autoTableDocumentDefaults=t:i=t},t.unifyColor=function(t){return Array.isArray(t)?t:"number"==typeof t?[t,t,t]:"string"==typeof t?[t]:null},t.prototype.applyStyles=function(e,n){var o,i,r;void 0===n&&(n=!1),e.fontStyle&&this.jsPDFDocument.setFontStyle&&this.jsPDFDocument.setFontStyle(e.fontStyle);var l=this.jsPDFDocument.internal.getFont(),a=l.fontStyle,s=l.fontName;if(e.font&&(s=e.font),e.fontStyle){a=e.fontStyle;var u=this.getFontList()[s];u&&-1===u.indexOf(a)&&this.jsPDFDocument.setFontStyle&&(this.jsPDFDocument.setFontStyle(u[0]),a=u[0])}if(this.jsPDFDocument.setFont(s,a),e.fontSize&&this.jsPDFDocument.setFontSize(e.fontSize),!n){var h=t.unifyColor(e.fillColor);h&&(o=this.jsPDFDocument).setFillColor.apply(o,h),(h=t.unifyColor(e.textColor))&&(i=this.jsPDFDocument).setTextColor.apply(i,h),(h=t.unifyColor(e.lineColor))&&(r=this.jsPDFDocument).setDrawColor.apply(r,h),"number"==typeof e.lineWidth&&this.jsPDFDocument.setLineWidth(e.lineWidth)}},t.prototype.splitTextToSize=function(t,e,n){return this.jsPDFDocument.splitTextToSize(t,e,n)},t.prototype.rect=function(t,e,n,o,i){return this.jsPDFDocument.rect(t,e,n,o,i)},t.prototype.getLastAutoTable=function(){return this.jsPDFDocument.lastAutoTable||null},t.prototype.getTextWidth=function(t){return this.jsPDFDocument.getTextWidth(t)},t.prototype.getDocument=function(){return this.jsPDFDocument},t.prototype.setPage=function(t){this.jsPDFDocument.setPage(t)},t.prototype.addPage=function(){return this.jsPDFDocument.addPage()},t.prototype.getFontList=function(){return this.jsPDFDocument.getFontList()},t.prototype.getGlobalOptions=function(){return i||{}},t.prototype.getDocumentOptions=function(){return this.jsPDFDocument.__autoTableDocumentDefaults||{}},t.prototype.pageSize=function(){var t=this.jsPDFDocument.internal.pageSize;return null==t.width&&(t={width:t.getWidth(),height:t.getHeight()}),t},t.prototype.scaleFactor=function(){return this.jsPDFDocument.internal.scaleFactor},t.prototype.getLineHeightFactor=function(){var t=this.jsPDFDocument;return t.getLineHeightFactor?t.getLineHeightFactor():1.15},t.prototype.getLineHeight=function(t){return t/this.scaleFactor()*this.getLineHeightFactor()},t.prototype.pageNumber=function(){var t=this.jsPDFDocument.internal.getCurrentPageInfo();return t?t.pageNumber:this.jsPDFDocument.internal.getNumberOfPages()},t}(),l=(o=function(t,e){return o=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n])},o(t,e)},function(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Class extends value "+String(e)+" is not a constructor or null");function n(){this.constructor=t}o(t,e),t.prototype=null===e?Object.create(e):(n.prototype=e.prototype,new n)}),a=function(t){function e(e){var n=t.call(this)||this;return n._element=e,n}return l(e,t),e}(Array);function s(t,e,n){return n.applyStyles(e,!0),(Array.isArray(t)?t:[t]).map(function(t){return n.getTextWidth(t)}).reduce(function(t,e){return Math.max(t,e)},0)}function u(t,e,n,o){var i=e.settings.tableLineWidth,r=e.settings.tableLineColor;t.applyStyles({lineWidth:i,lineColor:r});var l=h(i,!1);l&&t.rect(n.x,n.y,e.getWidth(t.pageSize().width),o.y-n.y,l)}function h(t,e){var n=t>0,o=e||0===e;return n&&o?"DF":n?"S":o?"F":null}function c(t,e){var n,o,i,r;if(t=t||e,Array.isArray(t)){if(t.length>=4)return{top:t[0],right:t[1],bottom:t[2],left:t[3]};if(3===t.length)return{top:t[0],right:t[1],bottom:t[2],left:t[1]};if(2===t.length)return{top:t[0],right:t[1],bottom:t[0],left:t[1]};t=1===t.length?t[0]:e}return"object"==typeof t?("number"==typeof t.vertical&&(t.top=t.vertical,t.bottom=t.vertical),"number"==typeof t.horizontal&&(t.right=t.horizontal,t.left=t.horizontal),{left:null!==(n=t.left)&&void 0!==n?n:e,top:null!==(o=t.top)&&void 0!==o?o:e,right:null!==(i=t.right)&&void 0!==i?i:e,bottom:null!==(r=t.bottom)&&void 0!==r?r:e}):("number"!=typeof t&&(t=e),{top:t,right:t,bottom:t,left:t})}function d(t,e){var n=c(e.settings.margin,0);return t.pageSize().width-(n.left+n.right)}function f(t,e,n,o,i){var r={},l=96/72,a=g(e,function(t){return i.getComputedStyle(t).backgroundColor});null!=a&&(r.fillColor=a);var s=g(e,function(t){return i.getComputedStyle(t).color});null!=s&&(r.textColor=s);var u=function(t,e){var n=[t.paddingTop,t.paddingRight,t.paddingBottom,t.paddingLeft],o=96/(72/e),i=(parseInt(t.lineHeight)-parseInt(t.fontSize))/e/2,r=n.map(function(t){return parseInt(t||"0")/o}),l=c(r,0);i>l.top&&(l.top=i);i>l.bottom&&(l.bottom=i);return l}(o,n);u&&(r.cellPadding=u);var h="borderTopColor",d=l*n,f=o.borderTopWidth;if(o.borderBottomWidth===f&&o.borderRightWidth===f&&o.borderLeftWidth===f){var p=(parseFloat(f)||0)/d;p&&(r.lineWidth=p)}else r.lineWidth={top:(parseFloat(o.borderTopWidth)||0)/d,right:(parseFloat(o.borderRightWidth)||0)/d,bottom:(parseFloat(o.borderBottomWidth)||0)/d,left:(parseFloat(o.borderLeftWidth)||0)/d},r.lineWidth.top||(r.lineWidth.right?h="borderRightColor":r.lineWidth.bottom?h="borderBottomColor":r.lineWidth.left&&(h="borderLeftColor"));var y=g(e,function(t){return i.getComputedStyle(t)[h]});null!=y&&(r.lineColor=y);var v=["left","right","center","justify"];-1!==v.indexOf(o.textAlign)&&(r.halign=o.textAlign),-1!==(v=["middle","bottom","top"]).indexOf(o.verticalAlign)&&(r.valign=o.verticalAlign);var m=parseInt(o.fontSize||"");isNaN(m)||(r.fontSize=m/l);var w=function(t){var e="";("bold"===t.fontWeight||"bolder"===t.fontWeight||parseInt(t.fontWeight)>=700)&&(e="bold");"italic"!==t.fontStyle&&"oblique"!==t.fontStyle||(e+="italic");return e}(o);w&&(r.fontStyle=w);var b=(o.fontFamily||"").toLowerCase();return-1!==t.indexOf(b)&&(r.font=b),r}function g(t,e){var n=p(t,e);if(!n)return null;var o=n.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d*\.?\d*))?\)$/);if(!o||!Array.isArray(o))return null;var i=[parseInt(o[1]),parseInt(o[2]),parseInt(o[3])];return 0===parseInt(o[4])||isNaN(i[0])||isNaN(i[1])||isNaN(i[2])?null:i}function p(t,e){var n=e(t);return"rgba(0, 0, 0, 0)"===n||"transparent"===n||"initial"===n||"inherit"===n?null==t.parentElement?null:p(t.parentElement,e):n}function y(t,e,n,o,i){var r,l,a;void 0===o&&(o=!1),void 0===i&&(i=!1),a="string"==typeof e?n.document.querySelector(e):e;var s=Object.keys(t.getFontList()),u=t.scaleFactor(),h=[],c=[],d=[];if(!a)return console.error("Html table could not be found with input: ",e),{head:h,body:c,foot:d};for(var f=0;f<a.rows.length;f++){var g=a.rows[f],p=null===(l=null===(r=null==g?void 0:g.parentElement)||void 0===r?void 0:r.tagName)||void 0===l?void 0:l.toLowerCase(),y=v(s,u,n,g,o,i);y&&("thead"===p?h.push(y):"tfoot"===p?d.push(y):c.push(y))}return{head:h,body:c,foot:d}}function v(t,e,n,o,i,r){for(var l=new a(o),s=0;s<o.cells.length;s++){var u=o.cells[s],h=n.getComputedStyle(u);if(i||"none"!==h.display){var c=void 0;r&&(c=f(t,u,e,h,n)),l.push({rowSpan:u.rowSpan,colSpan:u.colSpan,styles:c,_element:u,content:m(u)})}}var d=n.getComputedStyle(o);if(l.length>0&&(i||"none"!==d.display))return l}function m(t){var e=t.cloneNode(!0);return e.innerHTML=e.innerHTML.replace(/\n/g,"").replace(/ +/g," "),e.innerHTML=e.innerHTML.split(/<br.*?>/).map(function(t){return t.trim()}).join("\n"),e.innerText||e.textContent||""}function w(t,e,n,o,i){if(null==t)throw new TypeError("Cannot convert undefined or null to object");for(var r=Object(t),l=1;l<arguments.length;l++){var a=arguments[l];if(null!=a)for(var s in a)Object.prototype.hasOwnProperty.call(a,s)&&(r[s]=a[s])}return r}function b(t,e){var n=new r(t),o=n.getDocumentOptions(),i=n.getGlobalOptions();!function(t,e,n){for(var o=0,i=[t,e,n];o<i.length;o++){var r=i[o];r&&"object"!=typeof r&&console.error("The options parameter should be of type object, is: "+typeof r),r.startY&&"number"!=typeof r.startY&&(console.error("Invalid value for startY option",r.startY),delete r.startY)}}(i,o,e);var l,a=w({},i,o,e);"undefined"!=typeof window&&(l=window);var s=function(t,e,n){for(var o={styles:{},headStyles:{},bodyStyles:{},footStyles:{},alternateRowStyles:{},columnStyles:{}},i=function(i){if("columnStyles"===i){var r=t[i],l=e[i],a=n[i];o.columnStyles=w({},r,l,a)}else{var s=[t,e,n].map(function(t){return t[i]||{}});o[i]=w({},s[0],s[1],s[2])}},r=0,l=Object.keys(o);r<l.length;r++){i(l[r])}return o}(i,o,e),u=function(t,e,n){for(var o={didParseCell:[],willDrawCell:[],didDrawCell:[],willDrawPage:[],didDrawPage:[]},i=0,r=[t,e,n];i<r.length;i++){var l=r[i];l.didParseCell&&o.didParseCell.push(l.didParseCell),l.willDrawCell&&o.willDrawCell.push(l.willDrawCell),l.didDrawCell&&o.didDrawCell.push(l.didDrawCell),l.willDrawPage&&o.willDrawPage.push(l.willDrawPage),l.didDrawPage&&o.didDrawPage.push(l.didDrawPage)}return o}(i,o,e),h=function(t,e){var n,o,i,r,l,a,s,u,h,d,f,g,p,y,v=c(e.margin,40/t.scaleFactor()),m=null!==(n=function(t,e){var n=t.getLastAutoTable(),o=t.scaleFactor(),i=t.pageNumber(),r=!1;if(n&&n.startPageNumber){r=n.startPageNumber+n.pageNumber-1===i}if("number"==typeof e)return e;if((null==e||!1===e)&&r&&null!=(null==n?void 0:n.finalY))return n.finalY+20/o;return null}(t,e.startY))&&void 0!==n?n:v.top;p=!0===e.showFoot?"everyPage":!1===e.showFoot?"never":null!==(o=e.showFoot)&&void 0!==o?o:"everyPage";y=!0===e.showHead?"everyPage":!1===e.showHead?"never":null!==(i=e.showHead)&&void 0!==i?i:"everyPage";var w=null!==(r=e.useCss)&&void 0!==r&&r,b=e.theme||(w?"plain":"striped"),x=!!e.horizontalPageBreak,S=null!==(l=e.horizontalPageBreakRepeat)&&void 0!==l?l:null;return{includeHiddenHtml:null!==(a=e.includeHiddenHtml)&&void 0!==a&&a,useCss:w,theme:b,startY:m,margin:v,pageBreak:null!==(s=e.pageBreak)&&void 0!==s?s:"auto",rowPageBreak:null!==(u=e.rowPageBreak)&&void 0!==u?u:"auto",tableWidth:null!==(h=e.tableWidth)&&void 0!==h?h:"auto",showHead:y,showFoot:p,tableLineWidth:null!==(d=e.tableLineWidth)&&void 0!==d?d:0,tableLineColor:null!==(f=e.tableLineColor)&&void 0!==f?f:200,horizontalPageBreak:x,horizontalPageBreakRepeat:S,horizontalPageBreakBehaviour:null!==(g=e.horizontalPageBreakBehaviour)&&void 0!==g?g:"afterAllRows"}}(n,a),d=function(t,e,n){var o=e.head||[],i=e.body||[],r=e.foot||[];if(e.html){var l=e.includeHiddenHtml;if(n){var a=y(t,e.html,n,l,e.useCss)||{};o=a.head||o,i=a.body||o,r=a.foot||o}else console.error("Cannot parse html in non browser environment")}var s=e.columns||function(t,e,n){var o=t[0]||e[0]||n[0]||[],i=[];return Object.keys(o).filter(function(t){return"_element"!==t}).forEach(function(t){var e,n=1;"object"!=typeof(e=Array.isArray(o)?o[parseInt(t)]:o[t])||Array.isArray(e)||(n=(null==e?void 0:e.colSpan)||1);for(var r=0;r<n;r++){var l={dataKey:Array.isArray(o)?i.length:t+(r>0?"_".concat(r):"")};i.push(l)}}),i}(o,i,r);return{columns:s,head:o,body:i,foot:r}}(n,a,l);return{id:e.tableId,content:d,hooks:u,styles:s,settings:h}}var x,S=function(){var t=function(e,n){return t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n])},t(e,n)};return function(e,n){if("function"!=typeof n&&null!==n)throw new TypeError("Class extends value "+String(n)+" is not a constructor or null");function o(){this.constructor=e}t(e,n),e.prototype=null===n?Object.create(n):(o.prototype=n.prototype,new o)}}(),W=function(t,e,n){this.table=e,this.pageNumber=e.pageNumber,this.settings=e.settings,this.cursor=n,this.doc=t.getDocument()},P=function(t){function e(e,n,o,i,r,l){var a=t.call(this,e,n,l)||this;return a.cell=o,a.row=i,a.column=r,a.section=i.section,a}return S(e,t),e}(W),C=function(){function t(t,e){this.pageNumber=1,this.id=t.id,this.settings=t.settings,this.styles=t.styles,this.hooks=t.hooks,this.columns=e.columns,this.head=e.head,this.body=e.body,this.foot=e.foot}return t.prototype.getHeadHeight=function(t){return this.head.reduce(function(e,n){return e+n.getMaxCellHeight(t)},0)},t.prototype.getFootHeight=function(t){return this.foot.reduce(function(e,n){return e+n.getMaxCellHeight(t)},0)},t.prototype.allRows=function(){return this.head.concat(this.body).concat(this.foot)},t.prototype.callCellHooks=function(t,e,n,o,i,r){for(var l=0,a=e;l<a.length;l++){var s=!1===(0,a[l])(new P(t,this,n,o,i,r));if(n.text=Array.isArray(n.text)?n.text:[n.text],s)return!1}return!0},t.prototype.callEndPageHooks=function(t,e){t.applyStyles(t.userStyles);for(var n=0,o=this.hooks.didDrawPage;n<o.length;n++){(0,o[n])(new W(t,this,e))}},t.prototype.callWillDrawPageHooks=function(t,e){for(var n=0,o=this.hooks.willDrawPage;n<o.length;n++){(0,o[n])(new W(t,this,e))}},t.prototype.getWidth=function(t){if("number"==typeof this.settings.tableWidth)return this.settings.tableWidth;if("wrap"===this.settings.tableWidth)return this.columns.reduce(function(t,e){return t+e.wrappedWidth},0);var e=this.settings.margin;return t-e.left-e.right},t}(),D=function(){function t(t,e,n,o,i){void 0===i&&(i=!1),this.height=0,this.raw=t,t instanceof a&&(this.raw=t._element,this.element=t._element),this.index=e,this.section=n,this.cells=o,this.spansMultiplePages=i}return t.prototype.getMaxCellHeight=function(t){var e=this;return t.reduce(function(t,n){var o;return Math.max(t,(null===(o=e.cells[n.index])||void 0===o?void 0:o.height)||0)},0)},t.prototype.hasRowSpan=function(t){var e=this;return t.filter(function(t){var n=e.cells[t.index];return!!n&&n.rowSpan>1}).length>0},t.prototype.canEntireRowFit=function(t,e){return this.getMaxCellHeight(e)<=t},t.prototype.getMinimumRowHeight=function(t,e){var n=this;return t.reduce(function(t,o){var i=n.cells[o.index];if(!i)return 0;var r=e.getLineHeight(i.styles.fontSize),l=i.padding("vertical")+r;return l>t?l:t},0)},t}(),F=function(){function t(t,e,n){var o;this.contentHeight=0,this.contentWidth=0,this.wrappedWidth=0,this.minReadableWidth=0,this.minWidth=0,this.width=0,this.height=0,this.x=0,this.y=0,this.styles=e,this.section=n,this.raw=t;var i=t;null==t||"object"!=typeof t||Array.isArray(t)?(this.rowSpan=1,this.colSpan=1):(this.rowSpan=t.rowSpan||1,this.colSpan=t.colSpan||1,i=null!==(o=t.content)&&void 0!==o?o:t,t._element&&(this.raw=t._element));var r=null!=i?""+i:"";this.text=r.split(/\r\n|\r|\n/g)}return t.prototype.getTextPos=function(){var t,e;if("top"===this.styles.valign)t=this.y+this.padding("top");else if("bottom"===this.styles.valign)t=this.y+this.height-this.padding("bottom");else{var n=this.height-this.padding("vertical");t=this.y+n/2+this.padding("top")}if("right"===this.styles.halign)e=this.x+this.width-this.padding("right");else if("center"===this.styles.halign){var o=this.width-this.padding("horizontal");e=this.x+o/2+this.padding("left")}else e=this.x+this.padding("left");return{x:e,y:t}},t.prototype.getContentHeight=function(t,e){void 0===e&&(e=1.15);var n=(Array.isArray(this.text)?this.text.length:1)*(this.styles.fontSize/t*e)+this.padding("vertical");return Math.max(n,this.styles.minCellHeight)},t.prototype.padding=function(t){var e=c(this.styles.cellPadding,0);return"vertical"===t?e.top+e.bottom:"horizontal"===t?e.left+e.right:e[t]},t}(),H=function(){function t(t,e,n){this.wrappedWidth=0,this.minReadableWidth=0,this.minWidth=0,this.width=0,this.dataKey=t,this.raw=e,this.index=n}return t.prototype.getMaxCustomCellWidth=function(t){for(var e=0,n=0,o=t.allRows();n<o.length;n++){var i=o[n].cells[this.index];i&&"number"==typeof i.styles.cellWidth&&(e=Math.max(e,i.styles.cellWidth))}return e},t}();function j(t,e){!function(t,e){var n=t.scaleFactor(),o=e.settings.horizontalPageBreak,i=d(t,e);e.allRows().forEach(function(r){for(var l=0,a=e.columns;l<a.length;l++){var u=a[l],h=r.cells[u.index];if(h){var c=e.hooks.didParseCell;e.callCellHooks(t,c,h,r,u,null);var d=h.padding("horizontal");h.contentWidth=s(h.text,h.styles,t)+d;var f=s(h.text.join(" ").split(/[^\S\u00A0]+/),h.styles,t);if(h.minReadableWidth=f+h.padding("horizontal"),"number"==typeof h.styles.cellWidth)h.minWidth=h.styles.cellWidth,h.wrappedWidth=h.styles.cellWidth;else if("wrap"===h.styles.cellWidth||!0===o)h.contentWidth>i?(h.minWidth=i,h.wrappedWidth=i):(h.minWidth=h.contentWidth,h.wrappedWidth=h.contentWidth);else{var g=10/n;h.minWidth=h.styles.minCellWidth||g,h.wrappedWidth=h.contentWidth,h.minWidth>h.wrappedWidth&&(h.wrappedWidth=h.minWidth)}}}}),e.allRows().forEach(function(t){for(var n=0,o=e.columns;n<o.length;n++){var i=o[n],r=t.cells[i.index];if(r&&1===r.colSpan)i.wrappedWidth=Math.max(i.wrappedWidth,r.wrappedWidth),i.minWidth=Math.max(i.minWidth,r.minWidth),i.minReadableWidth=Math.max(i.minReadableWidth,r.minReadableWidth);else{var l=e.styles.columnStyles[i.dataKey]||e.styles.columnStyles[i.index]||{},a=l.cellWidth||l.minCellWidth;a&&"number"==typeof a&&(i.minWidth=a,i.wrappedWidth=a)}r&&(r.colSpan>1&&!i.minWidth&&(i.minWidth=r.minWidth),r.colSpan>1&&!i.wrappedWidth&&(i.wrappedWidth=r.minWidth))}})}(t,e);var n=[],o=0;e.columns.forEach(function(t){var i=t.getMaxCustomCellWidth(e);i?t.width=i:(t.width=t.wrappedWidth,n.push(t)),o+=t.width});var i=e.getWidth(t.pageSize().width)-o;i&&(i=T(n,i,function(t){return Math.max(t.minReadableWidth,t.minWidth)})),i&&(i=T(n,i,function(t){return t.minWidth})),i=Math.abs(i),!e.settings.horizontalPageBreak&&i>.1/t.scaleFactor()&&(i=i<1?i:Math.round(i),console.log("Of the table content, ".concat(i," units width could not fit page"))),function(t){for(var e=t.allRows(),n=0;n<e.length;n++)for(var o=e[n],i=null,r=0,l=0,a=0;a<t.columns.length;a++){var s=t.columns[a];if((l-=1)>1&&t.columns[a+1])r+=s.width,delete o.cells[s.index];else if(i){var u=i;delete o.cells[s.index],i=null,u.width=s.width+r}else{if(!(u=o.cells[s.index]))continue;if(l=u.colSpan,r=0,u.colSpan>1){i=u,r+=s.width;continue}u.width=s.width+r}}}(e),function(t,e){for(var n={count:0,height:0},o=0,i=t.allRows();o<i.length;o++){for(var r=i[o],l=0,a=t.columns;l<a.length;l++){var s=a[l],u=r.cells[s.index];if(u){e.applyStyles(u.styles,!0);var h=u.width-u.padding("horizontal");if("linebreak"===u.styles.overflow)u.text=e.splitTextToSize(u.text,h+1/e.scaleFactor(),{fontSize:u.styles.fontSize});else if("ellipsize"===u.styles.overflow)u.text=k(u.text,h,u.styles,e,"...");else if("hidden"===u.styles.overflow)u.text=k(u.text,h,u.styles,e,"");else if("function"==typeof u.styles.overflow){var c=u.styles.overflow(u.text,h);u.text="string"==typeof c?[c]:c}u.contentHeight=u.getContentHeight(e.scaleFactor(),e.getLineHeightFactor());var d=u.contentHeight/u.rowSpan;u.rowSpan>1&&n.count*n.height<d*u.rowSpan?n={height:d,count:u.rowSpan}:n&&n.count>0&&n.height>d&&(d=n.height),d>r.height&&(r.height=d)}}n.count--}}(e,t),function(t){for(var e={},n=1,o=t.allRows(),i=0;i<o.length;i++)for(var r=o[i],l=0,a=t.columns;l<a.length;l++){var s=a[l],u=e[s.index];if(n>1)n--,delete r.cells[s.index];else if(u)u.cell.height+=r.height,n=u.cell.colSpan,delete r.cells[s.index],u.left--,u.left<=1&&delete e[s.index];else{var h=r.cells[s.index];if(!h)continue;if(h.height=r.height,h.rowSpan>1){var c=o.length-i,d=h.rowSpan>c?c:h.rowSpan;e[s.index]={cell:h,left:d,row:r}}}}}(e)}function T(t,e,n){for(var o=e,i=t.reduce(function(t,e){return t+e.wrappedWidth},0),r=0;r<t.length;r++){var l=t[r],a=o*(l.wrappedWidth/i),s=l.width+a,u=n(l),h=s<u?u:s;e-=h-l.width,l.width=h}if(e=Math.round(1e10*e)/1e10){var c=t.filter(function(t){return!(e<0)||t.width>n(t)});c.length&&(e=T(c,e,n))}return e}function k(t,e,n,o,i){return t.map(function(t){return function(t,e,n,o,i){var r=1e4*o.scaleFactor();if(e=Math.ceil(e*r)/r,e>=s(t,n,o))return t;for(;e<s(t+i,n,o)&&!(t.length<=1);)t=t.substring(0,t.length-1);return t.trim()+i}(t,e,n,o,i)})}function z(t,e){var n=new r(t),o=function(t,e){var n=t.content,o=function(t){return t.map(function(t,e){var n,o;return o="object"==typeof t&&null!==(n=t.dataKey)&&void 0!==n?n:e,new H(o,t,e)})}(n.columns);if(0===n.head.length){(i=R(o,"head"))&&n.head.push(i)}if(0===n.foot.length){var i;(i=R(o,"foot"))&&n.foot.push(i)}var r=t.settings.theme,l=t.styles;return{columns:o,head:A("head",n.head,o,l,r,e),body:A("body",n.body,o,l,r,e),foot:A("foot",n.foot,o,l,r,e)}}(e,n.scaleFactor()),i=new C(e,o);return j(n,i),n.applyStyles(n.userStyles),i}function A(t,e,n,o,i,r){var l={};return e.map(function(e,a){for(var s=0,u={},h=0,c=0,d=0,f=n;d<f.length;d++){var g=f[d];if(null==l[g.index]||0===l[g.index].left)if(0===c){var p=void 0,y={};"object"!=typeof(p=Array.isArray(e)?e[g.index-h-s]:e[g.dataKey])||Array.isArray(p)||(y=(null==p?void 0:p.styles)||{});var v=L(t,g,a,i,o,r,y),m=new F(p,v,t);u[g.dataKey]=m,u[g.index]=m,c=m.colSpan-1,l[g.index]={left:m.rowSpan-1,times:c}}else c--,h++;else l[g.index].left--,c=l[g.index].times,s++}return new D(e,a,t,u)})}function R(t,e){var n={};return t.forEach(function(t){if(null!=t.raw){var o=function(t,e){if("head"===t){if("object"==typeof e)return e.header||null;if("string"==typeof e||"number"==typeof e)return e}else if("foot"===t&&"object"==typeof e)return e.footer;return null}(e,t.raw);null!=o&&(n[t.dataKey]=o)}}),Object.keys(n).length>0?n:null}function L(t,e,n,o,i,r,l){var a,s={striped:{table:{fillColor:255,textColor:80,fontStyle:"normal"},head:{textColor:255,fillColor:[41,128,185],fontStyle:"bold"},body:{},foot:{textColor:255,fillColor:[41,128,185],fontStyle:"bold"},alternateRow:{fillColor:245}},grid:{table:{fillColor:255,textColor:80,fontStyle:"normal",lineWidth:.1},head:{textColor:255,fillColor:[26,188,156],fontStyle:"bold",lineWidth:0},body:{},foot:{textColor:255,fillColor:[26,188,156],fontStyle:"bold",lineWidth:0},alternateRow:{}},plain:{head:{fontStyle:"bold"},foot:{fontStyle:"bold"}}}[o];"head"===t?a=i.headStyles:"body"===t?a=i.bodyStyles:"foot"===t&&(a=i.footStyles);var u=w({},s.table,s[t],i.styles,a),h=i.columnStyles[e.dataKey]||i.columnStyles[e.index]||{},c="body"===t?h:{},d="body"===t&&n%2==0?w({},s.alternateRow,i.alternateRowStyles):{},f=function(t){return{font:"helvetica",fontStyle:"normal",overflow:"linebreak",fillColor:!1,textColor:20,halign:"left",valign:"top",fontSize:10,cellPadding:5/t,lineColor:200,lineWidth:0,cellWidth:"auto",minCellHeight:0,minCellWidth:0}}(r),g=w({},f,u,d,c);return w(g,l)}function M(t,e,n){var o;void 0===n&&(n={});var i=d(t,e),r=new Map,l=[],a=[],s=[];Array.isArray(e.settings.horizontalPageBreakRepeat)?s=e.settings.horizontalPageBreakRepeat:"string"!=typeof e.settings.horizontalPageBreakRepeat&&"number"!=typeof e.settings.horizontalPageBreakRepeat||(s=[e.settings.horizontalPageBreakRepeat]),s.forEach(function(t){var n=e.columns.find(function(e){return e.dataKey===t||e.index===t});n&&!r.has(n.index)&&(r.set(n.index,!0),l.push(n.index),a.push(e.columns[n.index]),i-=n.wrappedWidth)});for(var u=!0,h=null!==(o=null==n?void 0:n.start)&&void 0!==o?o:0;h<e.columns.length;)if(r.has(h))h++;else{var c=e.columns[h].wrappedWidth;if(!(u||i>=c))break;u=!1,l.push(h),a.push(e.columns[h]),i-=c,h++}return{colIndexes:l,columns:a,lastIndex:h-1}}function O(t,e){var n=e.settings,o=n.startY,i=n.margin,l={x:i.left,y:o},a=e.getHeadHeight(e.columns)+e.getFootHeight(e.columns),s=o+i.bottom+a;"avoid"===n.pageBreak&&(s+=e.body.reduce(function(t,e){return t+e.height},0));var h=new r(t);("always"===n.pageBreak||null!=n.startY&&s>h.pageSize().height)&&(J(h),l.y=i.top),e.callWillDrawPageHooks(h,l);var c=w({},l);e.startPageNumber=h.pageNumber(),n.horizontalPageBreak?function(t,e,n,o){var i=function(t,e){for(var n=[],o=0;o<e.columns.length;o++){var i=M(t,e,{start:o});i.columns.length&&(n.push(i),o=i.lastIndex)}return n}(t,e),r=e.settings;if("afterAllRows"===r.horizontalPageBreakBehaviour)i.forEach(function(i,r){t.applyStyles(t.userStyles),r>0?G(t,e,n,o,i.columns,!0):_(t,e,o,i.columns),function(t,e,n,o,i){t.applyStyles(t.userStyles),e.body.forEach(function(r,l){var a=l===e.body.length-1;I(t,e,r,a,n,o,i)})}(t,e,n,o,i.columns),E(t,e,o,i.columns)});else for(var l=-1,a=i[0],s=function(){var r=l;if(a){t.applyStyles(t.userStyles);var s=a.columns;l>=0?G(t,e,n,o,s,!0):_(t,e,o,s),r=B(t,e,l+1,o,s),E(t,e,o,s)}var u=r-l;i.slice(1).forEach(function(i){t.applyStyles(t.userStyles),G(t,e,n,o,i.columns,!0),B(t,e,l+1,o,i.columns,u),E(t,e,o,i.columns)}),l=r};l<e.body.length-1;)s()}(h,e,c,l):(h.applyStyles(h.userStyles),"firstPage"!==n.showHead&&"everyPage"!==n.showHead||e.head.forEach(function(t){return Y(h,e,t,l,e.columns)}),h.applyStyles(h.userStyles),e.body.forEach(function(t,n){var o=n===e.body.length-1;I(h,e,t,o,c,l,e.columns)}),h.applyStyles(h.userStyles),"lastPage"!==n.showFoot&&"everyPage"!==n.showFoot||e.foot.forEach(function(t){return Y(h,e,t,l,e.columns)})),u(h,e,c,l),e.callEndPageHooks(h,l),e.finalY=l.y,t.lastAutoTable=e,h.applyStyles(h.userStyles)}function _(t,e,n,o){var i=e.settings;t.applyStyles(t.userStyles),"firstPage"!==i.showHead&&"everyPage"!==i.showHead||e.head.forEach(function(i){return Y(t,e,i,n,o)})}function B(t,e,n,o,i,r){t.applyStyles(t.userStyles),r=null!=r?r:e.body.length;for(var l=Math.min(n+r,e.body.length),a=-1,s=e.body.slice(n,l),u=0;u<s.length;u++){var h=s[u],c=q(t,e,n+u===e.body.length-1,o);if(!h.canEntireRowFit(c,i))break;Y(t,e,h,o,i),a=n+u}return a}function E(t,e,n,o){var i=e.settings;t.applyStyles(t.userStyles),"lastPage"!==i.showFoot&&"everyPage"!==i.showFoot||e.foot.forEach(function(i){return Y(t,e,i,n,o)})}function N(t,e,n){var o=n.getLineHeight(t.styles.fontSize),i=t.padding("vertical"),r=Math.floor((e-i)/o);return Math.max(0,r)}function I(t,e,n,o,i,r,l){var a=q(t,e,o,r);if(n.canEntireRowFit(a,l))Y(t,e,n,r,l);else if(function(t,e,n,o){var i=t.pageSize().height,r=o.settings.margin,l=i-(r.top+r.bottom);"body"===e.section&&(l-=o.getHeadHeight(o.columns)+o.getFootHeight(o.columns));var a=e.getMinimumRowHeight(o.columns,t),s=a<n;if(a>l)return console.log("Will not be able to print row ".concat(e.index," correctly since it's minimum height is larger than page height")),!0;if(!s)return!1;var u=e.hasRowSpan(o.columns);return e.getMaxCellHeight(o.columns)>l?(u&&console.log("The content of row ".concat(e.index," will not be drawn correctly since drawing rows with a height larger than the page height and has cells with rowspans is not supported.")),!0):!u&&"avoid"!==o.settings.rowPageBreak}(t,n,a,e)){var s=function(t,e,n,o){var i={};t.spansMultiplePages=!0,t.height=0;for(var r=0,l=0,a=n.columns;l<a.length;l++){var s=a[l];if(y=t.cells[s.index]){Array.isArray(y.text)||(y.text=[y.text]),(p=w(p=new F(y.raw,y.styles,y.section),y)).text=[];var u=N(y,e,o);y.text.length>u&&(p.text=y.text.splice(u,y.text.length));var h=o.scaleFactor(),c=o.getLineHeightFactor();y.contentHeight=y.getContentHeight(h,c),y.contentHeight>=e&&(y.contentHeight=e,p.styles.minCellHeight-=e),y.contentHeight>t.height&&(t.height=y.contentHeight),p.contentHeight=p.getContentHeight(h,c),p.contentHeight>r&&(r=p.contentHeight),i[s.index]=p}}var d=new D(t.raw,-1,t.section,i,!0);d.height=r;for(var f=0,g=n.columns;f<g.length;f++){var p,y;s=g[f],(p=d.cells[s.index])&&(p.height=d.height),(y=t.cells[s.index])&&(y.height=t.height)}return d}(n,a,e,t);Y(t,e,n,r,l),G(t,e,i,r,l),I(t,e,s,o,i,r,l)}else G(t,e,i,r,l),I(t,e,n,o,i,r,l)}function Y(t,e,o,i,r){i.x=e.settings.margin.left;for(var l=0,a=r;l<a.length;l++){var s=a[l],u=o.cells[s.index];if(u)if(t.applyStyles(u.styles),u.x=i.x,u.y=i.y,!1!==e.callCellHooks(t,e.hooks.willDrawCell,u,o,s,i)){K(t,u,i);var h=u.getTextPos();n(u.text,h.x,h.y,{halign:u.styles.halign,valign:u.styles.valign,maxWidth:Math.ceil(u.width-u.padding("left")-u.padding("right"))},t.getDocument()),e.callCellHooks(t,e.hooks.didDrawCell,u,o,s,i),i.x+=s.width}else i.x+=s.width;else i.x+=s.width}i.y+=o.height}function K(t,e,n){var o=e.styles;if(t.getDocument().setFillColor(t.getDocument().getFillColor()),"number"==typeof o.lineWidth){var i=h(o.lineWidth,o.fillColor);i&&t.rect(e.x,n.y,e.width,e.height,i)}else"object"==typeof o.lineWidth&&(o.fillColor&&t.rect(e.x,n.y,e.width,e.height,"F"),function(t,e,n,o){var i,r,l,a;o.top&&(i=n.x,r=n.y,l=n.x+e.width,a=n.y,o.right&&(l+=.5*o.right),o.left&&(i-=.5*o.left),s(o.top,i,r,l,a));o.bottom&&(i=n.x,r=n.y+e.height,l=n.x+e.width,a=n.y+e.height,o.right&&(l+=.5*o.right),o.left&&(i-=.5*o.left),s(o.bottom,i,r,l,a));o.left&&(i=n.x,r=n.y,l=n.x,a=n.y+e.height,o.top&&(r-=.5*o.top),o.bottom&&(a+=.5*o.bottom),s(o.left,i,r,l,a));o.right&&(i=n.x+e.width,r=n.y,l=n.x+e.width,a=n.y+e.height,o.top&&(r-=.5*o.top),o.bottom&&(a+=.5*o.bottom),s(o.right,i,r,l,a));function s(e,n,o,i,r){t.getDocument().setLineWidth(e),t.getDocument().line(n,o,i,r,"S")}}(t,e,n,o.lineWidth))}function q(t,e,n,o){var i=e.settings.margin.bottom,r=e.settings.showFoot;return("everyPage"===r||"lastPage"===r&&n)&&(i+=e.getFootHeight(e.columns)),t.pageSize().height-o.y-i}function G(t,e,n,o,i,r){void 0===i&&(i=[]),void 0===r&&(r=!1),t.applyStyles(t.userStyles),"everyPage"!==e.settings.showFoot||r||e.foot.forEach(function(n){return Y(t,e,n,o,i)}),e.callEndPageHooks(t,o);var l=e.settings.margin;u(t,e,n,o),J(t),e.pageNumber++,o.x=l.left,o.y=l.top,n.y=l.top,e.callWillDrawPageHooks(t,o),"everyPage"===e.settings.showHead&&(e.head.forEach(function(n){return Y(t,e,n,o,i)}),t.applyStyles(t.userStyles))}function J(t){var e=t.pageNumber();return t.setPage(e+1),t.pageNumber()===e&&(t.addPage(),!0)}function U(t){t.API.autoTable=function(){for(var t=[],e=0;e<arguments.length;e++)t[e]=arguments[e];return O(this,z(this,b(this,t[0]))),this},t.API.lastAutoTable=!1,t.API.autoTableText=function(t,e,o,i){n(t,e,o,i,this)},t.API.autoTableSetDefaults=function(t){return r.setDefaults(t,this),this},t.autoTableSetDefaults=function(t,e){r.setDefaults(t,e)},t.API.autoTableHtmlToJson=function(t,e){var n;if(void 0===e&&(e=!1),"undefined"==typeof window)return console.error("Cannot run autoTableHtmlToJson in non browser environment"),null;var o=y(new r(this),t,window,e,!1),i=o.head,l=o.body;return{columns:(null===(n=i[0])||void 0===n?void 0:n.map(function(t){return t.content}))||[],rows:l,data:l}}}function $(t,e){O(t,z(t,b(t,e)))}function Q(t,e){return z(t,b(t,e))}function V(t,e){O(t,e)}try{if("undefined"!=typeof window&&window){var X=window,Z=X.jsPDF||(null===(x=X.jspdf)||void 0===x?void 0:x.jsPDF);Z&&U(Z)}}catch(t){console.error("Could not apply autoTable plugin",t)}var tt=$;return e}()});
 </script>
 <script>
-/* ============ CONFIG ============ */
+/* ============ CONFIGURACIÓN ============ */
 const CATEGORIAS = [
   {key:'papel', label:'Papel / Cartón'},
   {key:'plastico', label:'Plástico'},
@@ -914,983 +965,1602 @@ const CATEGORIAS = [
   {key:'electronico', label:'Residuos electrónicos'},
   {key:'domiciliario', label:'Domiciliarios (no reciclables)'}
 ];
+const INFRA = [
+  {key:'contenedores', label:'Contenedores (disponibilidad y condición)'},
+  {key:'rotulacion', label:'Rotulación y claridad de instrucciones'},
+  {key:'mezcla', label:'Mezcla o contaminación observada'},
+  {key:'orden', label:'Orden, limpieza y condiciones de almacenamiento'}
+];
+const CAT_KEYS = CATEGORIAS.map(c=>c.key);
+const INFRA_KEYS = INFRA.map(c=>c.key);
+const CRITERIOS = [...CATEGORIAS.map(c=>({...c, kind:'cat'})), ...INFRA.map(c=>({...c, kind:'infra'}))];
+const CRIT_BY_KEY = Object.fromEntries(CRITERIOS.map(c=>[c.key, c]));
+const STATUS_VALUES = ['correcto','incorrecto','na'];
+const PRIORIDADES = ['alta','media','baja'];
+const ESTADOS_H = ['pendiente','en_proceso','cerrado'];
+const ESTADO_H_LBL = {pendiente:'Pendiente', en_proceso:'En proceso', cerrado:'Cerrado'};
+const LOC_TYPES = [
+  {key:'comedor', label:'Comedor / cocina', cats:['papel','plastico','vidrio','metal','tetrapak','organico','domiciliario'], infra:INFRA_KEYS},
+  {key:'lobby', label:'Lobby / recepción', cats:['papel','plastico','metal','vidrio','domiciliario'], infra:INFRA_KEYS},
+  {key:'oficina', label:'Oficina', cats:['papel','plastico','metal','electronico','domiciliario'], infra:INFRA_KEYS},
+  {key:'sala_tecnica', label:'Sala técnica (eléctrica / mecánica)', cats:['metal','peligroso','electronico','papel','domiciliario'], infra:INFRA_KEYS},
+  {key:'sala_equipos', label:'Sala de equipos (data hall)', cats:['papel','plastico','electronico','domiciliario'], infra:['contenedores','rotulacion','orden']},
+  {key:'bodega', label:'Bodega', cats:CAT_KEYS, infra:INFRA_KEYS},
+  {key:'contratistas', label:'Área de contratistas', cats:CAT_KEYS, infra:INFRA_KEYS},
+  {key:'almacenamiento', label:'Almacenamiento de residuos', cats:CAT_KEYS, infra:['contenedores','rotulacion','mezcla','orden']},
+  {key:'otra', label:'Otra ubicación', cats:CAT_KEYS, infra:INFRA_KEYS}
+];
+const TYPE_LBL = Object.fromEntries(LOC_TYPES.map(t=>[t.key, t.label]));
+const SUGERENCIAS = {
+  rotulacion: ['Mejorar la rotulación del contenedor con pictograma y texto en español','Reforzar la señalética de instrucciones de segregación'],
+  contenedores: ['Ajustar la ubicación o disponibilidad del contenedor para facilitar el uso','Completar contenedores según las categorías aplicables'],
+  mezcla: ['Retirar contaminantes del contenedor y reforzar la segregación en origen','Reforzar capacitación de quienes depositan residuos en esta ubicación'],
+  orden: ['Ajustar limpieza y orden del área de almacenamiento','Revisar condiciones de almacenamiento temporal de residuos'],
+  _default: ['Reforzar capacitación en segregación para esta categoría','Revisar rotulación y contenedor asignado a esta categoría']
+};
+const DB_NAME = 'zeroWasteDB';          // misma base que la versión anterior
+const DB_VERSION = 2;                   // sin cambio de esquema: solo campos nuevos dentro de los registros
+const ST_REC = 'recorridos';
+const ST_DRAFT = 'borradores';
+const ST_META = 'meta';
+const BACKUP_APP = 'zeroWasteBackup';
+const BACKUP_SCHEMA = 3;
+const DRAFT_DEBOUNCE_MS = 600;
+const RETRY_MS = 5000;
+const PHOTO_RE = /^data:image\/[a-z0-9.+-]+;base64,[A-Za-z0-9+/=]+$/i;
+const MAX_PHOTO_CHARS = 20 * 1024 * 1024;
+const ID_RE = /^[A-Za-z0-9_-]{1,160}$/;
+const PURPLE = [82,37,130], GREEN = [51,213,146], RED = [197,39,44], AMBER = [138,90,0], OKG = [29,138,94], GRAY = [110,110,110];
 
+/* ============ ESTADO ============ */
 let db = null;
-let tempCatPhotos = {}; // { catKey: [dataUrls...] } for the point being created/edited
-let currentRecorrido = null; // {id, sitio, fecha, participantes, objetivo, puntos:[], createdAt, updatedAt}
-let editingPointId = null;
-let tempPhotosNew = []; // dataURLs for point being created/edited
-let recognitionInstance = null;
-let recognitionTarget = null;
+let currentRecorrido = null;     // recorrido abierto, tal como quedó confirmado en IndexedDB (con rev)
+let allRecsCache = [];           // todos los recorridos guardados (para trazabilidad entre recorridos)
+let catCache = [];               // catálogo de ubicaciones del sitio abierto
+let draftOwnerId = null;
+let draft = emptyDraft();
+let draftRev = 0;
+let draftBaseline = '';
+let editorVisible = false;
+const hallOpen = new Set();
+const pendingOps = new Set();
+let saveQueue = Promise.resolve();
+let inFlight = 0;
+let saveError = false;
+let draftTimer = null, retryTimer = null, setupTimer = null;
+const TAB_ID = newId('tab');
+const bc = ('BroadcastChannel' in window) ? new BroadcastChannel('zerowaste-recorridos') : null;
 
-/* ============ INDEXEDDB ============ */
-function openDB(){
-  return new Promise((resolve, reject)=>{
-    const req = indexedDB.open('zeroWasteDB', 1);
-    req.onupgradeneeded = (e)=>{
-      const _db = e.target.result;
-      if(!_db.objectStoreNames.contains('recorridos')){
-        _db.createObjectStore('recorridos', {keyPath:'id'});
-      }
-    };
-    req.onsuccess = (e)=> resolve(e.target.result);
-    req.onerror = (e)=> reject(e);
-  });
+/* ============ UTILIDADES ============ */
+const $ = id => document.getElementById(id);
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function newId(p){ return `${p}_${Date.now()}_${Math.random().toString(36).slice(2,7)}`; }
+function makeId(sitio, fecha){ return `${sitio}_${fecha}_${Date.now()}_${Math.random().toString(36).slice(2,6)}`; }
+function hhmm(d=new Date()){ return d.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'}); }
+function todayISO(){ const d=new Date(), p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`; }
+function toast(msg, ms=2400){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'), ms); }
+function setBusy(on){ $('workArea').classList.toggle('busy', !!on); }
+function clone(v){ return JSON.parse(JSON.stringify(v)); }
+function stableStringify(v){
+  if(Array.isArray(v)) return '['+v.map(stableStringify).join(',')+']';
+  if(v && typeof v==='object') return '{'+Object.keys(v).sort().filter(k=>v[k]!==undefined).map(k=>JSON.stringify(k)+':'+stableStringify(v[k])).join(',')+'}';
+  return JSON.stringify(v===undefined ? null : v);
 }
-function dbPut(record){
-  return new Promise((resolve,reject)=>{
-    const tx = db.transaction('recorridos','readwrite');
-    tx.objectStore('recorridos').put(record);
-    tx.oncomplete = ()=>resolve();
-    tx.onerror = (e)=>reject(e);
-  });
-}
-function dbGetAll(){
-  return new Promise((resolve,reject)=>{
-    const tx = db.transaction('recorridos','readonly');
-    const req = tx.objectStore('recorridos').getAll();
-    req.onsuccess = ()=>resolve(req.result || []);
-    req.onerror = (e)=>reject(e);
-  });
-}
-function dbDelete(id){
-  return new Promise((resolve,reject)=>{
-    const tx = db.transaction('recorridos','readwrite');
-    tx.objectStore('recorridos').delete(id);
-    tx.oncomplete = ()=>resolve();
-    tx.onerror = (e)=>reject(e);
-  });
-}
-
-/* ============ INIT ============ */
-window.addEventListener('DOMContentLoaded', async ()=>{
-  document.getElementById('setDate').value = new Date().toISOString().slice(0,10);
-  buildCatGrid();
-  updateConnPill();
-  window.addEventListener('online', updateConnPill);
-  window.addEventListener('offline', updateConnPill);
-  try{
-    db = await openDB();
-  }catch(e){
-    toast('⚠ No se pudo abrir el almacenamiento local de este navegador.');
-  }
-});
-
-function updateConnPill(){
-  const pill = document.getElementById('connPill');
-  if(navigator.onLine){
-    pill.textContent = '● En línea';
-    pill.className = 'pill online';
-  }else{
-    pill.textContent = '● Sin conexión (modo offline)';
-    pill.className = 'pill offline';
-  }
-}
-
-function toast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2200);
-}
-
-/* ============ CATEGORY GRID (form) ============ */
-function buildCatGrid(){
-  const grid = document.getElementById('catGrid');
-  grid.innerHTML = CATEGORIAS.map(c=>`
-    <div class="cat-item" data-cat="${c.key}">
-      <div class="cat-head">
-        <span class="cat-name">${c.label}</span>
-        <div class="status-btns">
-          <button type="button" class="status-btn" data-val="correcto" onclick="setCatStatus(this,'${c.key}')">✔ Correcto</button>
-          <button type="button" class="status-btn" data-val="incorrecto" onclick="setCatStatus(this,'${c.key}')">✘ Incorrecto</button>
-          <button type="button" class="status-btn" data-val="na" onclick="setCatStatus(this,'${c.key}')">— N/A</button>
-        </div>
-      </div>
-      <input type="text" class="cat-note" placeholder="Nota breve (opcional)">
-      <div class="photo-strip cat-photo-strip" id="catPhotoStrip_${c.key}">
-        <label class="photo-add small">
-          📷
-          <input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handleCatPhotos(event,'${c.key}')">
-        </label>
-      </div>
-    </div>
-  `).join('');
-  tempCatPhotos = {};
-  CATEGORIAS.forEach(c=>renderCatPhotoStrip(c.key));
-}
-
-function handleCatPhotos(event, catKey){
-  const files = Array.from(event.target.files || []);
-  if(!tempCatPhotos[catKey]) tempCatPhotos[catKey] = [];
-  files.forEach(file=>{
-    const reader = new FileReader();
-    reader.onload = (e)=>{
-      compressImage(e.target.result, 900, 0.7).then(dataUrl=>{
-        tempCatPhotos[catKey].push(dataUrl);
-        renderCatPhotoStrip(catKey);
-      });
-    };
-    reader.readAsDataURL(file);
-  });
-  event.target.value = '';
-}
-function renderCatPhotoStrip(catKey){
-  const strip = document.getElementById('catPhotoStrip_'+catKey);
-  if(!strip) return;
-  const photos = tempCatPhotos[catKey] || [];
-  strip.innerHTML = photos.map((p,i)=>`
-    <div style="position:relative;">
-      <img src="${p}" class="photo-thumb small" onclick="openLightbox('${p}')">
-      <button type="button" onclick="removeCatPhoto('${catKey}',${i})" style="position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:10px;line-height:1;">✕</button>
-    </div>
-  `).join('') + `
-    <label class="photo-add small">
-      📷
-      <input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handleCatPhotos(event,'${catKey}')">
-    </label>
-  `;
-}
-function removeCatPhoto(catKey, i){
-  tempCatPhotos[catKey].splice(i,1);
-  renderCatPhotoStrip(catKey);
-}
-function setCatStatus(btn, catKey){
-  const item = btn.closest('.cat-item');
-  item.querySelectorAll('.status-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-}
-function readCatGrid(){
-  const items = document.querySelectorAll('#catGrid .cat-item');
-  const data = [];
-  items.forEach(item=>{
-    const key = item.dataset.cat;
-    const label = CATEGORIAS.find(c=>c.key===key).label;
-    const activeBtn = item.querySelector('.status-btn.active');
-    const status = activeBtn ? activeBtn.dataset.val : null;
-    const note = item.querySelector('.cat-note').value.trim();
-    const fotos = tempCatPhotos[key] || [];
-    if(status || note || fotos.length){
-      data.push({key, label, status, note, fotos});
-    }
-  });
-  return data;
-}
-function loadCatGrid(catData){
-  buildCatGrid();
-  if(!catData) return;
-  catData.forEach(cd=>{
-    const item = document.querySelector(`#catGrid .cat-item[data-cat="${cd.key}"]`);
-    if(!item) return;
-    if(cd.status){
-      const btn = item.querySelector(`.status-btn[data-val="${cd.status}"]`);
-      if(btn) btn.classList.add('active');
-    }
-    if(cd.note) item.querySelector('.cat-note').value = cd.note;
-    if(cd.fotos && cd.fotos.length){
-      tempCatPhotos[cd.key] = [...cd.fotos];
-      renderCatPhotoStrip(cd.key);
-    }
-  });
-}
-
-/* ============ VOICE DICTATION ============ */
-function toggleMic(targetId, btn){
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SpeechRecognition){
-    toast('🎤 Dictado por voz no disponible en este navegador (requiere conexión y Chrome/Edge).');
-    return;
-  }
-  if(recognitionInstance && recognitionTarget === targetId){
-    recognitionInstance.stop();
-    return;
-  }
-  if(recognitionInstance){ recognitionInstance.stop(); }
-
-  recognitionInstance = new SpeechRecognition();
-  recognitionTarget = targetId;
-  recognitionInstance.lang = 'es-CL';
-  recognitionInstance.continuous = true;
-  recognitionInstance.interimResults = false;
-
-  btn.classList.add('listening');
-  recognitionInstance.onresult = (e)=>{
-    const textarea = document.getElementById(targetId);
-    let finalText = '';
-    for(let i=e.resultIndex;i<e.results.length;i++){
-      if(e.results[i].isFinal) finalText += e.results[i][0].transcript;
-    }
-    if(finalText){
-      textarea.value = (textarea.value ? textarea.value + ' ' : '') + finalText.trim();
-    }
-  };
-  recognitionInstance.onerror = ()=>{
-    btn.classList.remove('listening');
-  };
-  recognitionInstance.onend = ()=>{
-    btn.classList.remove('listening');
-    recognitionInstance = null;
-  };
-  recognitionInstance.start();
-}
-
-/* ============ PHOTOS ============ */
-function handlePhotos(event, mode){
-  const files = Array.from(event.target.files || []);
-  files.forEach(file=>{
-    const reader = new FileReader();
-    reader.onload = (e)=>{
-      compressImage(e.target.result, 1100, 0.72).then(dataUrl=>{
-        tempPhotosNew.push(dataUrl);
-        renderPhotoStrip();
-      });
-    };
-    reader.readAsDataURL(file);
-  });
-  event.target.value = '';
+function slug(s){ return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40) || 'ubicacion'; }
+const isSafeId = v => typeof v==='string' && ID_RE.test(v);
+const isStr = (v,max) => typeof v==='string' && v.trim().length>0 && v.length<=max;
+function readFileAsDataURL(file){
+  return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=()=>rej(r.error); r.readAsDataURL(file); });
 }
 function compressImage(dataUrl, maxW, quality){
   return new Promise(resolve=>{
     const img = new Image();
     img.onload = ()=>{
-      let w = img.width, h = img.height;
-      if(w > maxW){ h = Math.round(h * (maxW/w)); w = maxW; }
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img,0,0,w,h);
-      resolve(canvas.toDataURL('image/jpeg', quality));
+      let w=img.width, h=img.height;
+      if(w>maxW){ h=Math.round(h*(maxW/w)); w=maxW; }
+      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(c.toDataURL('image/jpeg', quality));
     };
     img.onerror = ()=>resolve(dataUrl);
     img.src = dataUrl;
   });
 }
-function renderPhotoStrip(){
-  const strip = document.getElementById('photoStripNew');
-  strip.innerHTML = tempPhotosNew.map((p,i)=>`
-    <div style="position:relative;">
-      <img src="${p}" class="photo-thumb" onclick="openLightbox('${p}')">
-      <button type="button" onclick="removeTempPhoto(${i})" style="position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;line-height:1;">✕</button>
-    </div>
-  `).join('') + `
-    <label class="photo-add">
-      📷
-      <input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handlePhotos(event,'new')">
-    </label>
-  `;
-}
-function removeTempPhoto(i){
-  tempPhotosNew.splice(i,1);
-  renderPhotoStrip();
-}
-function openLightbox(src){
-  const box = document.createElement('div');
-  box.className = 'lightbox';
-  box.innerHTML = `<span class="close-x">✕</span><img src="${src}">`;
-  box.onclick = ()=>box.remove();
-  document.body.appendChild(box);
+function probeImage(src){
+  return new Promise(resolve=>{
+    const img = new Image();
+    img.onload = ()=>resolve({ok:true, ratio: (img.naturalWidth ? img.naturalHeight/img.naturalWidth : 0.75), fmt: /^data:image\/png/i.test(src) ? 'PNG' : 'JPEG'});
+    img.onerror = ()=>resolve({ok:false});
+    img.src = src;
+  });
 }
 
-/* ============ SETUP / RECORRIDO LIFECYCLE ============ */
-function makeId(sitio, fecha){
-  return `${sitio}_${fecha}_${Date.now()}`;
-}
-async function startOrResume(){
-  const sitio = document.getElementById('setSite').value;
-  const fecha = document.getElementById('setDate').value;
-  const participantes = document.getElementById('setParticipants').value.trim();
-  const objetivo = document.getElementById('setObjective').value.trim();
-  if(!sitio){ toast('Selecciona un sitio.'); return; }
-  if(!fecha){ toast('Selecciona una fecha.'); return; }
-
-  if(currentRecorrido && currentRecorrido.sitio === sitio && currentRecorrido.fecha === fecha){
-    // resume same one, just update meta
-    currentRecorrido.participantes = participantes;
-    currentRecorrido.objetivo = objetivo;
-  } else {
-    currentRecorrido = {
-      id: makeId(sitio, fecha),
-      sitio, fecha, participantes, objetivo,
-      puntos: [],
-      createdAt: Date.now(),
-      updatedAt: Date.now()
-    };
-  }
-  await persist();
-  document.getElementById('workArea').classList.remove('hidden');
-  document.getElementById('setupCard').classList.add('hidden');
-  document.getElementById('siteBadge').textContent = `${currentRecorrido.sitio} · ${currentRecorrido.fecha}`;
-  renderPointsList();
-  renderReport();
-  toast('Recorrido listo. ¡A registrar puntos!');
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-async function persist(){
-  if(!currentRecorrido || !db) return;
-  currentRecorrido.updatedAt = Date.now();
-  try{
-    await dbPut(currentRecorrido);
-    document.getElementById('savePill').textContent = '✔ Guardado ' + new Date().toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
-  }catch(e){
-    document.getElementById('savePill').textContent = '⚠ Error al guardar localmente';
-  }
-}
-
-async function openLoadModal(){
-  if(!db){ toast('Almacenamiento local no disponible.'); return; }
-  const all = await dbGetAll();
-  if(all.length === 0){ toast('No hay recorridos guardados todavía.'); return; }
-  all.sort((a,b)=>b.updatedAt - a.updatedAt);
+/* ============ MODALES ============ */
+function openModal(html, onClick){
+  closeModals();
   const bg = document.createElement('div');
   bg.className = 'modal-bg';
-  bg.innerHTML = `
-    <div class="modal">
-      <h2 style="margin-top:0;color:var(--purple-dark);font-size:16px;">📂 Recorridos guardados</h2>
-      ${all.map(r=>`
-        <div style="border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px;">
-          <div style="font-weight:bold;font-size:13px;">${r.sitio} · ${r.fecha}</div>
-          <div style="font-size:11px;color:var(--muted);margin:3px 0 8px;">${r.puntos.length} puntos registrados · actualizado ${new Date(r.updatedAt).toLocaleString('es-CL')}</div>
-          <div style="display:flex;gap:6px;">
-            <button class="btn-primary btn-small" onclick='loadRecorrido("${r.id}")'>Abrir</button>
-            <button class="btn-danger btn-small" onclick='deleteRecorrido("${r.id}")'>Eliminar</button>
-          </div>
-        </div>
-      `).join('')}
-      <button class="btn-ghost" style="width:100%;margin-top:6px;" onclick="this.closest('.modal-bg').remove()">Cerrar</button>
-    </div>
-  `;
+  bg.innerHTML = `<div class="modal">${html}</div>`;
+  bg.addEventListener('click', e=>{
+    if(e.target === bg){ closeModals(); return; }
+    if(onClick) onClick(e);
+  });
   document.body.appendChild(bg);
+  return bg;
 }
-async function loadRecorrido(id){
-  const all = await dbGetAll();
-  const rec = all.find(r=>r.id===id);
-  if(!rec) return;
-  currentRecorrido = rec;
-  document.querySelectorAll('.modal-bg').forEach(m=>m.remove());
-  document.getElementById('setSite').value = rec.sitio;
-  document.getElementById('setDate').value = rec.fecha;
-  document.getElementById('setParticipants').value = rec.participantes || '';
-  document.getElementById('setObjective').value = rec.objetivo || '';
-  document.getElementById('workArea').classList.remove('hidden');
-  document.getElementById('setupCard').classList.add('hidden');
-  document.getElementById('siteBadge').textContent = `${rec.sitio} · ${rec.fecha}`;
-  renderPointsList();
-  renderReport();
-  toast('Recorrido cargado.');
+function closeModals(){ document.querySelectorAll('.modal-bg').forEach(m=>m.remove()); }
+
+/* ============ INDEXEDDB ============ */
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e=>{
+      const d = e.target.result;
+      if(!d.objectStoreNames.contains(ST_REC)) d.createObjectStore(ST_REC, {keyPath:'id'});
+      if(!d.objectStoreNames.contains(ST_DRAFT)) d.createObjectStore(ST_DRAFT, {keyPath:'recorridoId'});
+      if(!d.objectStoreNames.contains(ST_META)) d.createObjectStore(ST_META, {keyPath:'key'});
+    };
+    req.onblocked = ()=>toast('Cierra otras pestañas de esta herramienta para completar la actualización.', 5000);
+    req.onsuccess = ()=>{
+      const d = req.result;
+      d.onversionchange = ()=>{ d.close(); toast('La base se actualizó en otra pestaña. Recarga la página.', 6000); };
+      resolve(d);
+    };
+    req.onerror = ()=>reject(req.error);
+  });
 }
-async function deleteRecorrido(id){
-  if(!confirm('¿Eliminar este recorrido guardado? No se puede deshacer.')) return;
-  await dbDelete(id);
-  document.querySelectorAll('.modal-bg').forEach(m=>m.remove());
-  toast('Recorrido eliminado.');
+function ensureDb(){ if(!db) throw new Error('Almacenamiento local no disponible'); return db; }
+function txDone(tx){
+  return new Promise((res,rej)=>{
+    tx.oncomplete = ()=>res();
+    tx.onerror = ()=>rej(tx.error || new Error('Error de escritura'));
+    tx.onabort = ()=>rej(tx.error || new Error('Escritura cancelada'));
+  });
 }
-function confirmNewRecorrido(){
-  if(!confirm('¿Iniciar un nuevo recorrido? El actual queda guardado y puedes retomarlo desde "Cargar recorrido guardado".')) return;
-  currentRecorrido = null;
-  document.getElementById('workArea').classList.add('hidden');
-  document.getElementById('setupCard').classList.remove('hidden');
-  clearPointForm();
-  document.getElementById('setSite').value = '';
-  document.getElementById('setParticipants').value = '';
-  document.getElementById('setObjective').value = 'Verificar la correcta segregación de residuos en los puntos críticos del sitio, identificar oportunidades de mejora y avanzar hacia la meta de desvío de relleno sanitario del programa TRUE Zero Waste.';
-  window.scrollTo({top:0,behavior:'smooth'});
+async function idbPut(store, value){ const tx=ensureDb().transaction(store,'readwrite'); tx.objectStore(store).put(value); await txDone(tx); }
+async function idbDelete(store, key){ const tx=ensureDb().transaction(store,'readwrite'); tx.objectStore(store).delete(key); await txDone(tx); }
+function idbRead(store, key){
+  return new Promise((res,rej)=>{ const q=ensureDb().transaction(store,'readonly').objectStore(store).get(key); q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); });
+}
+function idbReadAll(store){
+  return new Promise((res,rej)=>{ const q=ensureDb().transaction(store,'readonly').objectStore(store).getAll(); q.onsuccess=()=>res(q.result||[]); q.onerror=()=>rej(q.error); });
+}
+// Escritura con control de revisión: si otra pestaña cambió el registro desde que se leyó, NO sobrescribe.
+function putWithRev(store, keyField, obj){
+  return new Promise((res,rej)=>{
+    const tx = ensureDb().transaction(store,'readwrite');
+    const st = tx.objectStore(store);
+    let saved = null, conflict = false;
+    const g = st.get(obj[keyField]);
+    g.onsuccess = ()=>{
+      const cur = g.result;
+      const curRev = cur ? (cur.rev||0) : 0;
+      if(cur && curRev !== (obj.rev||0)){ conflict = true; tx.abort(); return; }
+      saved = {...obj, rev: curRev+1};
+      st.put(saved);
+    };
+    tx.oncomplete = ()=>res(saved);
+    tx.onabort = ()=>{ const e = new Error(conflict ? 'Conflicto de versión' : (tx.error ? tx.error.message : 'Escritura cancelada')); e.conflict = conflict; rej(e); };
+    tx.onerror = ()=>{};
+  });
+}
+function idbWriteBatch(ops){
+  return new Promise((res,rej)=>{
+    const tx = ensureDb().transaction(ops.map(o=>o.store),'readwrite');
+    ops.forEach(o=>{ const s=tx.objectStore(o.store); o.items.forEach(i=>s.put(i)); });
+    tx.oncomplete = ()=>res();
+    tx.onerror = ()=>rej(tx.error || new Error('Error de escritura'));
+    tx.onabort = ()=>rej(tx.error || new Error('Escritura cancelada'));
+  });
 }
 
-/* ============ POINTS ============ */
-function toggleOportunidad(){
-  document.getElementById('oportunidadFields').classList.toggle('hidden', !document.getElementById('pEsOportunidad').checked);
+/* ============ MODELO: CRITERIOS, UBICACIONES, HALLAZGOS ============ */
+function emptyDraft(){
+  return {locId:null, catId:null, nombre:'', tipo:'otra', tipoLegacy:'', criteriosActivos:[], criterios:{}, observacion:'', fotos:[], hallazgos:[]};
 }
-function clearPointForm(){
-  document.getElementById('pUbicacion').value = '';
-  document.getElementById('pTipo').selectedIndex = 0;
-  document.getElementById('pNota').value = '';
-  document.getElementById('pEsOportunidad').checked = false;
-  document.getElementById('pDescOportunidad').value = '';
-  document.getElementById('pPrioridad').value = 'media';
-  document.getElementById('pResponsable').value = '';
-  document.getElementById('oportunidadFields').classList.add('hidden');
-  tempPhotosNew = [];
-  editingPointId = null;
-  buildCatGrid();
-  renderPhotoStrip();
+function emptyCrit(){ return {status:null, note:'', fotos:[], disp:'', cond:''}; }
+function hasCritData(c){ return !!c && !!(c.status || (c.note||'').trim() || (c.fotos||[]).length || c.disp || c.cond); }
+function normalizeDraft(d){
+  const out = {...emptyDraft(), ...(d||{})};
+  out.criteriosActivos = Array.isArray(d && d.criteriosActivos) ? d.criteriosActivos.filter(k=>CRIT_BY_KEY[k]) : [];
+  out.fotos = Array.isArray(d && d.fotos) ? d.fotos : [];
+  out.hallazgos = Array.isArray(d && d.hallazgos) ? d.hallazgos : [];
+  out.criterios = {};
+  Object.entries((d && d.criterios) || {}).forEach(([k,c])=>{ if(CRIT_BY_KEY[k] && c) out.criterios[k] = {...emptyCrit(), ...c, fotos: Array.isArray(c.fotos)?c.fotos:[]}; });
+  return out;
 }
-async function savePoint(){
-  if(!currentRecorrido){ toast('Primero inicia el recorrido.'); return; }
-  const ubicacion = document.getElementById('pUbicacion').value.trim();
-  if(!ubicacion){ toast('Indica la ubicación del punto.'); return; }
-
-  const point = {
-    id: editingPointId || ('pt_' + Date.now()),
-    ubicacion,
-    tipo: document.getElementById('pTipo').value,
-    categorias: readCatGrid(),
-    nota: document.getElementById('pNota').value.trim(),
-    fotos: [...tempPhotosNew],
-    esOportunidad: document.getElementById('pEsOportunidad').checked,
-    descOportunidad: document.getElementById('pDescOportunidad').value.trim(),
-    prioridad: document.getElementById('pPrioridad').value,
-    responsable: document.getElementById('pResponsable').value.trim(),
-    ts: Date.now()
-  };
-
-  if(editingPointId){
-    const idx = currentRecorrido.puntos.findIndex(p=>p.id===editingPointId);
-    if(idx>-1) currentRecorrido.puntos[idx] = point;
-  } else {
-    currentRecorrido.puntos.push(point);
+function draftPersistable(d){
+  return !!d.locId || !!d.nombre.trim() || !!d.observacion.trim() || d.fotos.length>0 || d.hallazgos.length>0 || Object.values(d.criterios).some(hasCritData);
+}
+function isDraftEmpty(d = draft){ return !draftPersistable(d); }
+function hasUnsaved(){ return pendingOps.size > 0 || stableStringify(draft) !== draftBaseline; }
+function defaultCriteria(tipo){
+  const t = LOC_TYPES.find(x=>x.key===tipo) || LOC_TYPES[LOC_TYPES.length-1];
+  return [...t.cats, ...t.infra];
+}
+function newFinding(extra){
+  return {id:newId('h'), origen:null, descripcion:'', evidencia:[], accion:'', prioridad:'media', responsable:'', fechaCompromiso:'', estado:'pendiente', fechaCierre:'', evidenciaCierre:[], ...extra};
+}
+// Criterio marcado como incorrecto => aparece en hallazgos (sin depender de la casilla manual).
+function syncFindings(loc){
+  const hs = [...(loc.hallazgos||[])];
+  (loc.criteriosActivos||[]).forEach(k=>{
+    const c = loc.criterios[k];
+    if(!c || c.status !== 'incorrecto') return;
+    if(hs.some(h=>h.origen===k)) return;
+    hs.push(newFinding({origen:k, descripcion: CRIT_BY_KEY[k].label + ((c.note||'').trim() ? ': '+c.note.trim() : '')}));
+  });
+  return hs;
+}
+function countsOf(loc){
+  let C=0, I=0, NA=0, P=0;
+  (loc.criteriosActivos||[]).forEach(k=>{
+    const s = (loc.criterios[k]||{}).status;
+    if(s==='correcto') C++; else if(s==='incorrecto') I++; else if(s==='na') NA++; else P++;
+  });
+  return {C, I, NA, P};
+}
+function locState(loc){
+  const c = countsOf(loc);
+  const tiene = (c.C+c.I+c.NA)>0 || (loc.observacion||'').trim() || (loc.fotos||[]).length || (loc.hallazgos||[]).length;
+  if(!tiene) return 'pendiente';
+  return c.P===0 ? 'evaluada' : 'en_proceso';
+}
+const STATE_LBL = {pendiente:'Pendiente', en_proceso:'En proceso', evaluada:'Evaluada'};
+function locKeyOf(loc){ return loc.catId ? 'cat:'+loc.catId : 'nom:'+String(loc.nombre||'').trim().toLowerCase(); }
+function migrateLegacy(puntos){
+  // Cada punto anterior es una evaluación de ubicación. El registro original (puntos) no se modifica.
+  return (puntos||[]).map(p=>{
+    const criterios = {}, activos = [];
+    (p.categorias||[]).forEach(c=>{
+      if(!CAT_KEYS.includes(c.key)) return;
+      activos.push(c.key);
+      criterios[c.key] = {...emptyCrit(), status: STATUS_VALUES.includes(c.status)?c.status:null, note:c.note||'', fotos:[...(c.fotos||[])]};
+    });
+    const loc = {id:'leg_'+p.id, catId:null, nombre:p.ubicacion||'', tipo:'otra', tipoLegacy:p.tipo||'', criteriosActivos:activos, criterios,
+      observacion:p.nota||'', fotos:[...(p.fotos||[])], hallazgos:[], ts:p.ts||0};
+    if(p.esOportunidad){
+      loc.hallazgos.push(newFinding({id:'hl_'+p.id, descripcion:p.descOportunidad||p.nota||'', prioridad:p.prioridad||'media', responsable:p.responsable||''}));
+    }
+    loc.hallazgos = syncFindings(loc);
+    return loc;
+  });
+}
+function getLocations(rec){ return Array.isArray(rec.ubicaciones) ? rec.ubicaciones : migrateLegacy(rec.puntos); }
+function draftFromLoc(loc){
+  return normalizeDraft({locId:loc.id, catId:loc.catId||null, nombre:loc.nombre||'', tipo:loc.tipo||'otra', tipoLegacy:loc.tipoLegacy||'',
+    criteriosActivos:[...(loc.criteriosActivos||[])], criterios:clone(loc.criterios||{}), observacion:loc.observacion||'',
+    fotos:clone(loc.fotos||[]), hallazgos:clone(loc.hallazgos||[])});
+}
+function locFromDraft(d){
+  return {id: d.locId || newId('loc'), catId: d.catId||null, nombre: d.nombre.trim(), tipo: d.tipo, tipoLegacy: d.tipoLegacy||'',
+    criteriosActivos: [...d.criteriosActivos], criterios: clone(d.criterios), observacion: d.observacion.trim(), fotos: [...d.fotos],
+    hallazgos: clone(d.hallazgos), ts: Date.now()};
+}
+// Seguimiento entre recorridos: compara el mismo criterio de la misma ubicación con la evaluación anterior.
+function traceFor(rec, loc, critKey){
+  if(!critKey) return '';
+  const lk = locKeyOf(loc);
+  const prev = allRecsCache.filter(r=>r.sitio===rec.sitio && r.id!==rec.id &&
+      (r.fecha<rec.fecha || (r.fecha===rec.fecha && (r.createdAt||0)<(rec.createdAt||0))))
+    .sort((a,b)=> a.fecha===b.fecha ? (a.createdAt||0)-(b.createdAt||0) : (a.fecha<b.fecha?-1:1));
+  let last = null;
+  prev.forEach(r=>{
+    const l = getLocations(r).find(x=>locKeyOf(x)===lk);
+    const c = l && l.criterios[critKey];
+    if(c && c.status) last = {st:c.status, fecha:r.fecha, h:(l.hallazgos||[]).find(h=>h.origen===critKey)};
+  });
+  const cur = (loc.criterios[critKey]||{}).status;
+  if(!last) return cur==='incorrecto' ? 'Primera vez registrado' : '';
+  if(cur==='incorrecto'){
+    if(last.st==='incorrecto') return (last.h && last.h.estado==='cerrado') ? `Reapareció (cerrado antes, ${last.fecha})` : `Continúa abierto (desde ${last.fecha})`;
+    return `Nuevo respecto a ${last.fecha}`;
   }
-  await persist();
-  clearPointForm();
-  renderPointsList();
-  renderReport();
-  toast('✔ Punto guardado');
+  if(cur==='correcto' && last.st==='incorrecto') return `Corregido (incorrecto en ${last.fecha})`;
+  return '';
 }
-function editPoint(id){
-  const p = currentRecorrido.puntos.find(x=>x.id===id);
-  if(!p) return;
-  editingPointId = id;
-  document.getElementById('pUbicacion').value = p.ubicacion;
-  document.getElementById('pTipo').value = p.tipo;
-  document.getElementById('pNota').value = p.nota || '';
-  document.getElementById('pEsOportunidad').checked = p.esOportunidad;
-  document.getElementById('pDescOportunidad').value = p.descOportunidad || '';
-  document.getElementById('pPrioridad').value = p.prioridad || 'media';
-  document.getElementById('pResponsable').value = p.responsable || '';
-  toggleOportunidad();
-  loadCatGrid(p.categorias);
-  tempPhotosNew = [...(p.fotos || [])];
-  renderPhotoStrip();
-  document.getElementById('view-puntos').scrollIntoView({behavior:'smooth'});
+function buildModel(rec, catalogo){
+  const locs = getLocations(rec);
+  const keys = new Set(locs.map(locKeyOf));
+  const pendCat = catalogo.filter(c=>!keys.has('cat:'+c.id));
+  let C=0, I=0, NA=0, P=0, ev=0, enp=0, pen=0, fotos=0;
+  const findings = [];
+  locs.forEach(loc=>{
+    const c = countsOf(loc);
+    C+=c.C; I+=c.I; NA+=c.NA; P+=c.P;
+    const st = locState(loc);
+    if(st==='evaluada') ev++; else if(st==='en_proceso') enp++; else pen++;
+    fotos += (loc.fotos||[]).length + (loc.criteriosActivos||[]).reduce((s,k)=>s+((loc.criterios[k]||{}).fotos||[]).length,0);
+    (loc.hallazgos||[]).forEach(h=>{
+      findings.push({loc, h});
+      fotos += (h.evidencia||[]).length + (h.evidenciaCierre||[]).length;
+    });
+  });
+  pen += pendCat.length;
+  const ordenP = {alta:0, media:1, baja:2};
+  const abiertos = findings.filter(f=>f.h.estado!=='cerrado').sort((a,b)=>(ordenP[a.h.prioridad]??1)-(ordenP[b.h.prioridad]??1));
+  const pct = (C+I)>0 ? Math.round(C/(C+I)*100) : null;
+  const denCob = C+I+NA+P;
+  const cobertura = denCob>0 ? Math.round((C+I+NA)/denCob*100) : null;
+  return {locs, pendCat, C, I, NA, P, pct, cobertura, total: locs.length + pendCat.length, ev, enp, pen, findings, abiertos, fotos};
 }
-async function deletePoint(id){
-  if(!confirm('¿Eliminar este punto?')) return;
-  currentRecorrido.puntos = currentRecorrido.puntos.filter(p=>p.id!==id);
-  await persist();
-  renderPointsList();
-  renderReport();
-  toast('Punto eliminado.');
+function summarySentences(m){
+  const s = [];
+  s.push(`Se han evaluado ${m.ev} de ${m.total} ubicaciones; ${m.enp} ${m.enp===1?"está":"están"} en proceso y ${m.pen} ${m.pen===1?"sigue":"siguen"} pendiente${m.pen===1?"":"s"}.`);
+  if(m.pct===null) s.push('No hay criterios correctos o incorrectos registrados, por lo que no se calcula porcentaje de segregación (Sin evaluación).');
+  else s.push(`Segregación correcta (indicador interno): ${m.pct}% = ${m.C} correctos ÷ (${m.C} correctos + ${m.I} incorrectos). ${m.NA} criterios no aplican y ${m.P} quedan pendientes de evaluar.`);
+  s.push(m.cobertura===null ? 'Cobertura de evaluación de criterios: sin criterios aplicables.' : `Cobertura de evaluación de criterios: ${m.cobertura}% de los criterios aplicables tiene estado definido.`);
+  const alta = m.abiertos.filter(f=>f.h.prioridad==='alta').length, media = m.abiertos.filter(f=>f.h.prioridad==='media').length, baja = m.abiertos.filter(f=>f.h.prioridad==='baja').length;
+  s.push(`Hallazgos abiertos: ${m.abiertos.length} (alta ${alta}, media ${media}, baja ${baja}).`);
+  s.push('Indicador interno de segregación en sitio. No equivale a tasa de reciclaje, desvío de relleno sanitario ni cumplimiento de la certificación TRUE.');
+  return s;
+}
+const ESTADO_CRIT_LBL = {correcto:'Correcto', incorrecto:'Incorrecto', na:'No aplica'};
+const critEstadoLbl = s => ESTADO_CRIT_LBL[s] || 'Pendiente';
+
+/* ============ GUARDADO: COLA, ESTADOS, BORRADOR ============ */
+function setStatus(state, text){
+  const pill = $('savePill');
+  pill.classList.remove('saving','ok','err');
+  pill.title = '';
+  if(state==='saving'){ pill.textContent='◌ Guardando…'; pill.classList.add('saving'); }
+  else if(state==='saved'){ pill.textContent='✔ Guardado a las '+hhmm(); pill.classList.add('ok'); }
+  else if(state==='error'){ pill.textContent='⚠ Error al guardar · toca para reintentar'; pill.classList.add('err'); pill.title=text||''; }
+  else { pill.textContent = text || 'Sin recorrido activo'; }
+}
+function enqueue(task){
+  inFlight++;
+  setStatus('saving');
+  const run = saveQueue.then(task);
+  saveQueue = run.catch(()=>{});
+  return run.then(v=>{
+    inFlight--;
+    if(inFlight===0){ saveError=false; setStatus('saved'); }
+    return v;
+  }, err=>{
+    inFlight--;
+    saveError = true;
+    console.error('Error de almacenamiento', err);
+    setStatus('error', err && err.message || 'Error desconocido');
+    throw err;
+  });
+}
+function writeRecorrido(next){
+  return enqueue(()=>putWithRev(ST_REC, 'id', next)).then(saved=>{
+    currentRecorrido = saved;
+    if(bc) bc.postMessage({type:'changed', id:saved.id, tab:TAB_ID});
+    return saved;
+  });
+}
+function saveDraftNow(){
+  const owner = draftOwnerId;
+  if(!owner) return Promise.resolve();
+  const d = draft;
+  return enqueue(async ()=>{
+    if(isDraftEmpty(d)){ await idbDelete(ST_DRAFT, owner); if(owner===draftOwnerId) draftRev = 0; }
+    else {
+      const s = await putWithRev(ST_DRAFT, 'recorridoId', {recorridoId: owner, draft: d, updatedAt: Date.now(), rev: owner===draftOwnerId ? draftRev : 0});
+      if(owner===draftOwnerId) draftRev = s.rev;
+    }
+  });
+}
+function draftFail(e){
+  if(e && e.conflict){ saveError = true; setStatus('error', 'Otra pestaña modificó el borrador. Recarga la página.'); return; }
+  retryLater();
+}
+function retryLater(){
+  clearTimeout(retryTimer);
+  retryTimer = setTimeout(()=>{ retryTimer=null; if(draftOwnerId) scheduleDraftSave(); }, RETRY_MS);
+}
+function scheduleDraftSave(){
+  if(!draftOwnerId) return;
+  clearTimeout(draftTimer);
+  draftTimer = setTimeout(()=>{ draftTimer=null; saveDraftNow().catch(draftFail); }, DRAFT_DEBOUNCE_MS);
+}
+async function flushDraft(){
+  clearTimeout(draftTimer); draftTimer = null;
+  if(!draftOwnerId) return true;
+  try{ await saveDraftNow(); return true; }
+  catch(e){ draftFail(e); return false; }
+}
+function setActivePointer(id){
+  return id ? enqueue(()=>idbPut(ST_META, {key:'activo', recorridoId:id, updatedAt:Date.now()}))
+            : enqueue(()=>idbDelete(ST_META, 'activo'));
+}
+function readSetup(){ return {sitio:$('setSite').value, fecha:$('setDate').value, participantes:$('setParticipants').value, objetivo:$('setObjective').value}; }
+function fillSetup(v){
+  if(v.sitio) $('setSite').value = v.sitio;
+  if(v.fecha) $('setDate').value = v.fecha;
+  $('setParticipants').value = v.participantes || '';
+  $('setObjective').value = v.objetivo || OBJ_DEFAULT;
+}
+function scheduleSetupSave(){
+  if(currentRecorrido) return;
+  clearTimeout(setupTimer);
+  setupTimer = setTimeout(()=>{ setupTimer=null; enqueue(()=>idbPut(ST_META, {key:'setup', value:readSetup(), updatedAt:Date.now()})).catch(()=>{}); }, 400);
+}
+function settlePhotos(){ return (async ()=>{ while(pendingOps.size){ await Promise.allSettled([...pendingOps]); } })(); }
+function addPhotos(fileList, target, refresh, maxW, quality){
+  Array.from(fileList || []).forEach(file=>{
+    const op = readFileAsDataURL(file)
+      .then(raw=>compressImage(raw, maxW, quality))
+      .then(url=>{ target.push(url); })
+      .catch(()=>toast('⚠ No se pudo procesar una foto. Intenta de nuevo.', 3500))
+      .finally(()=>{ pendingOps.delete(op); updatePhotoBusy(); refresh(); scheduleDraftSave(); });
+    pendingOps.add(op);
+  });
+  updatePhotoBusy();
+}
+function updatePhotoBusy(){
+  const n = pendingOps.size, el = $('photoBusy');
+  el.textContent = n ? `⏳ Procesando ${n} foto(s)…` : '';
+  el.classList.toggle('hidden', !n);
 }
 
-function pointStatusClass(p){
-  if(p.esOportunidad && p.prioridad === 'alta') return 'critical';
-  if(p.esOportunidad) return 'finding';
-  const hasIncorrecto = (p.categorias||[]).some(c=>c.status==='incorrecto');
-  return hasIncorrecto ? 'finding' : 'ok';
-}
-
-function renderPointsList(){
-  const wrap = document.getElementById('pointsList');
-  document.getElementById('countPuntos').textContent = currentRecorrido.puntos.length;
-  if(currentRecorrido.puntos.length === 0){
-    wrap.innerHTML = `<p style="color:var(--muted);font-size:12.5px;">Aún no hay puntos registrados en este recorrido.</p>`;
+/* ============ INICIO Y RECUPERACIÓN ============ */
+window.addEventListener('DOMContentLoaded', init);
+async function init(){
+  $('setDate').value = todayISO();
+  bindEvents();
+  updateConnPill();
+  window.addEventListener('online', updateConnPill);
+  window.addEventListener('offline', updateConnPill);
+  if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+  try{ db = await openDB(); }
+  catch(e){
+    console.error(e);
+    setStatus('error', 'No se pudo abrir el almacenamiento de este navegador');
+    toast('⚠ No se pudo abrir el almacenamiento local. Los cambios NO se guardarán.', 6000);
     return;
   }
-  wrap.innerHTML = [...currentRecorrido.puntos].reverse().map(p=>`
-    <div class="point-card ${pointStatusClass(p)}">
-      <div class="point-head">
-        <div>
-          <div class="point-title">${p.ubicacion}</div>
-          <div class="point-meta">${p.tipo} · ${new Date(p.ts).toLocaleString('es-CL')}</div>
-        </div>
-        ${p.esOportunidad ? `<span class="badge ${p.prioridad}">${p.prioridad.toUpperCase()}</span>` : ''}
-      </div>
-      ${p.categorias && p.categorias.length ? `
-        <div style="margin-top:8px;font-size:11.5px;">
-          ${p.categorias.map(c=>`
-            <div style="margin-bottom:6px;">
-              <span style="display:inline-block;padding:2px 8px;border-radius:12px;background:${c.status==='correcto'?'#e4f9ef':c.status==='incorrecto'?'#fde2e2':'#eee'};color:${c.status==='correcto'?'#1d8a5e':c.status==='incorrecto'?'#c0272c':'#666'};">${c.label}${c.status?': '+(c.status==='correcto'?'✔':c.status==='incorrecto'?'✘':'N/A'):''}</span>
-              ${c.note ? ` <i style="color:var(--muted);">${c.note}</i>` : ''}
-              ${c.fotos && c.fotos.length ? `<div class="photo-strip" style="margin-top:4px;">${c.fotos.map(f=>`<img src="${f}" class="photo-thumb small" onclick="openLightbox('${f}')">`).join('')}</div>` : ''}
-            </div>
-          `).join('')}
-        </div>` : ''}
-      ${p.nota ? `<p style="font-size:12.5px;margin:8px 0 0;">${p.nota}</p>` : ''}
-      ${p.esOportunidad && p.descOportunidad ? `<p style="font-size:12.5px;margin:6px 0 0;background:#fff8e8;padding:8px;border-radius:8px;"><b>Oportunidad:</b> ${p.descOportunidad}${p.responsable ? ' · Responsable sugerido: '+p.responsable : ''}</p>` : ''}
-      ${p.fotos && p.fotos.length ? `<div class="photo-strip">${p.fotos.map(f=>`<img src="${f}" class="photo-thumb" onclick="openLightbox('${f}')">`).join('')}</div>` : ''}
-      <div class="point-actions no-print">
-        <button class="btn-ghost btn-small" onclick="editPoint('${p.id}')">✏ Editar</button>
-        <button class="btn-danger btn-small" onclick="deletePoint('${p.id}')">🗑 Eliminar</button>
-      </div>
-    </div>
-  `).join('');
+  await restoreSession();
+}
+async function restoreSession(){
+  try{
+    const ptr = await idbRead(ST_META, 'activo');
+    if(ptr && ptr.recorridoId){
+      const rec = await idbRead(ST_REC, ptr.recorridoId);
+      if(rec && await openRecorrido(rec, true)){
+        toast(editorVisible ? '↺ Recorrido y ubicación en edición recuperados' : '↺ Recorrido recuperado', 3500);
+        setStatus('idle', 'Recuperado · guardado en este dispositivo');
+        return;
+      }
+    }
+    const sd = await idbRead(ST_META, 'setup');
+    if(sd && sd.value) fillSetup(sd.value);
+    setStatus('idle');
+  }catch(e){
+    console.error(e);
+    setStatus('error', 'No se pudo leer el recorrido guardado');
+    toast('⚠ No se pudo recuperar el recorrido guardado.', 5000);
+  }
+}
+function updateConnPill(){
+  const pill = $('connPill');
+  if(navigator.onLine){ pill.textContent='● En línea'; pill.className='pill online'; }
+  else { pill.textContent='● Sin conexión (modo offline)'; pill.className='pill offline'; }
+}
+function bindEvents(){
+  // Setup
+  ['setSite','setDate','setParticipants','setObjective'].forEach(id=>{
+    $(id).addEventListener('input', scheduleSetupSave);
+    $(id).addEventListener('change', scheduleSetupSave);
+  });
+  $('importFile').addEventListener('change', onImportFileChosen);
+  // Barra de acciones
+  $('btnContinuar').addEventListener('click', continuarRecorrido);
+  $('btnEvaluar').addEventListener('click', abrirSelectorUbicacion);
+  $('btnInforme').addEventListener('click', ()=>switchTab('report'));
+  // Lista de ubicaciones
+  $('locList').addEventListener('click', onLocListClick);
+  // Editor de ubicación
+  $('dNombre').addEventListener('input', e=>{ draft.nombre = e.target.value; scheduleDraftSave(); });
+  $('dTipo').addEventListener('change', e=>{ aplicarTipo(e.target.value); });
+  $('dObs').addEventListener('input', e=>{ draft.observacion = e.target.value; scheduleDraftSave(); });
+  $('dCrit').addEventListener('click', onCritClick);
+  $('dCrit').addEventListener('input', onCritInput);
+  $('dCrit').addEventListener('change', onCritInput);
+  $('dAddCritBtn').addEventListener('click', ()=>{
+    const k = $('dAddCrit').value; if(!k) return;
+    if(!draft.criteriosActivos.includes(k)) draft.criteriosActivos.push(k);
+    renderEditorCriteria(); scheduleDraftSave();
+  });
+  $('dHall').addEventListener('click', onHallClick);
+  $('dHall').addEventListener('input', onHallInput);
+  $('dHall').addEventListener('change', onHallInput);
+  $('dHall').addEventListener('toggle', e=>{ const id = e.target.dataset && e.target.dataset.hid; if(!id) return; if(e.target.open) hallOpen.add(id); else hallOpen.delete(id); }, true);
+  $('dAddHall').addEventListener('click', ()=>{
+    const h = newFinding({descripcion:''});
+    draft.hallazgos.push(h); hallOpen.add(h.id);
+    renderEditorHallazgos(); scheduleDraftSave();
+  });
+  $('dPhotos').addEventListener('click', e=>{
+    const b = e.target.closest('[data-rm-obs]'); if(!b) return;
+    draft.fotos.splice(Number(b.dataset.rmObs), 1); renderEditorPhotos(); scheduleDraftSave();
+  });
+  $('btnSaveLoc').addEventListener('click', guardarUbicacion);
+  $('btnCloseEditor').addEventListener('click', ()=>{ editorVisible=false; renderEditorVisibility(); });
+  $('btnClearLoc').addEventListener('click', descartarEditor);
+  // Otros
+  $('catList').addEventListener('change', onCatListChange);
+  $('catList').addEventListener('click', onCatListClick);
+  $('btnCatAdd').addEventListener('click', agregarCatalogo);
+  $('reportLoc').addEventListener('change', ()=>{});
+  $('savePill').addEventListener('click', ()=>{ if(saveError && draftOwnerId) scheduleDraftSave(); });
+  document.addEventListener('click', e=>{
+    const img = e.target.closest && e.target.closest('img[data-lb]');
+    if(img) openLightbox(img.src);
+  });
+  if(bc) bc.onmessage = e=>{
+    const m = e.data || {};
+    if(m.type==='changed' && m.tab!==TAB_ID && currentRecorrido && m.id===currentRecorrido.id){
+      toast('⚠ Este recorrido se modificó en otra pestaña. Recarga antes de seguir editando.', 7000);
+    }
+  };
+  document.addEventListener('visibilitychange', ()=>{ if(document.hidden) flushDraft(); });
+  window.addEventListener('pagehide', ()=>{ flushDraft(); });
+  window.addEventListener('beforeunload', e=>{
+    if(draftTimer || inFlight>0 || saveError){ e.preventDefault(); e.returnValue=''; }
+  });
 }
 
-/* ============ TABS ============ */
+/* ============ RECORRIDOS ============ */
+async function startOrResume(){
+  if(!db){ toast('⚠ Almacenamiento local no disponible.', 4000); return; }
+  const v = readSetup();
+  const participantes = v.participantes.trim(), objetivo = v.objetivo.trim();
+  if(!v.sitio){ toast('Selecciona un sitio.'); return; }
+  if(!v.fecha){ toast('Selecciona una fecha.'); return; }
+  let mismos;
+  try{
+    allRecsCache = (await idbReadAll(ST_REC)).map(normalizeRec);
+    mismos = allRecsCache.filter(r=>r.sitio===v.sitio && r.fecha===v.fecha).sort((a,b)=>b.updatedAt-a.updatedAt);
+  }catch(e){ toast('⚠ No se pudo leer el historial. No se inició el recorrido.', 4000); return; }
+  if(!mismos.length){ await crearRecorrido(v.sitio, v.fecha, participantes, objetivo); return; }
+  const items = mismos.map(r=>`<button class="btn-primary choice" data-cont="${esc(r.id)}">▶ Continuar: ${getLocations(r).length} ubicación(es) · actualizado ${esc(hhmm(new Date(r.updatedAt)))}</button>`).join('');
+  openModal(`
+    <h2 style="margin-top:0;color:var(--purple-dark);font-size:16px;">${esc(v.sitio)} · ${esc(v.fecha)}</h2>
+    <p style="font-size:12.5px;color:var(--muted);">Ya hay ${mismos.length} recorrido(s) para este sitio y fecha. ¿Retomas uno o inicias otro el mismo día?</p>
+    ${items}
+    <button class="btn-green choice" data-new="1">＋ Iniciar un recorrido nuevo</button>
+    <button class="btn-ghost choice" data-close="1">Cancelar</button>`,
+  async e=>{
+    if(e.target.closest('[data-close]')){ closeModals(); return; }
+    if(e.target.closest('[data-new]')){ closeModals(); await crearRecorrido(v.sitio, v.fecha, participantes, objetivo); return; }
+    const c = e.target.closest('[data-cont]'); if(!c) return;
+    closeModals();
+    let rec = mismos.find(x=>x.id===c.dataset.cont); if(!rec) return;
+    if((participantes && participantes!==rec.participantes) || (objetivo && objetivo!==rec.objetivo)){
+      try{ rec = await writeRecorrido({...rec, participantes: participantes||rec.participantes, objetivo: objetivo||rec.objetivo, updatedAt: Date.now()}); }
+      catch(err){ handleWriteError(err, 'No se pudo actualizar el recorrido'); return; }
+    }
+    await openRecorrido(rec);
+  });
+}
+function normalizeRec(r){
+  return {...r, id:String(r.id), sitio:r.sitio||'', fecha:r.fecha||'', participantes:r.participantes||'', objetivo:r.objetivo||'',
+    puntos: Array.isArray(r.puntos) ? r.puntos : [], createdAt:r.createdAt||0, updatedAt:r.updatedAt||0, rev: r.rev||0};
+}
+async function crearRecorrido(sitio, fecha, participantes, objetivo){
+  const rec = {id:makeId(sitio,fecha), sitio, fecha, participantes, objetivo, puntos:[], createdAt:Date.now(), updatedAt:Date.now(), rev:0};
+  try{ await enqueue(()=>putWithRev(ST_REC,'id',rec)); }
+  catch(e){ handleWriteError(e, 'No se pudo crear el recorrido'); return; }
+  const saved = await idbRead(ST_REC, rec.id);
+  await openRecorrido(saved);
+}
+async function openRecorrido(rec, silent){
+  setBusy(true);
+  try{
+    await settlePhotos();
+    if(!(await flushDraft())){ toast('⚠ No se pudo guardar el borrador actual. No se cambió de recorrido.', 4500); return false; }
+    const r = normalizeRec(rec);
+    allRecsCache = (await idbReadAll(ST_REC)).map(normalizeRec);
+    catCache = await loadCatalogo(r.sitio);
+    const stored = await idbRead(ST_DRAFT, r.id);
+    currentRecorrido = r;
+    draftOwnerId = r.id;
+    draftRev = stored ? (stored.rev||0) : 0;
+    draft = stored && stored.draft ? normalizeDraft(stored.draft) : emptyDraft();
+    draftBaseline = stableStringify(draft);
+    editorVisible = draftPersistable(draft);
+    setActivePointer(r.id).catch(()=>{});
+    $('workArea').classList.remove('hidden');
+    $('setupCard').classList.add('hidden');
+    $('siteBadge').textContent = `${r.sitio} · ${r.fecha}`;
+    renderAll();
+    switchTab('puntos');
+    if(!silent) toast('Recorrido listo. Elige una ubicación para evaluar.');
+    window.scrollTo({top:0, behavior:'smooth'});
+    return true;
+  }catch(e){
+    console.error(e);
+    toast('⚠ No se pudo abrir el recorrido. Intenta nuevamente.', 4000);
+    return false;
+  }finally{ setBusy(false); }
+}
+function resetToSetup(){
+  clearTimeout(draftTimer); draftTimer = null;
+  currentRecorrido = null; draftOwnerId = null; draft = emptyDraft(); draftRev = 0; draftBaseline = stableStringify(draft); editorVisible = false;
+  $('workArea').classList.add('hidden');
+  $('setupCard').classList.remove('hidden');
+  $('siteBadge').textContent = '';
+  setStatus('idle');
+}
+async function confirmNewRecorrido(){
+  if(!currentRecorrido){ toast('No hay recorrido abierto.'); return; }
+  const aviso = hasUnsaved() ? ' La ubicación en edición se conserva en su borrador.' : '';
+  if(!confirm('¿Iniciar un nuevo recorrido? El actual queda guardado y puedes retomarlo desde "Cargar recorrido guardado".' + aviso)) return;
+  setBusy(true);
+  try{
+    await settlePhotos();
+    if(!(await flushDraft())){ toast('⚠ No se pudo guardar el borrador. Sigue aquí e intenta de nuevo.', 4500); return; }
+    await setActivePointer(null);
+    resetToSetup();
+    $('setSite').value=''; $('setParticipants').value=''; $('setObjective').value=OBJ_DEFAULT; $('setDate').value=todayISO();
+    scheduleSetupSave();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }catch(e){ toast('⚠ No se pudo cerrar el recorrido actual. Reintenta.', 4500); }
+  finally{ setBusy(false); }
+}
+async function openLoadModal(){
+  if(!db){ toast('Almacenamiento local no disponible.'); return; }
+  let all, drafts;
+  try{
+    allRecsCache = (await idbReadAll(ST_REC)).map(normalizeRec);
+    all = allRecsCache;
+    drafts = await idbReadAll(ST_DRAFT);
+  }catch(e){ toast('⚠ No se pudo leer el historial.', 4000); return; }
+  if(!all.length){ toast('No hay recorridos guardados todavía.'); return; }
+  const conBorrador = new Set(drafts.filter(d=>d.draft && draftPersistable(normalizeDraft(d.draft))).map(d=>d.recorridoId));
+  let html = '';
+  [...new Set(all.map(r=>r.sitio))].sort().forEach(s=>{
+    html += `<h3>${esc(s)}</h3>`;
+    [...new Set(all.filter(r=>r.sitio===s).map(r=>r.fecha))].sort().reverse().forEach(f=>{
+      const lista = all.filter(r=>r.sitio===s && r.fecha===f).sort((a,b)=>a.createdAt-b.createdAt);
+      html += `<div class="grp-date">${esc(f)} · ${lista.length} recorrido(s)</div>`;
+      lista.forEach((r,i)=>{
+        const locs = getLocations(r);
+        const hall = locs.reduce((s2,l)=>s2+(l.hallazgos||[]).filter(h=>h.estado!=='cerrado').length,0);
+        html += `<div style="border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px;">
+          <div style="font-weight:bold;font-size:13px;">Recorrido ${i+1}${conBorrador.has(r.id)?'<span class="draft-tag">borrador sin cerrar</span>':''}</div>
+          <div style="font-size:11px;color:var(--muted);margin:3px 0 8px;">${locs.length} ubicación(es) · ${hall} hallazgo(s) abierto(s) · actualizado ${esc(r.updatedAt?new Date(r.updatedAt).toLocaleString('es-CL'):'-')}</div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn-primary btn-small" data-open="${esc(r.id)}">Abrir</button>
+            <button class="btn-danger btn-small" data-del="${esc(r.id)}">Eliminar</button>
+          </div></div>`;
+      });
+    });
+  });
+  openModal(`<h2 style="margin-top:0;color:var(--purple-dark);font-size:16px;">📂 Historial de recorridos</h2>${html}
+    <button class="btn-ghost choice" data-close="1">Cerrar</button>`,
+  async e=>{
+    const o = e.target.closest('[data-open]');
+    if(o){ const r = all.find(x=>x.id===o.dataset.open); closeModals(); if(r) await openRecorrido(r); return; }
+    const d = e.target.closest('[data-del]');
+    if(d){ await eliminarRecorrido(d.dataset.del); return; }
+    if(e.target.closest('[data-close]')) closeModals();
+  });
+}
+async function eliminarRecorrido(id){
+  if(!confirm('¿Eliminar este recorrido con todas sus ubicaciones y fotos? No se puede deshacer. Antes puedes descargar un respaldo.')) return;
+  const esActivo = currentRecorrido && currentRecorrido.id===id;
+  if(esActivo){ clearTimeout(draftTimer); draftTimer=null; draftOwnerId=null; }
+  try{
+    await enqueue(()=>idbDelete(ST_DRAFT, id));
+    await enqueue(()=>idbDelete(ST_REC, id));
+    if(esActivo){ await setActivePointer(null).catch(()=>{}); resetToSetup(); }
+    toast('Recorrido eliminado.');
+    await openLoadModal();
+  }catch(e){ toast('⚠ No se pudo eliminar. Intenta nuevamente.', 4000); }
+}
+function handleWriteError(e, msg){
+  console.error(e);
+  if(e && e.conflict){
+    toast('⚠ Este recorrido cambió en otra pestaña. Recarga la página para ver la versión guardada; tus datos de este formulario siguen aquí.', 7000);
+    return;
+  }
+  toast('⚠ ' + msg + '. Tus datos siguen en pantalla; reintenta.', 4500);
+}
 function switchTab(tab){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
-  document.getElementById('view-puntos').classList.toggle('hidden', tab!=='puntos');
-  document.getElementById('view-report').classList.toggle('hidden', tab!=='report');
-  document.getElementById('view-datos').classList.toggle('hidden', tab!=='datos');
+  $('view-puntos').classList.toggle('hidden', tab!=='puntos');
+  $('view-report').classList.toggle('hidden', tab!=='report');
+  $('view-datos').classList.toggle('hidden', tab!=='datos');
   if(tab==='report') renderReport();
   if(tab==='datos') loadDatosTab();
 }
+function renderAll(){
+  renderProgress();
+  renderLocations();
+  renderEditorVisibility();
+  loadDatosTab();
+  renderCatalog();
+}
+
+/* ============ PROGRESO Y LISTA DE UBICACIONES ============ */
+function renderProgress(){
+  if(!currentRecorrido) return;
+  const m = buildModel(currentRecorrido, catCache);
+  $('progressBox').innerHTML = `
+    <div class="prog-row"><b>${m.ev}</b> evaluadas · <b>${m.enp}</b> en proceso · <b>${m.pen}</b> pendientes · de ${m.total} ubicaciones</div>
+    <div class="bar-track"><div class="bar-fill" style="width:${m.total? Math.round(m.ev/m.total*100):0}%;background:var(--green);"></div></div>
+    <div class="prog-row" style="font-size:11px;color:var(--muted);">Cobertura de criterios: ${m.cobertura===null?'—':m.cobertura+'%'} · Hallazgos abiertos: ${m.abiertos.length}</div>`;
+}
+// Lista unificada: catálogo (pendientes o ya evaluadas) + ubicaciones adicionales.
+function ubicacionesUnificadas(){
+  const locs = getLocations(currentRecorrido);
+  const items = [];
+  catCache.forEach(c=>{
+    const loc = locs.find(l=>l.catId===c.id);
+    items.push({kind: loc ? 'loc' : 'cat', loc, cat: c, nombre: c.nombre, tipo: c.tipo});
+  });
+  locs.filter(l=>!l.catId || !catCache.some(c=>c.id===l.catId)).forEach(l=>items.push({kind:'loc', loc:l, nombre:l.nombre, tipo:l.tipo}));
+  return items.map(it=>({...it, estado: it.loc ? locState(it.loc) : 'pendiente'}));
+}
+function renderLocations(){
+  if(!currentRecorrido){ $('locList').innerHTML=''; return; }
+  const items = ubicacionesUnificadas();
+  const grupos = [['en_proceso','En proceso'],['pendiente','Pendientes'],['evaluada','Evaluadas']];
+  $('locList').innerHTML = items.length===0
+    ? `<p style="color:var(--muted);font-size:12.5px;">Aún no hay ubicaciones. Agrega ubicaciones al catálogo del sitio (pestaña Datos) o usa “Evaluar ubicación”.</p>`
+    : grupos.map(([key,label])=>{
+        const lista = items.filter(i=>i.estado===key);
+        if(!lista.length) return '';
+        return `<div class="grp-date">${label} · ${lista.length}</div>` + lista.map(it=>cardUbicacion(it)).join('');
+      }).join('');
+}
+function cardUbicacion(it){
+  const loc = it.loc;
+  const c = loc ? countsOf(loc) : {C:0,I:0,NA:0,P:0};
+  const abiertos = loc ? (loc.hallazgos||[]).filter(h=>h.estado!=='cerrado').length : 0;
+  const attr = loc ? `data-eval="${esc(loc.id)}"` : `data-eval-cat="${esc(it.cat.id)}"`;
+  const detalleCrit = loc ? (loc.criteriosActivos||[]).map(k=>{
+    const s = (loc.criterios[k]||{}).status;
+    return `<span class="chip st-${s||'pend'}">${esc(CRIT_BY_KEY[k].label.split(' (')[0])}: ${critEstadoLbl(s)}</span>`;
+  }).join('') : '';
+  const detalleHall = loc && (loc.hallazgos||[]).length ? (loc.hallazgos||[]).map(h=>{
+    const tr = h.origen ? traceFor(currentRecorrido, loc, h.origen) : '';
+    return `<div class="hall-mini"><b>${esc(ESTADO_H_LBL[h.estado]||h.estado)}</b> · ${esc(h.descripcion||'(sin descripción)')}${tr?` <i>— ${esc(tr)}</i>`:''}</div>`;
+  }).join('') : '';
+  return `
+  <div class="loc-card st-${it.estado}">
+    <div class="point-head">
+      <div>
+        <div class="point-title">${esc(it.nombre)}</div>
+        <div class="point-meta">${esc(TYPE_LBL[it.tipo] || it.loc && it.loc.tipoLegacy || 'Sin tipo')}${loc && loc.tipoLegacy ? ' · anterior: '+esc(loc.tipoLegacy) : ''}${it.cat ? ' · catálogo' : ' · adicional'}</div>
+      </div>
+      <span class="badge-est st-${it.estado}">${STATE_LBL[it.estado] || 'Pendiente'}</span>
+    </div>
+    <div class="point-meta" style="margin-top:6px;">✔ ${c.C} · ✘ ${c.I} · N/A ${c.NA} · pendientes ${c.P} · hallazgos abiertos ${abiertos}</div>
+    <div class="point-actions no-print">
+      <button class="btn-primary btn-small" ${attr}>${it.estado==='evaluada'?'Revisar':'Evaluar'}</button>
+      ${loc ? `<button class="btn-danger btn-small" data-del-loc="${esc(loc.id)}">Quitar del recorrido</button>` : ''}
+      ${loc ? `<details class="det"><summary>Detalle</summary><div class="chips">${detalleCrit}</div>${detalleHall}</details>` : ''}
+    </div>
+  </div>`;
+}
+function onLocListClick(e){
+  const ev = e.target.closest('[data-eval]');
+  if(ev){ const loc = getLocations(currentRecorrido).find(l=>l.id===ev.dataset.eval); if(loc) abrirEditor(loc); return; }
+  const ec = e.target.closest('[data-eval-cat]');
+  if(ec){ const cat = catCache.find(c=>c.id===ec.dataset.evalCat); if(cat) abrirEditorCatalogo(cat); return; }
+  const dl = e.target.closest('[data-del-loc]');
+  if(dl) quitarUbicacion(dl.dataset.delLoc);
+}
+async function quitarUbicacion(id){
+  const loc = getLocations(currentRecorrido).find(l=>l.id===id); if(!loc) return;
+  if(!confirm(`¿Quitar "${loc.nombre}" de este recorrido? Sus datos se eliminan del recorrido; el catálogo del sitio no cambia.`)) return;
+  setBusy(true);
+  try{
+    await settlePhotos();
+    const next = {...currentRecorrido, ubicaciones: getLocations(currentRecorrido).filter(l=>l.id!==id), updatedAt: Date.now()};
+    await writeRecorrido(next);
+    if(draft.locId===id){ draft=emptyDraft(); draftBaseline=stableStringify(draft); editorVisible=false; await saveDraftNow().catch(draftFail); }
+    renderAll(); toast('Ubicación quitada del recorrido.');
+  }catch(e){ handleWriteError(e, 'No se pudo quitar la ubicación'); }
+  finally{ setBusy(false); }
+}
+function continuarRecorrido(){
+  if(!currentRecorrido) return;
+  const items = ubicacionesUnificadas();
+  const next = items.find(i=>i.estado==='en_proceso') || items.find(i=>i.estado==='pendiente');
+  if(!next){ toast('No hay ubicaciones pendientes. Puedes revisar el informe.', 3500); return; }
+  if(next.loc) abrirEditor(next.loc); else abrirEditorCatalogo(next.cat);
+}
+function abrirSelectorUbicacion(){
+  if(!currentRecorrido) return;
+  const items = ubicacionesUnificadas();
+  const filas = items.map(it=>`<button class="btn-ghost choice" ${it.loc?`data-sel="${esc(it.loc.id)}"`:`data-selcat="${esc(it.cat.id)}"`}>${esc(it.nombre)} · <i>${STATE_LBL[it.estado]||'Pendiente'}</i></button>`).join('');
+  openModal(`<h2 style="margin-top:0;color:var(--purple-dark);font-size:16px;">📍 Evaluar ubicación</h2>
+    ${filas || '<p style="font-size:12.5px;">El catálogo del sitio está vacío. Agrega ubicaciones en Datos del recorrido.</p>'}
+    <label>Otra ubicación (no está en el catálogo)</label>
+    <input type="text" id="selNueva" placeholder="Ej: Sala de baterías nivel 2">
+    <button class="btn-primary choice" data-selnew="1">Evaluar esta ubicación</button>
+    <button class="btn-ghost choice" data-close="1">Cerrar</button>`,
+  e=>{
+    if(e.target.closest('[data-close]')){ closeModals(); return; }
+    if(e.target.closest('[data-selnew]')){
+      const n = $('selNueva').value.trim(); if(!n){ toast('Escribe el nombre de la ubicación.'); return; }
+      closeModals(); abrirEditorNueva(n); return;
+    }
+    const s = e.target.closest('[data-sel]'); if(s){ const loc = getLocations(currentRecorrido).find(l=>l.id===s.dataset.sel); closeModals(); if(loc) abrirEditor(loc); return; }
+    const sc = e.target.closest('[data-selcat]'); if(sc){ const cat = catCache.find(c=>c.id===sc.dataset.selcat); closeModals(); if(cat) abrirEditorCatalogo(cat); }
+  });
+}
+
+/* ============ EDITOR DE UBICACIÓN ============ */
+async function confirmarCambioEditor(){
+  if(!hasUnsaved()) return true;
+  return confirm('Hay una ubicación con cambios sin guardar. Si cambias de ubicación, esos cambios se descartan. ¿Continuar?');
+}
+async function abrirEditor(loc){
+  if(draft.locId===loc.id && editorVisible){ $('editorCard').scrollIntoView({behavior:'smooth'}); return; }
+  if(!(await confirmarCambioEditor())) return;
+  setBusy(true);
+  try{
+    await settlePhotos();
+    draft = draftFromLoc(loc);
+    draftBaseline = stableStringify(draft);
+    editorVisible = true;
+    hallOpen.clear();
+    renderEditorVisibility(); scheduleDraftSave();
+    $('editorCard').scrollIntoView({behavior:'smooth'});
+  }finally{ setBusy(false); }
+}
+async function abrirEditorCatalogo(cat){
+  const existente = currentRecorrido && getLocations(currentRecorrido).find(l=>l.catId===cat.id);
+  if(existente) return abrirEditor(existente);
+  if(!(await confirmarCambioEditor())) return;
+  setBusy(true);
+  try{
+    await settlePhotos();
+    draft = normalizeDraft({catId:cat.id, nombre:cat.nombre, tipo:cat.tipo, criteriosActivos: defaultCriteria(cat.tipo)});
+    draftBaseline = stableStringify(draft);
+    editorVisible = true; hallOpen.clear();
+    renderEditorVisibility(); scheduleDraftSave();
+    $('editorCard').scrollIntoView({behavior:'smooth'});
+  }finally{ setBusy(false); }
+}
+async function abrirEditorNueva(nombre){
+  if(!(await confirmarCambioEditor())) return;
+  draft = normalizeDraft({nombre, tipo:'otra', criteriosActivos: defaultCriteria('otra')});
+  draftBaseline = stableStringify(draft);
+  editorVisible = true; hallOpen.clear();
+  renderEditorVisibility(); scheduleDraftSave();
+  $('editorCard').scrollIntoView({behavior:'smooth'});
+}
+function aplicarTipo(tipo){
+  draft.tipo = tipo;
+  const def = defaultCriteria(tipo);
+  // Se conservan los criterios que ya tienen datos aunque no sean del tipo.
+  const conDatos = draft.criteriosActivos.filter(k=>hasCritData(draft.criterios[k]));
+  draft.criteriosActivos = [...new Set([...def, ...conDatos])];
+  renderEditorCriteria(); scheduleDraftSave();
+}
+function renderEditorVisibility(){
+  const card = $('editorCard');
+  card.classList.toggle('hidden', !(editorVisible && currentRecorrido));
+  if(!editorVisible || !currentRecorrido) { renderLocations(); return; }
+  const esCat = !!draft.catId;
+  $('editorTitle').textContent = draft.locId ? '✏ Evaluando: ' + (draft.nombre || 'ubicación') : '📍 Evaluar ubicación: ' + (draft.nombre || '');
+  $('dNombre').value = draft.nombre;
+  $('dNombre').disabled = esCat;
+  $('dTipo').value = draft.tipo;
+  $('dObs').value = draft.observacion;
+  $('btnSaveLoc').textContent = draft.locId ? '✔ Guardar cambios' : '✔ Guardar ubicación';
+  $('editorHint').textContent = 'Los criterios sin estado quedan como pendientes: no se marcan como correctos automáticamente.';
+  renderEditorCriteria();
+  renderEditorHallazgos();
+  renderEditorPhotos();
+  updatePhotoBusy();
+  renderLocations();
+}
+function renderEditorCriteria(){
+  $('dCrit').innerHTML = draft.criteriosActivos.map(k=>critHtml(k)).join('') || '<p style="font-size:12px;color:var(--muted);">Sin criterios: elige un tipo de ubicación.</p>';
+  const restantes = CRITERIOS.filter(c=>!draft.criteriosActivos.includes(c.key));
+  $('dAddCrit').innerHTML = `<option value="">＋ Agregar criterio…</option>` + restantes.map(c=>`<option value="${c.key}">${esc(c.label)}</option>`).join('');
+  $('dAddCrit').closest('.row').classList.toggle('hidden', restantes.length===0);
+  renderEditorHallazgos();
+}
+function critHtml(k){
+  const c = draft.criterios[k] || emptyCrit();
+  const info = CRIT_BY_KEY[k];
+  const btns = [['correcto','✔ Correcto'],['incorrecto','✘ Incorrecto'],['na','No aplica']]
+    .map(([v,l])=>`<button type="button" class="status-btn${c.status===v?' active':''}" data-val="${v}">${l}</button>`).join('');
+  const extra = k==='contenedores' ? `
+    <div class="row" style="margin-top:6px;">
+      <div><label>Disponibilidad</label><select data-cf="disp"><option value="">—</option><option value="si" ${c.disp==='si'?'selected':''}>Disponible</option><option value="no" ${c.disp==='no'?'selected':''}>No disponible</option></select></div>
+      <div><label>Condición</label><select data-cf="cond"><option value="">—</option><option value="buena" ${c.cond==='buena'?'selected':''}>Buena</option><option value="regular" ${c.cond==='regular'?'selected':''}>Regular</option><option value="mala" ${c.cond==='mala'?'selected':''}>Mala</option></select></div>
+    </div>` : '';
+  const quitar = hasCritData(c) ? '' : `<button type="button" class="btn-small btn-ghost" data-rm-crit="${k}">Quitar</button>`;
+  return `
+  <div class="cat-item" data-crit="${k}">
+    <div class="cat-head">
+      <span class="cat-name">${esc(info.label)}</span>
+      <div class="status-btns">${btns}${quitar}</div>
+    </div>
+    ${extra}
+    <input type="text" class="cat-note" data-cf="note" placeholder="Nota breve (opcional)" value="${esc(c.note)}">
+    <div class="photo-strip cat-photo-strip">
+      ${c.fotos.map((p,i)=>`<div style="position:relative;"><img src="${p}" class="photo-thumb small" data-lb="1" alt=""><button type="button" data-rm-cp="${k}" data-idx="${i}" class="x-btn">✕</button></div>`).join('')}
+      <label class="photo-add small">📷<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handleCritPhotos(event,'${k}')"></label>
+    </div>
+    ${c.status==='incorrecto' ? `<small class="hint">Marcado incorrecto: aparece en Hallazgos.</small>` : ''}
+  </div>`;
+}
+function ensureCrit(k){ if(!draft.criterios[k]) draft.criterios[k] = emptyCrit(); return draft.criterios[k]; }
+function onCritClick(e){
+  const b = e.target.closest('.status-btn');
+  if(b){
+    const k = b.closest('[data-crit]').dataset.crit;
+    const c = ensureCrit(k);
+    c.status = c.status===b.dataset.val ? null : b.dataset.val;
+    draft.hallazgos = syncFindings(draft);
+    renderEditorCriteria(); scheduleDraftSave(); return;
+  }
+  const rc = e.target.closest('[data-rm-crit]');
+  if(rc){ const k = rc.dataset.rmCrit; draft.criteriosActivos = draft.criteriosActivos.filter(x=>x!==k); renderEditorCriteria(); scheduleDraftSave(); return; }
+  const rp = e.target.closest('[data-rm-cp]');
+  if(rp){ ensureCrit(rp.dataset.rmCp).fotos.splice(Number(rp.dataset.idx),1); renderEditorCriteria(); scheduleDraftSave(); }
+}
+function onCritInput(e){
+  const el = e.target;
+  const field = el.dataset.cf; if(!field) return;
+  const k = el.closest('[data-crit]').dataset.crit;
+  ensureCrit(k)[field] = el.value;
+  scheduleDraftSave();
+}
+function handleCritPhotos(event, k){
+  addPhotos(event.target.files, ensureCrit(k).fotos, ()=>renderEditorCriteria(), 900, 0.7);
+  event.target.value = '';
+}
+function renderEditorPhotos(){
+  $('dPhotos').innerHTML = draft.fotos.map((p,i)=>`
+    <div style="position:relative;"><img src="${p}" class="photo-thumb" data-lb="1" alt="">
+    <button type="button" data-rm-obs="${i}" class="x-btn">✕</button></div>`).join('') + `
+    <label class="photo-add">📷<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handleObsPhotos(event)"></label>`;
+}
+function handleObsPhotos(event){
+  addPhotos(event.target.files, draft.fotos, renderEditorPhotos, 1100, 0.72);
+  event.target.value = '';
+}
+function renderEditorHallazgos(){
+  const hs = draft.hallazgos;
+  $('dHallCount').textContent = hs.length;
+  $('dHall').innerHTML = hs.length ? hs.map(h=>hallHtml(h)).join('') : '<p style="font-size:12px;color:var(--muted);">Sin hallazgos. Se generan al marcar un criterio como incorrecto, o agrega uno manual.</p>';
+}
+function hallHtml(h){
+  const sugs = (h.origen && SUGERENCIAS[h.origen]) || SUGERENCIAS._default;
+  const trace = h.origen ? traceFor(currentRecorrido, {...draft, criterios: draft.criterios, nombre: draft.nombre, catId: draft.catId, id: draft.locId || 'x'}, h.origen) : '';
+  const origen = h.origen ? `Criterio: ${esc(CRIT_BY_KEY[h.origen]?.label || h.origen)}` : 'Hallazgo manual';
+  const cierre = h.estado==='cerrado' ? `
+    <div class="row"><div><label>Fecha de cierre</label><input type="date" data-hf="fechaCierre" value="${esc(h.fechaCierre)}"></div></div>
+    <label>Evidencia de cierre</label>
+    <div class="photo-strip">${(h.evidenciaCierre||[]).map((p,i)=>`<div style="position:relative;"><img src="${p}" class="photo-thumb small" data-lb="1" alt=""><button type="button" data-rm-hp="${h.id}" data-field="evidenciaCierre" data-idx="${i}" class="x-btn">✕</button></div>`).join('')}
+      <label class="photo-add small">📷<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handleHallPhotos(event,'${h.id}','evidenciaCierre')"></label></div>` : '';
+  return `
+  <details class="hall st-${h.estado}" data-hid="${h.id}" ${hallOpen.has(h.id)?'open':''}>
+    <summary><span class="badge ${esc(h.prioridad)}">${esc((h.prioridad||'').toUpperCase())}</span> ${esc(h.descripcion || '(sin descripción)')} <i>· ${ESTADO_H_LBL[h.estado]}</i></summary>
+    <div class="hall-body">
+      <div class="point-meta">${origen}${trace ? ' · <b>'+esc(trace)+'</b>' : ''}</div>
+      <label>Qué se observó</label>
+      <textarea data-hf="descripcion" id="hd_${h.id}" placeholder="Describe el hallazgo">${esc(h.descripcion)}</textarea>
+      <label>Acción propuesta</label>
+      <textarea data-hf="accion" placeholder="Acción concreta a ejecutar">${esc(h.accion)}</textarea>
+      <div class="chips">${sugs.map(s=>`<button type="button" class="chip-btn" data-sug="${esc(s)}" data-hid="${h.id}">＋ ${esc(s)}</button>`).join('')}</div>
+      <small class="hint">Sugerencia editable: requiere validación del responsable. No es un análisis automático.</small>
+      <div class="row">
+        <div><label>Prioridad</label><select data-hf="prioridad">${PRIORIDADES.map(p=>`<option value="${p}" ${h.prioridad===p?'selected':''}>${p[0].toUpperCase()+p.slice(1)}</option>`).join('')}</select></div>
+        <div><label>Estado</label><select data-hf="estado">${ESTADOS_H.map(s=>`<option value="${s}" ${h.estado===s?'selected':''}>${ESTADO_H_LBL[s]}</option>`).join('')}</select></div>
+      </div>
+      <div class="row">
+        <div><label>Responsable</label><input type="text" data-hf="responsable" value="${esc(h.responsable)}"></div>
+        <div><label>Fecha compromiso</label><input type="date" data-hf="fechaCompromiso" value="${esc(h.fechaCompromiso)}"></div>
+      </div>
+      ${cierre}
+      <label>Evidencia ${h.origen?'(las fotos del criterio aparecen en el criterio)':''}</label>
+      <div class="photo-strip">${(h.evidencia||[]).map((p,i)=>`<div style="position:relative;"><img src="${p}" class="photo-thumb small" data-lb="1" alt=""><button type="button" data-rm-hp="${h.id}" data-field="evidencia" data-idx="${i}" class="x-btn">✕</button></div>`).join('')}
+        <label class="photo-add small">📷<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handleHallPhotos(event,'${h.id}','evidencia')"></label></div>
+      ${h.origen ? '' : `<button type="button" class="btn-small btn-danger" data-rm-hall="${h.id}">Eliminar hallazgo manual</button>`}
+    </div>
+  </details>`;
+}
+function findHall(id){ return draft.hallazgos.find(h=>h.id===id); }
+function handleHallPhotos(event, hid, field){
+  const h = findHall(hid); if(!h){ event.target.value=''; return; }
+  addPhotos(event.target.files, h[field] || (h[field]=[]), renderEditorHallazgos, 1100, 0.72);
+  event.target.value = '';
+}
+function onHallClick(e){
+  const sug = e.target.closest('[data-sug]');
+  if(sug){
+    const h = findHall(sug.dataset.hid); if(!h) return;
+    h.accion = h.accion ? h.accion + '. ' + sug.dataset.sug : sug.dataset.sug;
+    renderEditorHallazgos(); scheduleDraftSave(); return;
+  }
+  const rh = e.target.closest('[data-rm-hall]');
+  if(rh){
+    if(!confirm('¿Eliminar este hallazgo manual?')) return;
+    draft.hallazgos = draft.hallazgos.filter(h=>h.id!==rh.dataset.rmHall);
+    renderEditorHallazgos(); scheduleDraftSave(); return;
+  }
+  const rp = e.target.closest('[data-rm-hp]');
+  if(rp){
+    const h = findHall(rp.dataset.rmHp); if(h && h[rp.dataset.field]) h[rp.dataset.field].splice(Number(rp.dataset.idx),1);
+    renderEditorHallazgos(); scheduleDraftSave();
+  }
+}
+function onHallInput(e){
+  const el = e.target; const f = el.dataset.hf; if(!f) return;
+  const card = el.closest('[data-hid]'); const h = findHall(card.dataset.hid); if(!h) return;
+  h[f] = el.value;
+  if(f==='estado'){
+    if(el.value==='cerrado' && !h.fechaCierre) h.fechaCierre = todayISO();
+    renderEditorHallazgos();
+  }
+  scheduleDraftSave();
+}
+function descartarEditor(){
+  if(hasUnsaved() && !confirm('¿Descartar la evaluación en edición? Se borran los cambios no guardados de esta ubicación.')) return;
+  draft = emptyDraft(); draftBaseline = stableStringify(draft); editorVisible = false; hallOpen.clear();
+  if(draftOwnerId) saveDraftNow().catch(draftFail);
+  renderEditorVisibility();
+}
+async function guardarUbicacion(){
+  if(!currentRecorrido) return;
+  if(!draft.nombre.trim()){ toast('Escribe el nombre de la ubicación.'); $('dNombre').focus(); return; }
+  const manualSinTexto = draft.hallazgos.find(h=>!h.origen && !h.descripcion.trim());
+  if(manualSinTexto){ toast('Un hallazgo manual no tiene descripción. Complétalo o elimínalo.', 4000); return; }
+  setBusy(true);
+  try{
+    await settlePhotos();
+    const loc = locFromDraft(draft);
+    loc.hallazgos = syncFindings(loc);
+    const base = getLocations(currentRecorrido);
+    const existe = base.some(l=>l.id===loc.id);
+    const ubicaciones = existe ? base.map(l=>l.id===loc.id ? loc : l) : [...base, loc];
+    await writeRecorrido({...currentRecorrido, ubicaciones, updatedAt: Date.now()});
+    draft = emptyDraft(); draftBaseline = stableStringify(draft); editorVisible = false; hallOpen.clear();
+    saveDraftNow().catch(draftFail);
+    renderAll();
+    toast('✔ Ubicación guardada');
+  }catch(e){ handleWriteError(e, 'La ubicación NO se guardó'); }
+  finally{ setBusy(false); }
+}
+
+/* ============ CATÁLOGO DE UBICACIONES (por sitio) ============ */
+async function loadCatalogo(sitio){
+  if(!sitio || !db) return [];
+  const m = await idbRead(ST_META, 'catalogo:'+sitio);
+  return m && Array.isArray(m.items) ? m.items : [];
+}
+async function saveCatalogo(items){
+  const sitio = currentRecorrido ? currentRecorrido.sitio : null;
+  if(!sitio) return;
+  await enqueue(()=>idbPut(ST_META, {key:'catalogo:'+sitio, items, updatedAt:Date.now()}));
+  catCache = items;
+  renderLocations(); renderProgress(); renderCatalog();
+}
+function renderCatalog(){
+  if(!currentRecorrido){ $('catList').innerHTML=''; return; }
+  $('catSitio').textContent = currentRecorrido.sitio;
+  $('catList').innerHTML = catCache.length ? catCache.map(c=>`
+    <div class="cat-row" data-cat="${esc(c.id)}">
+      <input type="text" data-cn value="${esc(c.nombre)}">
+      <select data-ct>${LOC_TYPES.map(t=>`<option value="${t.key}" ${c.tipo===t.key?'selected':''}>${esc(t.label)}</option>`).join('')}</select>
+      <button type="button" class="btn-small btn-danger" data-cdel>✕</button>
+    </div>`).join('') : '<p style="font-size:12px;color:var(--muted);">Catálogo vacío. Agrega las ubicaciones del sitio (comedor, lobby, oficinas, salas técnicas, bodegas, contratistas, almacenamiento de residuos…).</p>';
+  $('catNewTipo').innerHTML = LOC_TYPES.map(t=>`<option value="${t.key}">${esc(t.label)}</option>`).join('');
+}
+function onCatListChange(e){
+  const row = e.target.closest('.cat-row'); if(!row) return;
+  const items = catCache.map(c=>c.id===row.dataset.cat ? {...c, nombre: e.target.matches('[data-cn]') ? e.target.value.trim() || c.nombre : c.nombre, tipo: e.target.matches('[data-ct]') ? e.target.value : c.tipo} : c);
+  saveCatalogo(items).catch(()=>toast('⚠ No se pudo guardar el catálogo.', 4000));
+}
+function onCatListClick(e){
+  const b = e.target.closest('[data-cdel]'); if(!b) return;
+  const row = b.closest('.cat-row');
+  if(!confirm('¿Quitar esta ubicación del catálogo? Las evaluaciones ya registradas no se borran.')) return;
+  saveCatalogo(catCache.filter(c=>c.id!==row.dataset.cat)).catch(()=>toast('⚠ No se pudo guardar el catálogo.', 4000));
+}
+function agregarCatalogo(){
+  const nombre = $('catNewNombre').value.trim();
+  if(!nombre){ toast('Escribe el nombre de la ubicación.'); return; }
+  if(catCache.some(c=>c.nombre.toLowerCase()===nombre.toLowerCase())){ toast('Ya existe una ubicación con ese nombre en el catálogo.', 3500); return; }
+  saveCatalogo([...catCache, {id:newId('cat'), nombre, tipo:$('catNewTipo').value}]).then(()=>{ $('catNewNombre').value=''; }).catch(()=>toast('⚠ No se pudo guardar el catálogo.', 4000));
+}
+
+/* ============ DATOS DEL RECORRIDO ============ */
 function loadDatosTab(){
   if(!currentRecorrido) return;
-  document.getElementById('datosSitio').value = currentRecorrido.sitio;
-  document.getElementById('datosFecha').value = currentRecorrido.fecha;
-  document.getElementById('datosParticipantes').value = currentRecorrido.participantes || '';
-  document.getElementById('datosObjetivo').value = currentRecorrido.objetivo || '';
+  $('datosSitio').value = currentRecorrido.sitio;
+  $('datosFecha').value = currentRecorrido.fecha;
+  $('datosParticipantes').value = currentRecorrido.participantes || '';
+  $('datosObjetivo').value = currentRecorrido.objetivo || '';
 }
 async function saveDatosRecorrido(){
   if(!currentRecorrido) return;
-  currentRecorrido.participantes = document.getElementById('datosParticipantes').value.trim();
-  currentRecorrido.objetivo = document.getElementById('datosObjetivo').value.trim();
-  await persist();
-  renderReport();
-  toast('✔ Datos del recorrido actualizados.');
+  setBusy(true);
+  try{
+    await settlePhotos();
+    await writeRecorrido({...currentRecorrido, participantes: $('datosParticipantes').value.trim(), objetivo: $('datosObjetivo').value.trim(), updatedAt: Date.now()});
+    renderAll();
+    toast('✔ Datos del recorrido actualizados.');
+  }catch(e){ handleWriteError(e, 'No se guardaron los cambios'); }
+  finally{ setBusy(false); }
 }
 
-/* ============ REPORT ============ */
+/* ============ INFORME EN PANTALLA ============ */
 function renderReport(){
   if(!currentRecorrido) return;
-  const puntos = currentRecorrido.puntos;
-  const total = puntos.length;
-  const oportunidades = puntos.filter(p=>p.esOportunidad);
-  const altas = oportunidades.filter(p=>p.prioridad==='alta').length;
-  const medias = oportunidades.filter(p=>p.prioridad==='media').length;
-  const bajas = oportunidades.filter(p=>p.prioridad==='baja').length;
-  const totalFotos = puntos.reduce((s,p)=>s + (p.fotos?p.fotos.length:0), 0);
-
-  let correctos=0, incorrectos=0, na=0;
-  puntos.forEach(p=>(p.categorias||[]).forEach(c=>{
-    if(c.status==='correcto') correctos++;
-    else if(c.status==='incorrecto') incorrectos++;
-    else if(c.status==='na') na++;
-  }));
-  const totalEval = correctos+incorrectos+na;
-  const pctCorrecto = totalEval ? Math.round((correctos/totalEval)*100) : 0;
-
-  document.getElementById('summaryGrid').innerHTML = `
-    <div class="summary-box"><div class="num">${total}</div><div class="lbl">Puntos evaluados</div></div>
-    <div class="summary-box"><div class="num">${pctCorrecto}%</div><div class="lbl">Segregación correcta</div></div>
-    <div class="summary-box"><div class="num">${oportunidades.length}</div><div class="lbl">Oportunidades / hallazgos</div></div>
-    <div class="summary-box"><div class="num">${totalFotos}</div><div class="lbl">Fotografías</div></div>
-  `;
-
-  const bars = [
-    {lbl:`Alta prioridad`, val:altas, max:Math.max(1,oportunidades.length), color:'var(--red)'},
-    {lbl:`Media prioridad`, val:medias, max:Math.max(1,oportunidades.length), color:'var(--amber)'},
-    {lbl:`Baja prioridad`, val:bajas, max:Math.max(1,oportunidades.length), color:'var(--green)'},
-  ];
-  document.getElementById('barsWrap').innerHTML = `
-    <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Sitio: <b>${currentRecorrido.sitio}</b> · Fecha: <b>${currentRecorrido.fecha}</b> · Participantes: <b>${currentRecorrido.participantes||'-'}</b></div>
-    ${currentRecorrido.objetivo ? `<div style="font-size:12px;color:var(--muted);margin-bottom:10px;"><b>Objetivo:</b> ${currentRecorrido.objetivo}</div>`:''}
-    ${bars.map(b=>`
-      <div class="bar-wrap">
-        <div class="bar-lbl"><span>${b.lbl}</span><span>${b.val}</span></div>
-        <div class="bar-track"><div class="bar-fill" style="width:${(b.val/b.max)*100}%;background:${b.color};"></div></div>
-      </div>
-    `).join('')}
-  `;
-
-  document.getElementById('findingsList').innerHTML = oportunidades.length === 0
-    ? `<p style="color:var(--muted);font-size:12.5px;">No se han registrado oportunidades de mejora todavía.</p>`
-    : oportunidades.sort((a,b)=>({alta:0,media:1,baja:2}[a.prioridad]-{alta:0,media:1,baja:2}[b.prioridad])).map(p=>`
-      <div class="point-card ${pointStatusClass(p)}">
-        <div class="point-head">
-          <div>
-            <div class="point-title">${p.ubicacion}</div>
-            <div class="point-meta">${p.tipo}${p.responsable ? ' · Responsable: '+p.responsable : ''}</div>
-          </div>
-          <span class="badge ${p.prioridad}">${p.prioridad.toUpperCase()}</span>
-        </div>
-        <p style="font-size:12.5px;margin:8px 0 0;">${p.descOportunidad || p.nota || ''}</p>
-        ${p.fotos && p.fotos.length ? `<div class="photo-strip">${p.fotos.map(f=>`<img src="${f}" class="photo-thumb" onclick="openLightbox('${f}')">`).join('')}</div>` : ''}
-      </div>
-    `).join('');
+  const m = buildModel(currentRecorrido, catCache);
+  allRecsCache = allRecsCache || [];
+  $('summaryGrid').innerHTML = `
+    <div class="summary-box"><div class="num">${m.ev}/${m.total}</div><div class="lbl">Ubicaciones evaluadas</div></div>
+    <div class="summary-box"><div class="num">${m.pct===null?'Sin evaluación':m.pct+'%'}</div><div class="lbl">Segregación correcta</div></div>
+    <div class="summary-box"><div class="num">${m.cobertura===null?'—':m.cobertura+'%'}</div><div class="lbl">Cobertura de criterios</div></div>
+    <div class="summary-box"><div class="num">${m.abiertos.length}</div><div class="lbl">Hallazgos abiertos</div></div>`;
+  $('barsWrap').innerHTML = `
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Sitio: <b>${esc(currentRecorrido.sitio)}</b> · Fecha: <b>${esc(currentRecorrido.fecha)}</b> · Participantes: <b>${esc(currentRecorrido.participantes||'-')}</b></div>
+    <div class="chips"><span class="chip st-correcto">Correctos ${m.C}</span><span class="chip st-incorrecto">Incorrectos ${m.I}</span><span class="chip st-na">No aplica ${m.NA}</span><span class="chip st-pend">Pendientes ${m.P}</span></div>
+    <p style="font-size:11.5px;color:var(--muted);margin:8px 0 0;">Segregación correcta = correctos ÷ (correctos + incorrectos). “No aplica” y “pendiente” se muestran aparte. Indicador interno; no es tasa de reciclaje ni cumplimiento TRUE.</p>
+    ${summarySentences(m).map(s=>`<p style="font-size:12px;margin:4px 0;">${esc(s)}</p>`).join('')}`;
+  const pend = [...m.locs.filter(l=>locState(l)==='pendiente').map(l=>l.nombre), ...m.pendCat.map(c=>c.nombre)];
+  $('pendList').innerHTML = pend.length ? pend.map(n=>`<div class="hall-mini">• ${esc(n)}</div>`).join('') : '<p style="color:var(--muted);font-size:12.5px;">No hay ubicaciones pendientes.</p>';
+  $('findingsList').innerHTML = m.abiertos.length ? m.abiertos.map(f=>{
+    const tr = f.h.origen ? traceFor(currentRecorrido, f.loc, f.h.origen) : '';
+    return `<div class="point-card ${f.h.prioridad==='alta'?'critical':'finding'}">
+      <div class="point-head"><div><div class="point-title">${esc(f.loc.nombre)}</div>
+      <div class="point-meta">${esc(f.h.responsable ? 'Responsable: '+f.h.responsable : 'Sin responsable')}${f.h.fechaCompromiso ? ' · Compromiso: '+esc(f.h.fechaCompromiso) : ''} · ${esc(ESTADO_H_LBL[f.h.estado])}</div></div>
+      <span class="badge ${esc(f.h.prioridad)}">${esc(f.h.prioridad.toUpperCase())}</span></div>
+      <p style="font-size:12.5px;margin:6px 0 0;">${esc(f.h.descripcion || '(sin descripción)')}</p>
+      ${f.h.accion ? `<p style="font-size:12px;margin:4px 0 0;"><b>Acción:</b> ${esc(f.h.accion)}</p>` : '<p style="font-size:11.5px;color:var(--amber);margin:4px 0 0;">Falta acción propuesta</p>'}
+      ${tr ? `<p style="font-size:11.5px;color:var(--muted);margin:4px 0 0;">Seguimiento: ${esc(tr)}</p>` : ''}
+    </div>`;
+  }).join('') : '<p style="color:var(--muted);font-size:12.5px;">No hay hallazgos abiertos.</p>';
+  const evaluables = m.locs.filter(l=>locState(l)!=='pendiente');
+  $('reportLoc').innerHTML = evaluables.length ? evaluables.map(l=>`<option value="${esc(l.id)}">${esc(l.nombre)} (${STATE_LBL[locState(l)]})</option>`).join('') : '<option value="">Sin ubicaciones con datos</option>';
 }
 
-/* ============ EXPORT: CSV ============ */
-function exportCSV(){
-  if(!currentRecorrido || currentRecorrido.puntos.length===0){ toast('No hay puntos para exportar.'); return; }
-  const headers = ['Ubicacion','Tipo','Categorias evaluadas','Nota general','Es oportunidad','Descripcion oportunidad','Prioridad','Responsable','N fotos','Fecha/hora'];
-  const rows = currentRecorrido.puntos.map(p=>[
-    p.ubicacion,
-    p.tipo,
-    (p.categorias||[]).map(c=>`${c.label}:${c.status||'-'}`).join(' | '),
-    p.nota||'',
-    p.esOportunidad?'Si':'No',
-    p.descOportunidad||'',
-    p.prioridad||'',
-    p.responsable||'',
-    (p.fotos||[]).length,
-    new Date(p.ts).toLocaleString('es-CL')
-  ]);
-  const csvContent = [headers, ...rows].map(r=>
-    r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')
-  ).join('\n');
-  const blob = new Blob(['\ufeff'+csvContent], {type:'text/csv;charset=utf-8;'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `ZeroWaste_${currentRecorrido.sitio}_${currentRecorrido.fecha}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-  toast('CSV exportado.');
-}
-
-/* ============ EXPORT: PDF ============ */
-function statusLabel(s){
-  if(s==='correcto') return 'Correcto';
-  if(s==='incorrecto') return 'Incorrecto';
-  if(s==='na') return 'N/A';
-  return '-';
-}
-function statusColor(s){
-  if(s==='correcto') return '#1d8a5e';
-  if(s==='incorrecto') return '#c0272c';
-  return '#666666';
-}
-
-/* ============ FINALIZAR Y DESCARGAR ============ */
-async function finalizarYDescargar(){
-  if(!currentRecorrido || currentRecorrido.puntos.length === 0){
-    toast('Registra al menos un punto antes de finalizar.');
-    return;
-  }
-  renderReport();
-  await exportPDF();
-}
-
-/* Re-compress a photo specifically for the PDF report, lighter than the
-   on-screen copy, to keep the file quick to generate and reasonably sized. */
-function shrinkForExport(dataUrl){
-  return compressImage(dataUrl, 700, 0.6);
-}
-async function shrinkAllForExport(puntos){
-  const cache = new Map();
-  const all = [];
-  puntos.forEach(p=>{
-    (p.fotos||[]).forEach(f=>all.push(f));
-    (p.categorias||[]).forEach(c=>(c.fotos||[]).forEach(f=>all.push(f)));
+/* ============ PDF: CONSOLIDADO Y POR UBICACIÓN ============ */
+function collectPhotos(rec, loc){
+  const out = [];
+  const add = (src, caption)=>{ if(src) out.push({src, caption}); };
+  (loc.fotos||[]).forEach(p=>add(p, `${loc.nombre} · Observación general`));
+  (loc.criteriosActivos||[]).forEach(k=>{
+    const c = loc.criterios[k] || {};
+    (c.fotos||[]).forEach(p=>add(p, `${loc.nombre} · ${CRIT_BY_KEY[k].label} (${critEstadoLbl(c.status)})`));
   });
-  const unique = [...new Set(all)];
-  for(const f of unique){
-    try{
-      cache.set(f, await shrinkForExport(f));
-    }catch(e){
-      cache.set(f, f);
-    }
-  }
-  return cache;
-}
-function getImageDimensionsMm(dataUrl, widthMm){
-  return new Promise((resolve)=>{
-    const img = new Image();
-    img.onload = ()=>{
-      const ratio = (img.naturalHeight && img.naturalWidth) ? (img.naturalHeight / img.naturalWidth) : 0.75;
-      resolve({w: widthMm, h: widthMm * ratio});
-    };
-    img.onerror = ()=>resolve({w: widthMm, h: widthMm * 0.75});
-    img.src = dataUrl;
+  (loc.hallazgos||[]).forEach((h,i)=>{
+    (h.evidencia||[]).forEach(p=>add(p, `${loc.nombre} · Hallazgo ${i+1} (evidencia)`));
+    (h.evidenciaCierre||[]).forEach(p=>add(p, `${loc.nombre} · Hallazgo ${i+1} (evidencia de cierre)`));
   });
+  return out;
 }
-
-async function exportPDF(){
-  if(!currentRecorrido || currentRecorrido.puntos.length===0){ toast('No hay puntos para generar el informe.'); return; }
-  if(!window.jspdf || !window.jspdf.jsPDF){ toast('⚠ No se pudo cargar el generador de PDF.'); return; }
-  toast('Generando informe PDF...');
-  try{
-    const { jsPDF } = window.jspdf;
-    const r = currentRecorrido;
-    const puntos = r.puntos;
-    const oportunidades = puntos.filter(p=>p.esOportunidad);
-
-    let correctos=0, incorrectos=0, na=0;
-    puntos.forEach(p=>(p.categorias||[]).forEach(c=>{
-      if(c.status==='correcto') correctos++;
-      else if(c.status==='incorrecto') incorrectos++;
-      else if(c.status==='na') na++;
-    }));
-    const totalEval = correctos+incorrectos+na;
-    const pctCorrecto = totalEval ? Math.round((correctos/totalEval)*100) : 0;
-    const totalFotos = puntos.reduce((s,p)=>s + (p.fotos?p.fotos.length:0) + (p.categorias||[]).reduce((s2,c)=>s2+(c.fotos?c.fotos.length:0),0), 0);
-    const fechaGen = new Date().toLocaleString('es-CL');
-
-    // Pre-shrink every unique photo once for a lighter, faster PDF
-    const photoCache = await shrinkAllForExport(puntos);
-    const exportPhoto = (f)=> photoCache.get(f) || f;
-
-    const doc = new jsPDF({unit:'mm', format:'a4'});
-    const pageW = doc.internal.pageSize.getWidth();
-    const pageH = doc.internal.pageSize.getHeight();
-    const margin = 14;
-    const contentW = pageW - margin*2;
-    let y = 0;
-
-    const PURPLE = [82,37,130];
-    const GREEN = [51,213,146];
-    const RED = [197,39,44];
-    const AMBER = [138,90,0];
-    const OKGREEN = [29,138,94];
-    const GRAY = [110,110,110];
-
-    function ensureSpace(h){
-      if(y + h > pageH - margin){
-        doc.addPage();
-        y = margin;
-        return true;
-      }
-      return false;
-    }
-
-    function sectionHeading(title){
-      ensureSpace(14);
-      doc.setFont('helvetica','bold');
-      doc.setFontSize(12);
-      doc.setTextColor(...PURPLE);
-      doc.text(title, margin, y);
-      doc.setDrawColor(...GREEN);
-      doc.setLineWidth(0.8);
-      doc.line(margin, y+2, margin+Math.min(80, contentW), y+2);
-      y += 8;
-      doc.setTextColor(0,0,0);
-    }
-
-    // Header banner
-    doc.setFillColor(...PURPLE);
-    doc.rect(0,0,pageW,22,'F');
-    doc.setTextColor(255,255,255);
-    doc.setFont('helvetica','bold');
-    doc.setFontSize(15);
-    doc.text('Informe de Recorrido Zero Waste', margin, 12);
-    doc.setFont('helvetica','normal');
-    doc.setFontSize(9);
-    doc.text('ODATA Colocation · Sistema de Gestión Integrado (SGI)', margin, 18);
-    y = 30;
-    doc.setTextColor(0,0,0);
-
-    // Metadata
-    doc.setFontSize(10);
-    const metaLines = [
-      ['Sitio', r.sitio],
-      ['Fecha del recorrido', r.fecha],
-      ['Participantes', r.participantes || '-'],
-    ];
-    if(r.objetivo) metaLines.push(['Objetivo', r.objetivo]);
-    metaLines.push(['Fecha de generación', fechaGen]);
-
-    metaLines.forEach(([label, value])=>{
-      const wrapped = doc.splitTextToSize(String(value||'-'), contentW - 45);
-      ensureSpace(wrapped.length*5 + 2);
-      doc.setFont('helvetica','bold');
-      doc.text(label+':', margin, y);
-      doc.setFont('helvetica','normal');
-      doc.text(wrapped, margin+45, y);
-      y += wrapped.length*5 + 2;
+function makePdf(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'mm', format:'a4'});
+  const P = {doc, W: doc.internal.pageSize.getWidth(), H: doc.internal.pageSize.getHeight(), M: 14, y: 0, failedImgs: 0};
+  P.cw = P.W - 2*P.M;
+  P.newPage = ()=>{ doc.addPage(); P.y = P.M + 4; };
+  P.ensure = h=>{ if(P.y + h > P.H - 16) P.newPage(); };
+  P.font = (size, bold, rgb)=>{ doc.setFont('helvetica', bold?'bold':'normal'); doc.setFontSize(size); doc.setTextColor(...(rgb||[30,30,30])); };
+  P.text = (str, o={})=>{
+    const size = o.size || 9.5, lh = size*0.45;
+    P.font(size, o.bold, o.color);
+    const lines = doc.splitTextToSize(String(str ?? ''), o.width || P.cw);
+    lines.forEach(line=>{ P.ensure(lh); doc.text(line, P.M + (o.indent||0), P.y); P.y += lh; });
+    P.y += o.gap ?? 1.5;
+  };
+  P.heading = t=>{
+    P.ensure(16);
+    P.font(12, true, PURPLE);
+    doc.text(t, P.M, P.y);
+    doc.setDrawColor(...GREEN); doc.setLineWidth(0.8); doc.line(P.M, P.y+1.8, P.M+Math.min(80,P.cw), P.y+1.8);
+    P.y += 8;
+  };
+  P.table = (head, body, didParse)=>{
+    doc.autoTable({
+      startY: P.y, margin:{left:P.M, right:P.M},
+      head:[head], body,
+      styles:{fontSize:7.8, cellPadding:1.6, overflow:'linebreak', valign:'top'},
+      headStyles:{fillColor:PURPLE, textColor:255},
+      didParseCell: didParse || undefined
     });
-    y += 4;
-
-    // Summary
-    sectionHeading('Resumen ejecutivo');
-    const summaryItems = [
-      [String(puntos.length), 'Puntos evaluados'],
-      [pctCorrecto+'%', 'Segregación correcta'],
-      [String(oportunidades.length), 'Oportunidades / hallazgos'],
-      [String(totalFotos), 'Fotografías']
-    ];
-    ensureSpace(24);
-    const boxGap = 4;
-    const boxW = (contentW - boxGap*3)/4;
-    summaryItems.forEach((item,i)=>{
-      const bx = margin + i*(boxW+boxGap);
-      doc.setDrawColor(220,220,220);
-      doc.setFillColor(244,242,248);
-      doc.roundedRect(bx, y, boxW, 18, 2, 2, 'FD');
-      doc.setFont('helvetica','bold');
-      doc.setFontSize(14);
-      doc.setTextColor(...PURPLE);
-      doc.text(item[0], bx+boxW/2, y+8, {align:'center'});
-      doc.setFont('helvetica','normal');
-      doc.setFontSize(7.5);
-      doc.setTextColor(90,90,90);
-      doc.text(item[1], bx+boxW/2, y+14, {align:'center', maxWidth: boxW-2});
-    });
-    y += 24;
-    doc.setTextColor(0,0,0);
-
-    // Findings
-    sectionHeading('Oportunidades de mejora identificadas');
-    if(oportunidades.length === 0){
-      doc.setFont('helvetica','normal');
-      doc.setFontSize(10);
-      ensureSpace(8);
-      doc.text('No se identificaron oportunidades de mejora en este recorrido.', margin, y);
-      y += 8;
-    } else {
-      const body = oportunidades.map((p,i)=>[
-        String(i+1),
-        p.ubicacion||'',
-        (p.prioridad||'').toUpperCase(),
-        p.descOportunidad||p.nota||'',
-        p.responsable||''
-      ]);
-      doc.autoTable({
-        startY: y,
-        margin: {left:margin, right:margin},
-        head: [['#','Ubicación','Prioridad','Descripción','Responsable']],
-        body,
-        styles:{fontSize:8, cellPadding:2, overflow:'linebreak'},
-        headStyles:{fillColor:PURPLE, textColor:255},
-        columnStyles:{0:{cellWidth:8}, 2:{cellWidth:20}},
-        didParseCell: (data)=>{
-          if(data.section==='body' && data.column.index===2){
-            const val = (data.cell.raw||'').toString().toUpperCase();
-            if(val==='ALTA') data.cell.styles.textColor = RED;
-            else if(val==='MEDIA') data.cell.styles.textColor = AMBER;
-            else if(val==='BAJA') data.cell.styles.textColor = OKGREEN;
-            data.cell.styles.fontStyle = 'bold';
-          }
-        }
+    P.y = doc.lastAutoTable.finalY + 4;
+  };
+  // Fotos identificadas: cada una con su criterio/hallazgo. Si falla, se dibuja un recuadro explícito.
+  P.photos = (list, probe)=>{
+    if(!list.length) return;
+    const gap = 4, colW = (P.cw - 2*gap)/3;
+    for(let i=0;i<list.length;i+=3){
+      const row = list.slice(i,i+3);
+      const blocks = row.map(it=>{
+        const pr = probe.get(it.src) || {ok:false};
+        const imgH = pr.ok ? Math.min(colW*(pr.ratio||0.75), 70) : 22;
+        const capLines = doc.splitTextToSize(it.caption, colW);
+        return {it, pr, imgH, capLines, h: imgH + capLines.length*3.4 + 3};
       });
-      y = doc.lastAutoTable.finalY + 8;
-    }
-
-    // Detail per point
-    sectionHeading('Detalle de puntos evaluados');
-
-    for(let i=0;i<puntos.length;i++){
-      const p = puntos[i];
-      ensureSpace(16);
-      doc.setFont('helvetica','bold');
-      doc.setFontSize(11);
-      doc.setTextColor(...PURPLE);
-      doc.text(`${i+1}. ${p.ubicacion||''}`, margin, y);
-      y += 5;
-      doc.setFont('helvetica','normal');
-      doc.setFontSize(8.5);
-      doc.setTextColor(...GRAY);
-      doc.text(`${p.tipo||''} · ${new Date(p.ts).toLocaleString('es-CL')}`, margin, y);
-      y += 5;
-      doc.setTextColor(0,0,0);
-
-      const catRows = (p.categorias||[]).filter(c=>c.status||c.note);
-      if(catRows.length){
-        doc.autoTable({
-          startY: y,
-          margin:{left:margin, right:margin},
-          head: [['Categoría','Estado','Nota']],
-          body: catRows.map(c=>[c.label, statusLabel(c.status), c.note||'']),
-          styles:{fontSize:8, cellPadding:2, overflow:'linebreak'},
-          headStyles:{fillColor:PURPLE, textColor:255},
-          didParseCell:(data)=>{
-            if(data.section==='body' && data.column.index===1){
-              const val = data.cell.raw;
-              if(val==='Correcto') data.cell.styles.textColor = OKGREEN;
-              else if(val==='Incorrecto') data.cell.styles.textColor = RED;
-              data.cell.styles.fontStyle='bold';
-            }
-          }
-        });
-        y = doc.lastAutoTable.finalY + 3;
-      }
-
-      if(p.nota){
-        doc.setFont('helvetica','bold');
-        doc.setFontSize(9);
-        const wrapped = doc.splitTextToSize('Observación: ' + p.nota, contentW);
-        ensureSpace(wrapped.length*4.5 + 2);
-        doc.setFont('helvetica','normal');
-        doc.text(wrapped, margin, y);
-        y += wrapped.length*4.5 + 2;
-      }
-
-      if(p.esOportunidad){
-        const boxColor = p.prioridad==='alta' ? [253,226,226] : p.prioridad==='media' ? [255,241,214] : [228,249,239];
-        const textColor = p.prioridad==='alta' ? RED : p.prioridad==='media' ? AMBER : OKGREEN;
-        const desc = p.descOportunidad || '';
-        const wrapped = doc.splitTextToSize(`OPORTUNIDAD DE MEJORA - PRIORIDAD ${(p.prioridad||'').toUpperCase()}: ${desc}${p.responsable?' (Responsable sugerido: '+p.responsable+')':''}`, contentW - 6);
-        const boxH = wrapped.length*4.5 + 4;
-        ensureSpace(boxH+2);
-        doc.setFillColor(...boxColor);
-        doc.rect(margin, y, contentW, boxH, 'F');
-        doc.setFont('helvetica','bold');
-        doc.setFontSize(8.5);
-        doc.setTextColor(...textColor);
-        doc.text(wrapped, margin+3, y+5);
-        y += boxH + 3;
-        doc.setTextColor(0,0,0);
-      }
-
-      const allPhotos = [];
-      (p.fotos||[]).forEach(f=>allPhotos.push(f));
-      (p.categorias||[]).forEach(c=>(c.fotos||[]).forEach(f=>allPhotos.push(f)));
-
-      if(allPhotos.length){
-        const photoW = 42;
-        const gap = 3;
-        let x = margin;
-        let rowH = 0;
-        for(const foto of allPhotos){
-          const src = exportPhoto(foto);
-          const dims = await getImageDimensionsMm(src, photoW);
-          if(x + photoW > margin + contentW + 0.01){
-            x = margin;
-            y += rowH + gap;
-            rowH = 0;
-          }
-          if(ensureSpace(dims.h + gap)){
-            x = margin;
-          }
-          try{
-            doc.addImage(src, 'JPEG', x, y, photoW, dims.h);
-          }catch(imgErr){
-            console.error('No se pudo insertar una foto en el PDF', imgErr);
-          }
-          x += photoW + gap;
-          rowH = Math.max(rowH, dims.h);
+      const rowH = Math.max(...blocks.map(b=>b.h));
+      P.ensure(rowH + 2);
+      blocks.forEach((b,j)=>{
+        const x = P.M + j*(colW+gap), y = P.y;
+        if(b.pr.ok){
+          try{ doc.addImage(b.it.src, b.pr.fmt, x, y, colW, b.imgH); }
+          catch(err){ b.pr = {ok:false}; }
         }
-        y += rowH + 4;
+        if(!b.pr.ok){
+          P.failedImgs++;
+          doc.setDrawColor(...RED); doc.setLineWidth(0.3); doc.rect(x, y, colW, b.imgH);
+          P.font(7, true, RED); doc.text('IMAGEN NO INCLUIDA', x+colW/2, y+b.imgH/2, {align:'center'});
+        }
+        P.font(6.8, false, GRAY);
+        doc.text(b.capLines, x, y + b.imgH + 3);
+      });
+      P.y += rowH + 2;
+    }
+  };
+  return P;
+}
+function locationBlock(P, rec, loc, allRecs){
+  const lbl = critEstadoLbl;
+  P.ensure(24);
+  P.font(11, true, PURPLE);
+  P.text(`Ubicación: ${loc.nombre}`, {size:11, bold:true, color:PURPLE, gap:1});
+  P.text(`Tipo: ${TYPE_LBL[loc.tipo] || loc.tipoLegacy || 'Sin tipo'}${loc.tipoLegacy && loc.tipo==='otra' ? ' (registro anterior: '+loc.tipoLegacy+')' : ''} · Estado: ${STATE_LBL[locState(loc)]}`, {size:8.5, color:GRAY});
+  P.text(`Participantes: ${rec.participantes || '-'} · Fecha del recorrido: ${rec.fecha}`, {size:8.5, color:GRAY, gap:3});
+  // Criterios (incluye los que solo tienen fotos y los pendientes)
+  const rows = (loc.criteriosActivos||[]).map(k=>{
+    const c = loc.criterios[k] || {};
+    const extra = k==='contenedores' ? [c.disp?`Disp.: ${c.disp==='si'?'sí':'no'}`:'', c.cond?`Condición: ${c.cond}`:''].filter(Boolean).join(' · ') : '';
+    const nota = [extra, c.note||''].filter(Boolean).join(' · ');
+    return [CRIT_BY_KEY[k].label, lbl(c.status), nota || '-', String((c.fotos||[]).length), c.status==='incorrecto' ? (traceFor(rec, loc, k) || '-') : '-'];
+  });
+  P.heading('Evaluación por criterio');
+  if(rows.length) P.table(['Criterio','Estado','Nota','Fotos','Seguimiento'], rows, d=>{
+    if(d.section==='body' && d.column.index===1){
+      if(d.cell.raw==='Correcto') d.cell.styles.textColor = OKG;
+      else if(d.cell.raw==='Incorrecto') d.cell.styles.textColor = RED;
+      d.cell.styles.fontStyle = 'bold';
+    }
+  });
+  else P.text('Sin criterios aplicables registrados.', {color:GRAY});
+  if((loc.observacion||'').trim()){ P.heading('Observaciones'); P.text(loc.observacion); }
+  const hs = loc.hallazgos || [];
+  P.heading(`Hallazgos y acciones (${hs.length})`);
+  if(!hs.length) P.text('Sin hallazgos registrados en esta ubicación.', {color:GRAY});
+  else P.table(['#','Hallazgo','Acción propuesta','Prioridad','Responsable','Compromiso','Estado','Cierre / seguimiento'],
+    hs.map((h,i)=>[String(i+1), h.descripcion||'-', h.accion||'(sin acción)', (h.prioridad||'').toUpperCase(), h.responsable||'-', h.fechaCompromiso||'-', ESTADO_H_LBL[h.estado]||h.estado,
+      [h.estado==='cerrado' ? `Cierre: ${h.fechaCierre||'-'}` : '', h.origen ? (traceFor(rec, loc, h.origen)||'') : ''].filter(Boolean).join(' · ') || '-']),
+    d=>{
+      if(d.section==='body' && d.column.index===3){
+        const v = d.cell.raw;
+        d.cell.styles.textColor = v==='ALTA'?RED:v==='MEDIA'?AMBER:OKG; d.cell.styles.fontStyle='bold';
       }
-
-      ensureSpace(4);
-      doc.setDrawColor(225,225,225);
-      doc.line(margin, y, margin+contentW, y);
-      y += 6;
+    });
+  const photos = collectPhotos(rec, loc);
+  if(photos.length){ P.heading(`Fotografías identificadas (${photos.length})`); P.photos(photos, P._probe); }
+}
+async function prepararFotos(rec, locs){
+  const photos = locs.flatMap(l=>collectPhotos(rec, l));
+  const probe = new Map();
+  const uniq = [...new Set(photos.map(p=>p.src))];
+  for(const s of uniq){ probe.set(s, await probeImage(s)); }
+  return {photos, probe};
+}
+function finalizarPdf(P, meta){
+  const doc = P.doc, n = doc.internal.getNumberOfPages();
+  for(let i=1;i<=n;i++){
+    doc.setPage(i);
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.2); doc.setTextColor(120,120,120);
+    doc.text(`Página ${i} de ${n} · ${meta.sitio} · ${meta.fecha}${meta.borrador?' · BORRADOR (informe parcial)':''} · Informe Zero Waste · SGI ODATA`, P.W/2, P.H-6, {align:'center'});
+  }
+}
+function nombreArchivo(rec, loc, borrador){
+  const base = loc
+    ? `ZeroWaste_${rec.sitio}_${rec.fecha}_${slug(loc.nombre)}_${rec.id.slice(-8)}`
+    : `ZeroWaste_${rec.sitio}_${rec.fecha}_Consolidado_${rec.id.slice(-8)}`;
+  return base + (borrador ? '_BORRADOR' : '') + '.pdf';
+}
+async function generarInforme(modo, locId, imprimir){
+  if(!currentRecorrido){ toast('Abre un recorrido primero.'); return; }
+  if(!window.jspdf){ toast('⚠ No se pudo cargar el generador de PDF.'); return; }
+  const rec = currentRecorrido;
+  const model = buildModel(rec, catCache);
+  const loc = modo==='ubicacion' ? model.locs.find(l=>l.id===locId) : null;
+  if(modo==='ubicacion' && !loc){ toast('Selecciona una ubicación con datos.'); return; }
+  if(modo==='consolidado' && model.locs.length===0){ toast('Aún no hay ubicaciones evaluadas para el informe.', 3500); return; }
+  const locs = loc ? [loc] : model.locs;
+  const borrador = loc ? locState(loc)!=='evaluada' : (model.ev < model.total);
+  toast('Generando informe PDF…', 1500);
+  try{
+    const {probe} = await prepararFotos(rec, locs);
+    const P = makePdf();
+    P._probe = probe;
+    const doc = P.doc;
+    // Portada / cabecera
+    doc.setFillColor(...PURPLE); doc.rect(0,0,P.W,24,'F');
+    doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(14);
+    doc.text(loc ? `Informe de ubicación · ${loc.nombre}` : 'Informe consolidado de recorrido Zero Waste', P.M, 12);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5);
+    doc.text('ODATA Colocation · Sistema de Gestión Integrado (SGI)', P.M, 19);
+    P.y = 30;
+    if(borrador){
+      doc.setDrawColor(...RED); doc.setLineWidth(0.6); doc.rect(P.M, P.y-4, P.cw, 9);
+      P.font(9.5, true, RED); doc.text('BORRADOR · informe parcial: faltan ubicaciones o criterios por evaluar', P.M+3, P.y+1.5);
+      P.y += 10;
     }
-
-    // Footer page numbers
-    const pageCount = doc.internal.getNumberOfPages();
-    for(let i=1;i<=pageCount;i++){
-      doc.setPage(i);
-      doc.setFont('helvetica','normal');
-      doc.setFontSize(7.5);
-      doc.setTextColor(150,150,150);
-      doc.text(`Página ${i} de ${pageCount} · Informe Zero Waste · SGI ODATA Colocation`, pageW/2, pageH-6, {align:'center'});
+    const meta = [['Sitio', rec.sitio],['Fecha del recorrido', rec.fecha],['Participantes', rec.participantes||'-']];
+    if(rec.objetivo) meta.push(['Objetivo', rec.objetivo]);
+    meta.push(['Identificador del recorrido', rec.id]);
+    meta.push(['Generado', new Date().toLocaleString('es-CL')]);
+    meta.forEach(([k,v])=>{
+      P.font(9, true); doc.text(k+':', P.M, P.y);
+      P.font(9, false);
+      const lines = doc.splitTextToSize(String(v), P.cw-45);
+      doc.text(lines, P.M+45, P.y); P.y += lines.length*4.2 + 1.5;
+    });
+    const fallidas = probe ? [...probe.values()].filter(v=>!v.ok).length : 0;
+    if(fallidas) { P.font(8.5,true,RED); doc.text(`Fotografías que no pudieron cargarse: ${fallidas}. Aparecen marcadas como “IMAGEN NO INCLUIDA”.`, P.M, P.y+3); P.y+=8; }
+    P.y += 3;
+    if(!loc){
+      P.heading('Resumen ejecutivo');
+      summarySentences(model).forEach(s=>P.text(s, {gap:2}));
+      P.heading('Cobertura del recorrido');
+      P.table(['Indicador','Valor'], [
+        ['Ubicaciones evaluadas', `${model.ev} de ${model.total}`],
+        ['Ubicaciones en proceso', String(model.enp)],
+        ['Ubicaciones pendientes', String(model.pen)],
+        ['Criterios correctos / incorrectos', `${model.C} / ${model.I}`],
+        ['Criterios no aplica / pendientes', `${model.NA} / ${model.P}`],
+        ['Segregación correcta (C ÷ (C+I))', model.pct===null ? 'Sin evaluación' : model.pct+'%'],
+        ['Cobertura de evaluación de criterios', model.cobertura===null ? 'Sin criterios aplicables' : model.cobertura+'%']
+      ]);
+      P.heading('Ubicaciones pendientes');
+      const pend = [...model.locs.filter(l=>locState(l)==='pendiente').map(l=>l.nombre), ...model.pendCat.map(c=>c.nombre)];
+      if(pend.length) pend.forEach(n=>P.text('• '+n, {gap:0.5})); else P.text('No hay ubicaciones pendientes.', {color:GRAY});
+      P.heading('Principales hallazgos abiertos');
+      if(model.abiertos.length) P.table(['#','Ubicación','Hallazgo','Prioridad','Responsable','Estado'],
+        model.abiertos.map((f,i)=>[String(i+1), f.loc.nombre, f.h.descripcion||'-', f.h.prioridad.toUpperCase(), f.h.responsable||'-', ESTADO_H_LBL[f.h.estado]]));
+      else P.text('No hay hallazgos abiertos.', {color:GRAY});
+      P.heading('Acciones prioritarias');
+      const acc = model.abiertos.filter(f=>f.h.prioridad!=='baja');
+      if(acc.length) P.table(['#','Acción propuesta','Ubicación','Responsable','Compromiso'],
+        acc.map((f,i)=>[String(i+1), f.h.accion || '(falta definir acción)', f.loc.nombre, f.h.responsable||'-', f.h.fechaCompromiso||'-']));
+      else P.text('No hay acciones de prioridad alta o media pendientes.', {color:GRAY});
+      locs.forEach(l=>{ P.newPage(); locationBlock(P, rec, l); });
+    } else {
+      P.heading('Detalle de la ubicación');
+      locationBlock(P, rec, loc);
     }
-
-    doc.save(`Informe_ZeroWaste_${r.sitio}_${r.fecha}.pdf`);
-    toast('✔ Informe PDF descargado.');
+    finalizarPdf(P, {sitio:rec.sitio, fecha:rec.fecha, borrador});
+    const nombre = nombreArchivo(rec, loc, borrador);
+    if(imprimir){
+      const url = doc.output('bloburl');
+      window.open(url, '_blank');
+    } else {
+      doc.save(nombre);
+    }
+    toast(`✔ Informe PDF ${borrador?'(borrador) ':''}generado.` + (P.failedImgs ? ` ⚠ ${P.failedImgs} imagen(es) no incluidas: aparecen señaladas.` : ''), 6000);
   }catch(err){
     console.error(err);
-    toast('⚠ Ocurrió un error generando el informe PDF. Intenta nuevamente.');
+    toast('⚠ No se pudo generar el informe PDF. Intenta nuevamente.', 5000);
   }
 }
+function exportarInformeConsolidado(){ generarInforme('consolidado', null, false); }
+function exportarInformeUbicacion(){ const id = $('reportLoc').value; if(!id){ toast('No hay ubicación seleccionada.'); return; } generarInforme('ubicacion', id, false); }
+function imprimirInforme(){ generarInforme('consolidado', null, true); }
 
-
-/* ============ EXPORT: EMAIL ============ */
+/* ============ CSV Y CORREO ============ */
+function exportCSV(){
+  if(!currentRecorrido){ toast('No hay recorrido activo.'); return; }
+  const m = buildModel(currentRecorrido, catCache);
+  if(m.locs.length===0){ toast('No hay ubicaciones para exportar.'); return; }
+  const headers = ['Sitio','Fecha','Recorrido','Ubicación','Tipo','Estado ubicación','Criterio','Estado criterio','Nota','Fotos','Hallazgos abiertos (ubicación)'];
+  const rows = [];
+  m.locs.forEach(l=>{
+    const abiertos = (l.hallazgos||[]).filter(h=>h.estado!=='cerrado').length;
+    (l.criteriosActivos||[]).forEach(k=>{
+      const c = l.criterios[k] || {};
+      rows.push([currentRecorrido.sitio, currentRecorrido.fecha, currentRecorrido.id, l.nombre, TYPE_LBL[l.tipo]||l.tipo, STATE_LBL[locState(l)], CRIT_BY_KEY[k].label, critEstadoLbl(c.status), c.note||'', (c.fotos||[]).length, abiertos]);
+    });
+  });
+  const csv = [headers, ...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = `ZeroWaste_${currentRecorrido.sitio}_${currentRecorrido.fecha}_${currentRecorrido.id.slice(-8)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  toast('CSV exportado.');
+}
 function exportEmail(){
   if(!currentRecorrido){ toast('No hay recorrido activo.'); return; }
-  const puntos = currentRecorrido.puntos;
-  const oportunidades = puntos.filter(p=>p.esOportunidad);
-  let body = `Informe de Recorrido Zero Waste\n`;
-  body += `Sitio: ${currentRecorrido.sitio}\nFecha: ${currentRecorrido.fecha}\nParticipantes: ${currentRecorrido.participantes||'-'}\n`;
-  if(currentRecorrido.objetivo) body += `Objetivo: ${currentRecorrido.objetivo}\n`;
-  body += `\nPuntos evaluados: ${puntos.length}\nOportunidades de mejora identificadas: ${oportunidades.length}\n\n`;
-  body += `--- Oportunidades / hallazgos ---\n`;
-  if(oportunidades.length===0){
-    body += `(Sin hallazgos registrados)\n`;
-  } else {
-    oportunidades.forEach((p,i)=>{
-      body += `${i+1}. [${p.prioridad.toUpperCase()}] ${p.ubicacion}: ${p.descOportunidad || p.nota || ''}${p.responsable ? ' (Responsable sugerido: '+p.responsable+')' : ''}\n`;
-    });
-  }
-  body += `\nNota: Este correo es un resumen. Adjunta el informe PDF descargado (botón "Descargar informe PDF") con las fotografías completas.\n\nAbs,\nAlejandro`;
-
+  const m = buildModel(currentRecorrido, catCache);
+  let body = `Informe de recorrido Zero Waste\nSitio: ${currentRecorrido.sitio}\nFecha: ${currentRecorrido.fecha}\nParticipantes: ${currentRecorrido.participantes||'-'}\n\n`;
+  body += summarySentences(m).join('\n') + '\n\n--- Hallazgos abiertos ---\n';
+  body += m.abiertos.length ? m.abiertos.map((f,i)=>`${i+1}. [${f.h.prioridad.toUpperCase()}] ${f.loc.nombre}: ${f.h.descripcion||''}${f.h.responsable?' (Responsable: '+f.h.responsable+')':''}`).join('\n') : '(Sin hallazgos abiertos)';
+  body += `\n\nNota: adjunta el PDF consolidado descargado desde la herramienta.\n\nSaludos,\nAlejandro`;
   const subject = `[SGI] Informe Zero Waste - ${currentRecorrido.sitio} - ${currentRecorrido.fecha}`;
-  const mailto = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  window.location.href = mailto;
+  window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+function openLightbox(src){
+  const box = document.createElement('div'); box.className = 'lightbox';
+  const x = document.createElement('span'); x.className = 'close-x'; x.textContent = '✕';
+  const img = document.createElement('img'); img.src = src;
+  box.append(x, img);
+  box.addEventListener('click', ()=>box.remove());
+  document.body.appendChild(box);
+}
+
+/* ============ RESPALDO: EXPORTAR / IMPORTAR ============ */
+async function exportarRespaldo(){
+  try{
+    await settlePhotos();
+    if(!(await flushDraft())) throw new Error('borrador');
+    await enqueue(()=>{});
+    const recs = await idbReadAll(ST_REC);
+    const drafts = await idbReadAll(ST_DRAFT);
+    const metas = (await idbReadAll(ST_META)).filter(m=>String(m.key).startsWith('catalogo:'));
+    const payload = {app: BACKUP_APP, schema: BACKUP_SCHEMA, exportedAt: new Date().toISOString(),
+      counts: {recorridos: recs.length, borradores: drafts.length, catalogos: metas.length},
+      recorridos: recs, borradores: drafts, catalogos: metas};
+    const blob = new Blob([JSON.stringify(payload)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = `ZeroWaste_respaldo_${todayISO()}_${hhmm().replace(':','')}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    toast(`✔ Respaldo descargado: ${recs.length} recorrido(s)`, 3500);
+  }catch(e){ console.error(e); toast('⚠ No se pudo generar el respaldo. Intenta nuevamente.', 4000); }
+}
+function importarRespaldo(){ const i=$('importFile'); i.value=''; i.click(); }
+function validPhotoList(arr){ return Array.isArray(arr) && arr.every(f=>typeof f==='string' && f.length<=MAX_PHOTO_CHARS && PHOTO_RE.test(f)); }
+function validarUbicacion(loc, w, add){
+  if(!loc || typeof loc!=='object'){ add(`${w}: no es válida.`); return; }
+  if(!isSafeId(loc.id)) add(`${w}: identificador inválido.`);
+  if(!isStr(loc.nombre, 200)) add(`${w}: nombre vacío o demasiado largo.`);
+  if(loc.tipo!==undefined && typeof loc.tipo!=='string') add(`${w}: tipo no válido.`);
+  if(loc.criteriosActivos!==undefined && (!Array.isArray(loc.criteriosActivos) || !loc.criteriosActivos.every(k=>CRIT_BY_KEY[k]))) add(`${w}: criterios desconocidos.`);
+  Object.entries(loc.criterios||{}).forEach(([k,c])=>{
+    if(!CRIT_BY_KEY[k]) { add(`${w}: criterio desconocido (${k}).`); return; }
+    if(c && c.status!=null && !STATUS_VALUES.includes(c.status)) add(`${w}: estado no reconocido en ${k}.`);
+    if(c && c.fotos!==undefined && !validPhotoList(c.fotos)) add(`${w}: fotografías no válidas en ${k}.`);
+  });
+  if(loc.fotos!==undefined && !validPhotoList(loc.fotos)) add(`${w}: fotografías no válidas.`);
+  if(loc.hallazgos!==undefined && !Array.isArray(loc.hallazgos)){ add(`${w}: hallazgos no válidos.`); return; }
+  (loc.hallazgos||[]).forEach((h,j)=>{
+    if(!h || !isSafeId(h.id)) { add(`${w}, hallazgo ${j+1}: identificador inválido.`); return; }
+    if(h.prioridad!==undefined && !PRIORIDADES.includes(h.prioridad)) add(`${w}, hallazgo ${j+1}: prioridad no reconocida.`);
+    if(h.estado!==undefined && !ESTADOS_H.includes(h.estado)) add(`${w}, hallazgo ${j+1}: estado no reconocido.`);
+    if(h.evidencia!==undefined && !validPhotoList(h.evidencia)) add(`${w}, hallazgo ${j+1}: evidencia no válida.`);
+    if(h.evidenciaCierre!==undefined && !validPhotoList(h.evidenciaCierre)) add(`${w}, hallazgo ${j+1}: evidencia de cierre no válida.`);
+  });
+}
+function validarRespaldo(obj){
+  const errors = [];
+  const add = m=>{ if(errors.length<15) errors.push(m); };
+  if(!obj || typeof obj!=='object' || Array.isArray(obj)) return {errors:['El archivo no tiene la estructura de un respaldo de Zero Waste.'], recorridos:[], borradores:[], catalogos:[]};
+  if(obj.app!==BACKUP_APP) add('El archivo no es un respaldo de esta herramienta (falta la marca "zeroWasteBackup").');
+  if(!Array.isArray(obj.recorridos)) add('Falta la lista "recorridos".');
+  if(obj.borradores!==undefined && !Array.isArray(obj.borradores)) add('"borradores" debe ser una lista.');
+  if(obj.catalogos!==undefined && !Array.isArray(obj.catalogos)) add('"catalogos" debe ser una lista.');
+  if(errors.length) return {errors, recorridos:[], borradores:[], catalogos:[]};
+  const ids = new Set(), recorridos = [];
+  obj.recorridos.forEach((r,i)=>{
+    const w = `Recorrido ${i+1}`;
+    if(!r || typeof r!=='object'){ add(`${w}: no es un objeto válido.`); return; }
+    if(!isSafeId(r.id)){ add(`${w}: identificador inválido.`); return; }
+    if(ids.has(r.id)){ add(`${w}: identificador repetido dentro del archivo.`); return; }
+    ids.add(r.id);
+    if(!isSafeId(r.sitio)) add(`${w}: sitio inválido.`);
+    if(typeof r.fecha!=='string' || !/^\d{4}-\d{2}-\d{2}$/.test(r.fecha) || isNaN(Date.parse(r.fecha))) add(`${w}: fecha inválida (se espera AAAA-MM-DD).`);
+    if(r.participantes!==undefined && typeof r.participantes!=='string') add(`${w}: participantes debe ser texto.`);
+    if(r.objetivo!==undefined && typeof r.objetivo!=='string') add(`${w}: objetivo debe ser texto.`);
+    if(r.puntos!==undefined && !Array.isArray(r.puntos)) add(`${w}: "puntos" debe ser una lista.`);
+    if(r.ubicaciones!==undefined){
+      if(!Array.isArray(r.ubicaciones)) add(`${w}: "ubicaciones" debe ser una lista.`);
+      else r.ubicaciones.forEach((l,j)=>validarUbicacion(l, `${w}, ubicación ${j+1}`, add));
+    }
+    recorridos.push(r);
+  });
+  const borradores = [];
+  (obj.borradores||[]).forEach((b,i)=>{
+    const w = `Borrador ${i+1}`;
+    if(!b || !isSafeId(b.recorridoId) || !b.draft || typeof b.draft!=='object'){ add(`${w}: estructura inválida.`); return; }
+    const cats = Object.values(b.draft.criterios || {});
+    if(!validPhotoList(b.draft.fotos||[]) || !cats.every(c=>validPhotoList((c&&c.fotos)||[]))) add(`${w}: fotografías no válidas.`);
+    if(ids.has(b.recorridoId)) borradores.push(b);
+  });
+  const catalogos = (obj.catalogos||[]).filter(m=>m && typeof m.key==='string' && m.key.startsWith('catalogo:') && Array.isArray(m.items));
+  return {errors, recorridos, borradores, catalogos};
+}
+function mostrarErroresImport(errors){
+  openModal(`<h2 style="margin-top:0;color:var(--red);font-size:16px;">⚠ El respaldo no se puede importar</h2>
+    <p style="font-size:12.5px;">No se escribió nada en este dispositivo. Corrige el archivo o usa un respaldo generado por esta herramienta:</p>
+    <ul style="font-size:12.5px;">${errors.map(e=>`<li>${esc(e)}</li>`).join('')}</ul>
+    <button class="btn-ghost choice" data-close="1">Cerrar</button>`,
+  e=>{ if(e.target.closest('[data-close]')) closeModals(); });
+}
+async function onImportFileChosen(e){
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  let obj;
+  try{ obj = JSON.parse(await file.text()); }
+  catch(err){ mostrarErroresImport(['El archivo no es un JSON válido.']); return; }
+  const v = validarRespaldo(obj);
+  if(v.errors.length){ mostrarErroresImport(v.errors); return; }
+  try{
+    const locales = new Map((await idbReadAll(ST_REC)).map(r=>[r.id, r]));
+    const strip = r=>{ const {rev, updatedAt, ...rest} = r; return stableStringify(rest); };
+    const plan = v.recorridos.map(r=>{
+      const cur = locales.get(r.id);
+      const action = !cur ? 'nuevo' : (strip(cur)===strip(r) ? 'identico' : 'conflicto');
+      return {rec: r, action, rev: cur ? (cur.rev||0) : 0};
+    });
+    mostrarPlanImport(plan, v, file.name);
+  }catch(err){ toast('⚠ No se pudo leer el almacenamiento local para comparar.', 4000); }
+}
+function mostrarPlanImport(plan, v, fileName){
+  const n = a=>plan.filter(x=>x.action===a).length;
+  const nuevos = n('nuevo'), iguales = n('identico'), conflictos = n('conflicto');
+  let botones;
+  if(!nuevos && !conflictos) botones = `<p style="font-size:12.5px;">No hay nada nuevo que importar: los recorridos del respaldo ya están aquí y son idénticos.</p>`;
+  else if(conflictos===0) botones = `<button class="btn-green choice" data-mode="nuevos">Importar ${nuevos} recorrido(s) nuevo(s)</button>`;
+  else botones = `<p style="font-size:12px;color:var(--muted);">Elige cómo tratar los conflictos. Nada se sobrescribe sin tu elección:</p>
+      <button class="btn-primary choice" data-mode="copias">Importar nuevos y conflictos como copias (recomendado)</button>
+      <button class="btn-ghost choice" data-mode="nuevos">Importar solo los nuevos (omitir conflictos)</button>
+      <button class="btn-danger choice" data-mode="reemplazar">Reemplazar conflictos con la versión del respaldo</button>`;
+  openModal(`<h2 style="margin-top:0;color:var(--purple-dark);font-size:16px;">📥 Vista previa de importación</h2>
+    <p style="font-size:12px;color:var(--muted);">Archivo: <b>${esc(fileName)}</b> · recorridos: <b>${plan.length}</b> · borradores: <b>${v.borradores.length}</b> · catálogos: <b>${v.catalogos.length}</b></p>
+    <ul style="font-size:13px;line-height:1.7;">
+      <li><b>${nuevos}</b> nuevo(s): se agregan.</li>
+      <li><b>${iguales}</b> idéntico(s): se omiten.</li>
+      <li><b>${conflictos}</b> con el mismo identificador y contenido distinto: no se tocan sin tu elección.</li>
+    </ul>${botones}
+    <button class="btn-ghost choice" data-close="1">Cancelar</button>`,
+  async e=>{
+    if(e.target.closest('[data-close]')){ closeModals(); return; }
+    const b = e.target.closest('[data-mode]'); if(!b) return;
+    const mode = b.dataset.mode;
+    if(mode==='reemplazar' && !confirm(`Se reemplazarán ${conflictos} recorrido(s) de este dispositivo por la versión del respaldo. ¿Continuar?`)) return;
+    closeModals();
+    await ejecutarImportacion(plan, v, mode);
+  });
+}
+async function ejecutarImportacion(plan, v, mode){
+  await settlePhotos();
+  if(!(await flushDraft())){ toast('⚠ No se pudo guardar el borrador actual. Importación cancelada.', 4500); return; }
+  const recWrites = [], draftWrites = [], idMap = new Map(), replaced = new Set();
+  const cnt = {nuevos:0, copias:0, reemplazados:0, omitidos:0};
+  plan.forEach(x=>{
+    if(x.action==='identico'){ cnt.omitidos++; return; }
+    if(x.action==='nuevo'){ recWrites.push({...x.rec, rev: 1}); cnt.nuevos++; return; }
+    if(mode==='copias'){
+      const nid = makeId(x.rec.sitio, x.rec.fecha);
+      idMap.set(x.rec.id, nid);
+      recWrites.push({...x.rec, id: nid, rev: 1}); cnt.copias++;
+    } else if(mode==='reemplazar'){
+      recWrites.push({...x.rec, rev: x.rev+1}); replaced.add(x.rec.id); cnt.reemplazados++;
+    } else cnt.omitidos++;
+  });
+  const written = new Set(recWrites.map(r=>r.id));
+  v.borradores.forEach(b=>{
+    const target = idMap.get(b.recorridoId) || b.recorridoId;
+    if(written.has(target)) draftWrites.push({recorridoId: target, draft: b.draft, updatedAt: Date.now(), rev: 1});
+  });
+  // Catálogos: solo se importan si el dispositivo aún no tiene catálogo para ese sitio (no se sobrescriben en silencio).
+  const catWrites = [];
+  for(const m of v.catalogos){ const local = await idbRead(ST_META, m.key).catch(()=>null); if(!local) catWrites.push({key:m.key, items:m.items, updatedAt:Date.now()}); }
+  if(!recWrites.length && !catWrites.length){ toast('No había nada nuevo que importar.'); return; }
+  try{
+    await enqueue(()=>idbWriteBatch([{store:ST_REC, items:recWrites}, {store:ST_DRAFT, items:draftWrites}, {store:ST_META, items:catWrites}]));
+  }catch(err){ toast('⚠ La importación no se completó; no se escribió nada. Revisa el espacio disponible.', 5000); return; }
+  if(currentRecorrido && replaced.has(currentRecorrido.id)){
+    draftOwnerId = null; draft = emptyDraft(); draftBaseline = stableStringify(draft);
+    const fresh = await idbRead(ST_REC, currentRecorrido.id).catch(()=>null);
+    if(fresh) await openRecorrido(fresh, true);
+  }
+  toast(`Importado: ${cnt.nuevos} nuevos · ${cnt.copias} como copia · ${cnt.reemplazados} reemplazados · ${cnt.omitidos} omitidos`, 5000);
 }
 </script>
 </body>
